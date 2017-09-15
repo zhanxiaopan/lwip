@@ -1,0 +1,42 @@
+_proj_sf_bl
+_proj_sf_dido
+_proj_sf_eips
+_proj_sf_pnio
+  - CCS project folders
+
+application
+  - application level codes for WS.
+  
+bsp_userconfig
+  - bsp
+  
+eips
+  - eips stack from RTA
+  
+io_dido
+io_eips
+io_pnio
+  - codes for network IO applications
+  
+lwip_hal
+  - hal between lwIP app and hardware.
+  
+lwip-1.4.1
+  - lwip stack
+  
+pnio
+  - pnio stack from PORT
+  
+tftp
+  - tftp implementation based on lwIP
+  
+TivaWare
+  - TivaWare driver from TI
+  
+utilities
+  - some general utilities such as filter, mem operation, etc.
+  - almost platform independent.
+  
+webserver_lwip
+  - web server implementation based on lwIP.
+  - html files included in this folder as well.

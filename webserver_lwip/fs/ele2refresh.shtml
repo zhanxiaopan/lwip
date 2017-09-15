@@ -1,0 +1,137 @@
+<html><head><title>WebDashboard</title>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<!-- <meta http-equiv="refresh" content="1"> -->
+<meta content="MSHTML 6.00.2900.3698" name="GENERATOR">
+<style></style><!-- saved from url=(0038)http://192.168.0.10/STM32F107ADC.shtml -->
+</head>
+
+<body>
+
+<table border="1" cellpadding="5" cellspacing="1">
+<tbody>
+
+<tr>
+<td><small><span style="font-family: Segoe UI;"> ATTR. NAME 		</span> </small></td>
+<td><small><span style="font-family: Segoe UI;"> Value   			</span></small> </td>
+</tr>
+
+<tr>
+<td><small><span style="font-family: Calibri;"> FLOW_OK </span> 	</small></td>
+<td><small><span style="font-family: Calibri;" id="dval_flow_ok"><!--#disp1--></span></small> </td>
+</tr>
+
+<tr>
+<td><small><span style="font-family: Calibri;"> VALVE_ON </span> 	</small></td>
+<td><small><span style="font-family: Calibri;" id="dval_valve"><!--#disp2--></span></small> </td>
+</tr>
+
+<tr>
+<td><small><span style="font-family: Calibri;"> DETECT_ON </span> 	</small></td>
+<td><small><span style="font-family: Calibri;" id="dval_bypass"><!--#disp3--></span></small> </td>
+</tr>
+
+<tr>
+<td><small><span style="font-family: Calibri;"> FLOWRATE </span> 	</small></td>
+<td><small><span style="font-family: Calibri;" id="dval_flowrate"><!--#disp4--></span></small> </td>
+</tr>
+
+<tr>
+<td><small><span style="font-family: Calibri;"> LEAKAGE 			</span> </small></td>
+<td><small><span style="font-family: Calibri;" id="dval_leak"><!--#disp11--></span></small> </td>
+</tr>
+
+<tr>
+<td><small><span style="font-family: Calibri;"> CP_FLOW_WARNING 	</span> </small></td>
+<td><small><span style="font-family: Calibri;" id="dval_flow_warn"><!--#disp5--></span></small> </td>
+</tr>
+
+<tr>
+<td><small><span style="font-family: Calibri;"> CP_FLOW_FAULT 		</span> </small></td>
+<td><small><span style="font-family: Calibri;" id="dval_flow_fault"><!--#disp6--></span></small> </td>
+</tr>
+
+<tr>
+<td><small><span style="font-family: Calibri;"> CP_LEAK_RESP 		</span> </small></td>
+<td><small><span style="font-family: Calibri;" id="dval_leak_resp"><!--#disp7--></span></small> </td>
+</tr>
+
+<tr>
+<td><small><span style="font-family: Calibri;"> STATE_OKTOWELD 		</span> </small></td>
+<td><small><span style="font-family: Calibri;" id="dval_oktoweld"><!--#disp8--></span></small> </td>
+</tr>
+
+<tr>
+<td><small><span style="font-family: Calibri;"> TIME_TICK 			</span> </small></td>
+<td><small><span style="font-family: Calibri;" id="dval_timetick"><!--#disp9--></span></small> </td>
+</tr>
+
+<tr>
+<td><small><span style="font-family: Calibri;"> WS_LEAK_RESP_INTEXT 			</span> </small></td>
+<td><small><span style="font-family: Calibri;" id="dval_wrapup"><!--#disp10--></span></small> </td>
+</tr>
+
+<tr>
+<td><small><span style="font-family: Calibri;"> DEF_FLOW_WARN 			</span> </small></td>
+<td><small><span style="font-family: Calibri;" id="dval_flow_warn_def"><!--#disp12--></span></small> </td>
+</tr>
+
+<tr>
+<td><small><span style="font-family: Calibri;"> DEF_FLOW_FAULT 			</span> </small></td>
+<td><small><span style="font-family: Calibri;" id="dval_flow_fault_def"><!--#disp13--></span></small> </td>
+</tr>
+
+<tr>
+<td><small><span style="font-family: Calibri;"> DEF_LEAK_RESP 			</span> </small></td>
+<td><small><span style="font-family: Calibri;" id="dval_leak_resp_def"><!--#disp14--></span></small> </td>
+</tr>
+
+<tr>
+<td><small><span style="font-family: Calibri;"> WS_STATUS_INDEX 			</span> </small></td>
+<td><small><span style="font-family: Calibri;" id="dval_ws_status_index"><!--#disp15--></span></small> </td>
+</tr>
+
+<tr>
+<td><small><span style="font-family: Calibri;"> WS_STATUS_INTEXT 			</span> </small></td>
+<td><small><span style="font-family: Calibri;" id="dval_ws_status_intext"><!--#disp16--></span></small> </td>
+</tr>
+
+<tr>
+<td><small><span style="font-family: Calibri;"> WS_CUR_STARTUP_DELAY 			</span> </small></td>
+<td><small><span style="font-family: Calibri;" id="dval_ws_cur_su_delay"><!--#disp17--></span></small> </td>
+</tr>
+
+<tr>
+<td><small><span style="font-family: Calibri;"> WS_CUR_STARTUP_LEAK_THRESH 			</span> </small></td>
+<td><small><span style="font-family: Calibri;" id="dval_ws_cur_su_thresh"><!--#disp18--></span></small> </td>
+</tr>
+
+<tr>
+<td><small><span style="font-family: Calibri;"> WS_DEF_STARTUP_DELAY 			</span> </small></td>
+<td><small><span style="font-family: Calibri;" id="dval_ws_def_su_delay"><!--#disp19--></span></small> </td>
+</tr>
+
+<tr>
+<td><small><span style="font-family: Calibri;"> WS_DEF_STARTUP_LEAK_THRESH 			</span> </small></td>
+<td><small><span style="font-family: Calibri;" id="dval_ws_def_su_thresh"><!--#disp20--></span></small> </td>
+</tr>
+
+<tr>
+<td><small><span style="font-family: Calibri;"> WS_CUR_IPADDR 			</span> </small></td>
+<td><small><span style="font-family: Calibri;" id="dval_ws_cur_ipaddr"><!--#disp21--></span></small> </td>
+</tr>
+
+<tr>
+<td><small><span style="font-family: Calibri;"> WS_CUR_SENSE_INDEX 			</span> </small></td>
+<td><small><span style="font-family: Calibri;" id="dval_ws_cur_senseindex"><!--#disp22--></span></small> </td>
+</tr>
+
+<tr>
+<td><small><span style="font-family: Calibri;"> WS_CUR_LEAK_INDEX 			</span> </small></td>
+<td><small><span style="font-family: Calibri;" id="dval_ws_cur_leakindex"><!--#disp23--></span></small> </td>
+</tr>
+
+</tbody>
+</table>
+
+
+</body></html>

@@ -1,0 +1,19 @@
+This foler contains
+ - netconf.c
+ - netconf.h
+ - lwipopts.h
+ 
+ netconf.c
+ This module works as a driver between user application and network hardware/stack. It provides the following features:
+  - init of lwip
+  - define ETH related interrupt
+  - lwip main process thread
+  - lwip's link statuc check
+ 
+ 
+ lwipopts.h
+ This header file configure the parameters of lwip system, including:
+  - pbuf number
+  - pbuf size
+  - etc.
+ 

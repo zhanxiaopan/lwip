@@ -1,0 +1,20 @@
+This directory contains the application module that is almost
+pure software and hardware independent. These modules interact
+with hardware throught driver/bsp.
+
+flowsensor.c
+
+io_data_struct.c
+        define the data struct used in filedbus IO data. The
+        fieldbus could be either Ethernet/IP or PROFINET.
+
+led.c
+
+main.c
+
+
+system.c
+
+
+ws_func.c
+

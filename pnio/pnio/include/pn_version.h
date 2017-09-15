@@ -1,0 +1,14 @@
+
+
+#ifndef PN_VERSION_H
+#define PN_VERSION_H
+
+/* Stack version: PN_STACK_VERSION.PN_STACK_SUBVERSION.PN_STACK_PATCH */
+
+#define PN_STACK_VERSION 2
+#define PN_STACK_SUBVERSION 0
+#define PN_STACK_PATCH 8
+#define PN_STACK_SPECIAL "generic"
+#define PN_STACK_REV "git:PNIO_V2_0_8"
+
+#endif /* PN_VERSION_H */

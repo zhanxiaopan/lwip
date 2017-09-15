@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+		<title>Weld Saver</title>
+		<meta name="description" content="" />
+		<meta name="author" content="KS" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no"/>
+		<link rel="shortcut icon" href="/favicon.ico" />
+		<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+		<link rel="stylesheet" type="text/css" href="Public/css/base.css" />		
+	</head>
+
+    <body style=" background: #087AA1;">
+	
+    	<div class="mbox">
+    		<table cellpadding="0" cellspacing="0" border="0" align="center">
+    			<tbody>
+    				<tr>
+    					<th>Flow Warning(LPM)</th>
+    					<td><input id="pr_input_warnflow" type="text" class="tx01" value="11.5" /></td>
+    				</tr>
+    				<tr>
+    					<th>Flow Fault(LPM)</th>
+    					<td><input id="pr_input_faultflow" type="text" class="tx01" value="7.6" /></td>
+    				</tr>
+    				<tr>
+    					<th>Leak Response</th>
+    					<td >
+    						<select id="pr_input_leakresp">
+								<option>Slow</option>
+    							<option>Normal</option>
+								<option>Fast</option>
+    						</select>
+    					</td>
+    				</tr>
+    				<tr>
+    					<th>Stabilization Delay(SEC)</th>
+    					<td>
+<input id="pr_input_su_delay" type="text" class="tx01" value="2" />
+    					</td>
+    				</tr>
+    				<tr>
+    					<th>Startup Leak(LPM)</th>
+    					<td>
+<input id="pr_input_su_thresh" type="text" class="tx01" value="3.8" />
+    					</td>
+    				</tr>
+					
+					<tr>
+    					<th>IP addr</th>
+    					<td>
+<input id="ip_addr_input_1" style="width: 150px" type="text" class="tx01" value="192" /> 
+    					</td>
+    				</tr>
+					
+
+                    <tr>
+                        <td colspan="2" class="btns"><input type="button" style="width: 175px" onclick= "btn_click_showdefparas()" value="Show Factory Settings" /> &nbsp; <input style="width: 50px" type="button" onclick= "btn_click_newctrlparas()" value="Save" /> &nbsp; <input style="width: 50px" type="button" onclick= "btn_click_setcancel() "value="Back" /></td> 
+                    </tr>
+    			</tbody>
+    		</table>
+    	</div>
+    </body>
+</html>
+
+
+
+
+
+
+
+

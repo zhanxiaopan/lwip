@@ -1,0 +1,18 @@
+<html><head><title>FlowrateValue</title>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<!-- <meta http-equiv="refresh" content="1"> -->
+<meta content="MSHTML 6.00.2900.3698" name="GENERATOR">
+<style></style>
+</head>
+
+<body>
+    <ul>
+        <li class="o1"><i id="o1_flow" style="display: none"><!--#disp10--></i>FLOW</li>
+        <li class="o2"><i id="o2_valve" style="display: none"><!--#disp2--></i>VALVE</li>
+        <li class="o3"><i id="o3_bypass" style="display: none"><!--#disp3--></i>DETECTION</li>
+    </ul>
+    <span class="lpm" id="div_flowrate">
+        <strong><!--#disp9--></strong><br/ >LPM
+    </span>
+
+</body></html>

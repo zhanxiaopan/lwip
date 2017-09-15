@@ -1,0 +1,1 @@
+makefsfile -i fs_datalog -o fsdata_custom.h -r -h -q
