@@ -53,16 +53,15 @@ void pnio_app_init(void)
 
     // ** added to initialize the ethernet controller for PROFINET
     //uint8_t mac_addr[] = DEVICE_MAC_ADDR;
-    uint8_t mac_addr[6];
     gen_mac_addr();
-    mac_addr[0] =  l_mac[0];//MAC_ADDR0;
-    mac_addr[1] =  l_mac[1];//MAC_ADDR1;
-    mac_addr[2] =  l_mac[2];//MAC_ADDR2;
-    mac_addr[3] =  l_mac[3];//MAC_ADDR3;
-    mac_addr[4] =  l_mac[4];//MAC_ADDR4;
-    mac_addr[5] =  l_mac[5];//MAC_ADDR5;
+    MAC_ADDR[0] =  get_mac_addr(0);//MAC_ADDR0;
+    MAC_ADDR[1] =  get_mac_addr(1);//MAC_ADDR1;
+    MAC_ADDR[2] =  get_mac_addr(2);//MAC_ADDR2;
+    MAC_ADDR[3] =  get_mac_addr(3);//MAC_ADDR3;
+    MAC_ADDR[4] =  get_mac_addr(4);//MAC_ADDR4;
+    MAC_ADDR[5] =  get_mac_addr(5);//MAC_ADDR5;
     // Initialize the Ethernet Controller
-    HAL_setupEthernet(mac_addr);
+    HAL_setupEthernet(MAC_ADDR);
     IntPrioritySet(INT_EMAC0, INTERRUPT_PRIORITY_HIGH);
 
     /* Initialize PNIO Stack with callback function */

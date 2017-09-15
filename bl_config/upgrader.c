@@ -12,7 +12,7 @@
 #include "inc/hw_memmap.h"
 #include "hw_nvic.h"
 #include <stdio.h>
-
+#include <bsp_eeprom_const.h>
 
 #define UPGRADER_APP_START_ADDR (0x20000)
 #define UPGRADER_DL_BUF_START_ADDR (0x60000)
@@ -38,7 +38,13 @@ uint8_t g_ui8FlashError = 0;
 FW_UPGRADER_T g_upgrader;
 TFTP_ERROR_LIST g_error;
 
+#define JUMP_WAITING_TIME_LONG      1200        //5 min
+#define JUMP_WAITING_TIME_SHORT     40          //10s
+#define JUMP_WAITING_TIME_NO        1           // 250ms
+#define JUMP_WAITING_TIME_FOREVER   4000000000  // several monthes
 
+uint32_t    jump_config;
+uint32_t    WaitingTime = JUMP_WAITING_TIME_SHORT;  //40
 
 FW_UPGRADER_STATUS_T upgrader_read_status_eeprom ()
 {
@@ -53,6 +59,29 @@ void upgrader_write_status_eeprom ()
 void upgrader_init(FW_UPGRADER_T *upgrader)
 {
 	//upgrader->status = upgrader_read_status_eeprom();
+    //retrive the configuration for the waiting time
+    EEPROMRead ((uint32_t*)&jump_config, EEPROM_ADDR_BL_JUMP_CONFIG, EEPROM_LEN_BL_JUMP_CONFIG);
+    switch(jump_config) {
+        case JUMP_CONFIG_NO_WAIT:
+            WaitingTime = JUMP_WAITING_TIME_NO;
+            break;
+
+        case JUMP_CONFIG_SHORT_WAIT:
+            WaitingTime = JUMP_WAITING_TIME_SHORT;
+            break;
+
+        case JUMP_CONFIG_LONG_WAIT:
+            WaitingTime = JUMP_WAITING_TIME_LONG;
+            break;
+
+        case JUMP_CONFIG_FOREVER_WAIT:
+            WaitingTime = JUMP_WAITING_TIME_FOREVER;
+            break;
+
+        default:
+            WaitingTime = JUMP_WAITING_TIME_SHORT;
+    }
+
 	upgrader->status = UPGRADER_IDLE;
 
 }
@@ -88,7 +117,7 @@ void upgrader_process ()
 		if (g_ui8IsWrqReceived == 1) {
 			g_upgrader.status = REQUESTED;
 		}
-		else if (loop_tick_2 < 40) {
+		else if (loop_tick_2 < WaitingTime) {
 			// blink the LED here.
             // toggle the LED every 250ms
 			if (loop_tick_1 >= (250/UPGRADER_PROCESS_INTERVAL)) {
@@ -151,6 +180,11 @@ void upgrader_process ()
 
 		// now it's ready to jump.
 		g_upgrader.status = READY_TO_JUMP;
+
+		//config the waiting to be "no_wait"
+		jump_config = JUMP_CONFIG_NO_WAIT;
+		EEPROMProgram ((uint32_t*)&jump_config, EEPROM_ADDR_BL_JUMP_CONFIG, EEPROM_LEN_BL_JUMP_CONFIG);
+
 		puts("Jumping");
 		break;
 	case READY_TO_JUMP:
@@ -181,6 +215,8 @@ void upgrader_process ()
 		SysCtlPeripheralDisable(SYSCTL_PERIPH_PWM0);
 		SysCtlPeripheralDisable(SYSCTL_PERIPH_TIMER1);
 		SysCtlPeripheralDisable(SYSCTL_PERIPH_TIMER2);
+
+		SysTickIntDisable();
 
 		/*
 		 * Branch to the specified address.  This should never return.

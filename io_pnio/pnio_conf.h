@@ -3,12 +3,14 @@
 #ifndef PNIO_CONF_H
 #define PNIO_CONF_H
 
+#include <stdint.h>
 
 /***************************************************************************
  *
  * Resource Management
  *
  ***************************************************************************/
+
 
 /* CONFIG_MAX_PART
  *
@@ -24,6 +26,7 @@
  * CONFIG_MAX_MODULE_COUNT        - Default: 10, overall module count
  * CONFIG_MAX_SUBMOD_COUNT        - Default:  6, overall submodule count
  */
+
 #define CONFIG_MAX_AP_COUNT           1
 #define CONFIG_MAX_SLOT_COUNT         3
 #define CONFIG_MAX_SUBSLOT_COUNT      6
@@ -427,7 +430,8 @@
 #define _LOCAL_STATIC_MAC_ADDR_INDEX (2)
 #if _LOCAL_STATIC_MAC_ADDR_INDEX == 1
 /* MAC ADDR #1*/
-#define DEVICE_MAC_ADDR { 0x00, 0x45, 0x56, 0x78, 0x9a, 0xbc }
+//#define DEVICE_MAC_ADDR { 0x00, 0x45, 0x56, 0x78, 0x9a, 0xbc }
+#define DEVICE_MAC_ADDR MAC_ADDR
 #elif _LOCAL_STATIC_MAC_ADDR_INDEX == 2
 /* MAC ADDR #2*/
 #define DEVICE_MAC_ADDR { 0x00, 0x45, 0x56, 0x78, 0x9a, 0xbd }
@@ -445,7 +449,11 @@
 #define DEVICE_MAC_ADDR { 0x00, 0x45, 0x56, 0x78, 0x9a, 0xc1 }
 #endif
 
+#ifndef MAC_ADDR_LEN
+#define MAC_ADDR_LEN    6
+#endif
 
+static uint8_t MAC_ADDR[MAC_ADDR_LEN];
 
 /* PORT1_ID, PORT1_INTERFACE
  *

@@ -247,7 +247,7 @@ extern uint32_t EEPROMBlockUnlock(uint32_t ui32Block,
 extern void EEPROMBlockHide(uint32_t ui32Block);
 extern void EEPROMIntEnable(uint32_t ui32IntFlags);
 extern void EEPROMIntDisable(uint32_t ui32IntFlags);
-extern uint32_t EEPROMIntStatus(_Bool bMasked);
+extern uint32_t EEPROMIntStatus(bool bMasked);
 extern void EEPROMIntClear(uint32_t ui32IntFlags);
 
 #ifndef DEPRECATED

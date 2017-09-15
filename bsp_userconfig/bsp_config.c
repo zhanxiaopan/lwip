@@ -116,6 +116,7 @@ void BSP_Init()
 	// Initialize User Modules
 	//Console_Init();
 	//if (EEPROMInit()!=EEPROM_INIT_OK) Console_Error("EEPROM initialization failed");
+	while(EEPROMInit()!=EEPROM_INIT_OK);
 
 	// Welcome String
 	//Console_PrintColor(CONSOLE_COLOR_GREY, "Welcome to %s: %s, Version %d.%d.%d", APP_NAME, APP_NAME_EXTENDED, APP_VERSION_MAJ, APP_VERSION_MID, APP_VERSION_MIN);

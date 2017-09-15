@@ -76,7 +76,7 @@ void HAL_setupTimer0(uint32_t sys_clock);
 
 void HAL_setup()
 {
-    char mac_addr[] = DEVICE_MAC_ADDR;
+    //char mac_addr[] = DEVICE_MAC_ADDR; //here we use MAC_ADDR instead
     // initialize the clock frequency
     g_ui32ClkFreq = HAL_setupClockFreq();
 
@@ -93,7 +93,7 @@ void HAL_setup()
     HAL_setupSysTick(g_ui32ClkFreq);
 
     // Initialize the Ethernet Controller
-    HAL_setupEthernet(mac_addr);
+    HAL_setupEthernet(MAC_ADDR);
 
     // interrupt
     /* set interrupt priorities */

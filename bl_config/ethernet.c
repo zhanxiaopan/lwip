@@ -8,6 +8,7 @@
 #include "timeout.h"     	// Timeout header file
 #include "sys_config.h"
 #include <stdio.h>
+#include <bsp_eeprom_const.h>
 
 extern char ws_o_ipaddr_text[20];
 
@@ -36,11 +37,11 @@ void Ethernet_Init()
 	Ethernet_InitMACPHYDMA();		// MAC, PHY and DMA
 
 	// read IP from EEPROM.
-	EEPROMRead ((uint32_t*)&uip_add_0, EEPROMAddrFromBlock(2), 4);
-	EEPROMRead ((uint32_t*)&uip_add_1, EEPROMAddrFromBlock(2)+4, 4);
-	EEPROMRead ((uint32_t*)&uip_add_2, EEPROMAddrFromBlock(2)+8, 4);
-	EEPROMRead ((uint32_t*)&uip_add_3, EEPROMAddrFromBlock(2)+12, 4);
-	EEPROMRead ((uint32_t*)&is_new_ip_saved_before, EEPROMAddrFromBlock(2)+16, 4);
+	EEPROMRead ((uint32_t*)&uip_add_0, EEPROM_ADDR_IP_ADDR0, 4);
+	EEPROMRead ((uint32_t*)&uip_add_1, EEPROM_ADDR_IP_ADDR1, 4);
+	EEPROMRead ((uint32_t*)&uip_add_2, EEPROM_ADDR_IP_ADDR2, 4);
+	EEPROMRead ((uint32_t*)&uip_add_3, EEPROM_ADDR_IP_ADDR3, 4);
+	EEPROMRead ((uint32_t*)&is_new_ip_saved_before, EEPROM_ADDR_NEW_IP_IS_SAVED, 4);
 	if (uip_add_0 == 0 || uip_add_1 ==0 || uip_add_2 == 0 || uip_add_3 == 0 || is_new_ip_saved_before != 167) {
 		uip_add_0 = 192;
 		uip_add_1 = 168;
@@ -140,12 +141,18 @@ void Ethernet_InitMACPHYDMA()
     // Program the hardware with its MAC address (for filtering).
     uint8_t MAC_ADDR[6];
     gen_mac_addr();
-    MAC_ADDR[0] =  l_mac[0];//MAC_ADDR0;
-    MAC_ADDR[1] =  l_mac[1];//MAC_ADDR1;
-    MAC_ADDR[2] =  l_mac[2];//MAC_ADDR2;
-    MAC_ADDR[3] =  l_mac[3];//MAC_ADDR3;
-    MAC_ADDR[4] =  l_mac[4];//MAC_ADDR4;
-    MAC_ADDR[5] =  l_mac[5];//MAC_ADDR5;
+    MAC_ADDR[0] =  get_mac_addr(0);//MAC_ADDR0;
+    MAC_ADDR[1] =  get_mac_addr(1);//MAC_ADDR1;
+    MAC_ADDR[2] =  get_mac_addr(2);//MAC_ADDR2;
+    MAC_ADDR[3] =  get_mac_addr(3);//MAC_ADDR3;
+    MAC_ADDR[4] =  get_mac_addr(4);//MAC_ADDR4;
+    MAC_ADDR[5] =  get_mac_addr(5);//MAC_ADDR5;
+//    MAC_ADDR[0] =  l_mac[0];//MAC_ADDR0;
+//    MAC_ADDR[1] =  l_mac[1];//MAC_ADDR1;
+//    MAC_ADDR[2] =  l_mac[2];//MAC_ADDR2;
+//    MAC_ADDR[3] =  l_mac[3];//MAC_ADDR3;
+//    MAC_ADDR[4] =  l_mac[4];//MAC_ADDR4;
+//    MAC_ADDR[5] =  l_mac[5];//MAC_ADDR5;
     EMACAddrSet(EMAC0_BASE, 0, MAC_ADDR);
     // Set the interrupt priority to peripheral
     IntPrioritySet(INT_EMAC0, INTERRUPT_PRIORITY_LOW);

@@ -10,8 +10,10 @@
 
 MEMORY
 {
-    FLASH (RX) : origin = 0x00000000, length = 0x00100000
-    SRAM (RWX) : origin = 0x20000000, length = 0x00040000
+    //FLASH (RX) : origin = 0x00020000, length = 0x000D0000
+    FLASH (RX) : origin = 0x00000000, length = 0x000F0000
+    SRAM (RWX) : origin = 0x20000000, length = 0x00038000
+    SRAM_STACK (RWX) : origin = 0x20038000, length = 0x00008000
 }
 
 /* The following command line options are set as part of the CCS project.    */
@@ -25,10 +27,46 @@ MEMORY
 /* --library=rtsv7M4_T_le_eabi.lib                                           */
 
 /* Section allocation in memory */
+/*
+SECTIONS
+{
+    .text :
+    {
+        _text = .;
+        KEEP(*(.isr_vector))
+        *(.text*)
+        *(.rodata*)
+        _etext = .;
+    } > FLASH
+
+    .data : AT(ADDR(.text) + SIZEOF(.text))
+    {
+        _data = .;
+        *(vtable)
+        *(.data*)
+        _edata = .;
+    } > SRAM
+
+    .bss :
+    {
+        _bss = .;
+        *(.bss*)
+        *(COMMON)
+        _ebss = .;
+    } > SRAM
+
+   .stack :
+   {
+       KEEP(*(.stack))
+   } > SRAM_STACK
+}
+*/
+
 
 SECTIONS
 {
-    .intvecs:   > 0x00000000
+    //.intvecs:   > 0x00020000
+    .intvecs:	> 0x00000000
     .text   :   > FLASH
     .const  :   > FLASH
     .cinit  :   > FLASH
@@ -39,7 +77,8 @@ SECTIONS
     .data   :   > SRAM
     .bss    :   > SRAM
     .sysmem :   > SRAM
-    .stack  :   > SRAM
+    .stack  :   > SRAM_STACK
 }
 
-__STACK_TOP = __stack + 512;
+__STACK_TOP = __stack + 32768;
+
