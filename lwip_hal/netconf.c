@@ -29,10 +29,10 @@ void LWIP_LinkCallback(struct netif *netif);
 
 /* Exported variables ------------------------------------------------- */
 // global ip addr variables
-uint8_t uip_add_0 = 172;
-uint8_t uip_add_1 = 24;
-uint8_t uip_add_2 = 1;
-uint8_t uip_add_3 = 6;
+uint8_t uip_add_0 = IP_ADDR0;
+uint8_t uip_add_1 = IP_ADDR1;
+uint8_t uip_add_2 = IP_ADDR2;
+uint8_t uip_add_3 = IP_ADDR3;
 
 
 /* Exported functions ------------------------------------------------- */
@@ -136,12 +136,12 @@ void Ethernet_InitMACPHYDMA()
     // Program the hardware with its MAC address (for filtering).
     uint8_t MAC_ADDR[6];
     gen_mac_addr();
-    MAC_ADDR[0] =  l_mac[0];
-    MAC_ADDR[1] =  l_mac[1];
-    MAC_ADDR[2] =  l_mac[2];
-    MAC_ADDR[3] =  l_mac[3];
-    MAC_ADDR[4] =  l_mac[4];
-    MAC_ADDR[5] =  l_mac[5];
+    MAC_ADDR[0] =  get_mac_addr(0);
+    MAC_ADDR[1] =  get_mac_addr(1);
+    MAC_ADDR[2] =  get_mac_addr(2);
+    MAC_ADDR[3] =  get_mac_addr(3);
+    MAC_ADDR[4] =  get_mac_addr(4);
+    MAC_ADDR[5] =  get_mac_addr(5);
     EMACAddrSet(EMAC0_BASE, 0, MAC_ADDR);
 
     // Set the interrupt priority to peripheral

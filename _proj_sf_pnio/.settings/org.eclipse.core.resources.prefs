@@ -22,6 +22,7 @@ encoding//Debug/lwip-1.4.1/src/core/snmp/subdir_vars.mk=UTF-8
 encoding//Debug/lwip-1.4.1/src/core/subdir_rules.mk=UTF-8
 encoding//Debug/lwip-1.4.1/src/core/subdir_vars.mk=UTF-8
 encoding//Debug/makefile=UTF-8
+encoding//Debug/objects.mk=UTF-8
 encoding//Debug/pnio/lib/subdir_rules.mk=UTF-8
 encoding//Debug/pnio/lib/subdir_vars.mk=UTF-8
 encoding//Debug/pnio/pn_oal/subdir_rules.mk=UTF-8
