@@ -21,8 +21,8 @@ extern "C" {
  * input means data from remote to our device
  * output means data from our device to remote
 */
-#define IO_DATA_OUTPUT_LEN 6
-#define IO_DATA_INTPUT_LEN 2
+#define IO_DATA_OUTPUT_LEN 8
+#define IO_DATA_INTPUT_LEN 8
 
 
 /* Exported typedef ------------------------------------------------ */
@@ -39,10 +39,17 @@ typedef union IO_DATA_INPUT_T
 		uint8_t		di_rvd_bit02:1;			// unused.
 		uint8_t		di_rvd_bit03:1;			// unused.
 		uint8_t		di_rvd_bit04:1;			// unused.
-		uint8_t		di_rvd_bit05:1;			// unused.
+		uint8_t		cmd_tpu_ctrl_update:1;			// #added by TMS
 
 		// defined by ourselves
-		uint8_t		o2t_rvd;				// reserved
+		uint8_t		cmd_flow_warning;		// goFlowWarningValue
+		uint8_t     cmd_flow_fault;         // goFlowFaultValue
+		uint8_t     cmd_leak_response;      // goLeakResponse
+		uint8_t     cmd_delay;              // goDelay
+		uint8_t     cmd_startup_leak;       // goStartupLeak
+
+		uint16_t    di_rvd_byte_6_7;
+
 	} data;
 	uint8_t row[IO_DATA_INTPUT_LEN];
 } IO_DATA_INPUT_T;
@@ -60,7 +67,7 @@ typedef union IO_DATA_OUTPUT_T
 		uint8_t		isBypassed:1;			// diGxWS_Bypassed 1: bypassed, 0: not bypassed
 		uint8_t 	diWS_MinFlow:1;			// diGxWS_MinFlow
 		uint8_t		diWS_CapLoss:1;			// diGxWS_CapLoss
-		uint8_t		t2o_rvd_bit0:1;			// reserved
+		uint8_t		diWS_ACK:1;			    // #added by TMS
 		uint8_t		t2o_rvd_bit1:1;			// reserved
 		uint8_t		diWS_PowerOk:1;			// diGxWS_PowerOK
 
@@ -76,9 +83,11 @@ typedef union IO_DATA_OUTPUT_T
 		uint8_t		t2o_rvd_bit3:1;			// reserved
 		uint8_t		t2o_rvd_bit4:1;			// reserved
 
-		uint8_t 	t2o_rvd_byte0;			// reserved
-		uint8_t 	t2o_rvd_byte1;			// reserved
-		uint8_t		t2o_rvd_byte2;			// reserved
+		uint8_t 	flow_warning;			// 8: flow warning, by TMS
+		uint8_t 	flow_fault;			    // 8: flow fault, by TMS
+		uint8_t		leak_response;			// 8: flow response, by TMS
+		uint8_t     delay;                  // 8: delay, by TMS
+		uint8_t     startup_leak;           // 8: startup_leak, by TMS
 	} data;
 	uint8_t row[IO_DATA_OUTPUT_LEN];
 } IO_DATA_OUTPUT_T;

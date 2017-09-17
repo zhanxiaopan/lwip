@@ -1,167 +1,110 @@
-<html><head><meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
 <meta http-equiv="Pragma" content="no-cache">
-<script type="text/javascript">
-function fetch_current_paravalue()
-{
-    var t_str_1;
-    var t_str_2;
-    document.getElementById("id_p8").value = document.getElementById("cur_flow_warn").innerText;
-    document.getElementById("id_p9").value = document.getElementById("cur_flow_fault").innerText;
-    t_str_1 = document.getElementById("cur_leak_resp").innerText; 
-    if (t_str_1 == "Fastest") {
-        t_str_2 = 0;
-    }
-    else if (t_str_1 == "Fast") {
-        t_str_2 = 1;
-    }
-    else if (t_str_1 == "Normal") {
-        t_str_2 = 2;
-    }
-    else if (t_str_1 == "Slow") {
-        t_str_2 = 3;
-    }
-    else if (t_str_1 == "Slowest") {
-        t_str_2 = 4;
-    }
-    else {
-        t_str_2 = 2;
-    }
-    document.getElementById("id_p10").selectedIndex = t_str_2;
-    
-    t_str_1 = document.getElementById("cur_sta_delay").innerText;
-    t_str_2 = parseInt(t_str_1);
-    document.getElementById("id_p12").value = t_str_2;
-    t_str_1 = document.getElementById("cur_sta_leak").innerText;
-    t_str_2 = parseInt(t_str_1);
-    document.getElementById("id_p13").value = t_str_2;
-}
-</script>
 </head>
-<body onload="fetch_current_paravalue()" marginwidth="0" marginheight="0">
-<table width="429" border="0" cellspacing="0" cellpadding="0" align="left" bgcolor="#006699">
-<tbody><tr>
-<td width="429" height="2" bgcolor="#FFFFFF"><img src="/src/blank.gif" border="0" alt=""></td>
-</tr>
-<tr>
-<td width="429" height="4" bgcolor="#CCFFFF"><img src="/src/blank.gif" border="0" alt=""></td>
-</tr>
-<tr>
-<td height="301" align="center" valign="top">
-<table width="429" border="0" cellspacing="0" cellpadding="0" align="center">
-<tbody><tr>
-<td width="429" height="35" align="center" bgcolor="CCFFFF"><img src="/src/info_setup_title.gif" border="0" alt=""></td>
-</tr>
-<tr>
-<td width="429" height="181" align="center" valign="top" bgcolor="CCFFFF">
-<form method="GET" action="http://<!--#disp30-->/leds.cgi?para7=1">
-<table width="429" border="0" cellpadding="0" cellspacing="0">
-<tbody><tr>
-<td height="25" width="32"><img src="/src/blank.gif" border="0" alt=""></td>
-<td height="25" width="225" align="left"><font size="2">Flow Warning (LPM)</font></td>
-<td height="25" width="140" align="right"><input id="id_p8" name="para8" size="10" value="7.0"></td>
-<td height="25" width="32"><img src="/src/blank.gif" border="0" alt=""></td>
-</tr>
-<tr>
-<td height="25" width="32"><img src="/src/blank.gif" border="0" alt=""></td>
-<td height="25" width="225" align="left"><font size="2">Flow Fault (LPM)</font></td>
-<td height="25" width="140" align="right"><input id="id_p9" name="para9" size="10" value="2.0"></td>
-<td height="25" width="32"><img src="/src/blank.gif" border="0" alt=""></td>
-</tr>
-<tr>
-<td height="25" width="32"><img src="/src/blank.gif" border="0" alt=""></td>
-<td height="25" width="225" align="left"><font size="2">Leak Response</font></td>
-<td height="25" width="140" align="right"><select size="1" id="id_p10" name="para10">
-<option value="0">Fastest</option>
-<option value="1">Fast</option>
-<option value="2" selected="">Normal</option>
-<option value="3">Slow</option>
-<option value="4">Slowest</option>
-</select></td>
-<td height="25" width="32"><img src="/src/blank.gif" border="0" alt=""></td>
-</tr>
-<tr>
-<td height="25" width="32"><img src="/src/blank.gif" border="0" alt=""></td>
-<td height="25" width="225" align="left"><font size="2">Stabilization Delay (SEC)</font></td>
-<td height="25" width="140" align="right"><select size="1" id="id_p12" name="para12">
-<option value="1">1</option>
-<option value="2" selected="">2</option>
-<option value="4">4</option>
-<option value="8">8</option>
-<option value="16">16</option>
-</select></td>
-<td height="25" width="32"><img src="/src/blank.gif" border="0" alt=""></td>
-</tr>
-<tr>
-<td height="25" width="32"><img src="/src/blank.gif" border="0" alt=""></td>
-<td height="25" width="225" align="left"><font size="2">Startup Leak (LPM)</font></td>
-<td height="25" width="140" align="right"><select size="1" id="id_p13" name="para13">
-<option value="2" selected="">2.0</option>
-<option value="4">4.0</option>
-<option value="6">6.0</option>
-<option value="8">8.0</option>
-<option value="10">10.0</option>
-</select></td>
-<td height="25" width="32"><img src="/src/blank.gif" border="0" alt=""></td>
-</tr>
-<input type="hidden" name="setup" value="0">
-<tr>
-<td height="33" colspan="4" align="center" valign="bottom">
-<input type="button" value="Show Factory Settings" onclick="window.document.location.href=&#39;leds.cgi?para6=1&#39;">
-<input type="submit" value="Submit" onclick="">
-<input type="button" value="Cancel" onclick="window.document.location.href=&#39;leds.cgi?para11=1&#39;">
-</td>
-</tr>
-</tbody></table>
-</form>
-</td>
-</tr>
-<tr>
-<td width="429" height="4" bgcolor="#FFFFFF"><img src="/src/blank.gif" border="0" alt=""></td>
-</tr>
-<tr>
-<td width="429" height="81" align="center" valign="top">
-<table width="429" border="0" cellpadding="0" cellspacing="0" bgcolor="#006699">
-<tbody><tr>
-<td width="429" height="20" align="center" valign="middle" colspan="7">
-<img src="/src/info_setup_current.gif" width="170" height="15" border="0" alt=""></td>
-</tr>
-<tr>
-<td width="22" height="16"><img src="/src/blank.gif" border="0" alt=""></td>
-<td width="100" height="16" align="left"><font size="2" color="#CCFFFF"><strong>Flow Warning</strong></font></td>
-<td width="60" height="16" align="right"><font size="2" color="#CCFFFF"><strong id="cur_flow_warn"><!--#disp5--></strong> LPM</font></td>
-<td width="20" height="16"><img src="/src/blank.gif" border="0" alt=""></td>
-<td width="145" height="16"><font size="2" color="#CCFFFF"><strong>Stabilization Delay</strong></font></td>
-<td width="60" height="16" align="right"><font size="2" color="#CCFFFF"><strong id="cur_sta_delay"><!--#disp17--></strong> SEC</font></td>
-<td width="22" height="16"><img src="/src/blank.gif" border="0" alt=""></td>
-</tr>
-<tr>
-<td width="22" height="16"><img src="/src/blank.gif" border="0" alt=""></td>
-<td width="100" height="16" align="left"><font size="2" color="#CCFFFF"><strong>Flow Fault</strong></font></td>
-<td width="60" height="16" align="right"><font size="2" color="#CCFFFF"><strong id="cur_flow_fault"><!--#disp6--></strong> LPM</font></td>
-<td width="20" height="16"><img src="/src/blank.gif" border="0" alt=""></td>
-<td width="145" height="16" align="left"><font size="2" color="#CCFFFF"><strong>Startup Leak</strong></font></td>
-<td width="60" height="16" align="right"><font size="2" color="#CCFFFF"><strong  id="cur_sta_leak"><!--#disp18--></strong> LPM</font></td>
-<td width="22" height="16"><img src="/src/blank.gif" border="0" alt=""></td>
-</tr>
-<tr>
-<td width="22" height="16"><img src="/src/blank.gif" border="0" alt=""></td>
-<td width="100" height="16" align="left"><font size="2" color="#CCFFFF"><strong>Leak Response</strong></font></td>
-<td width="60" height="16" align="right"><font size="2" color="#CCFFFF"><strong id="cur_leak_resp"><!--#disp10--></strong></font></td>
-<td width="20" height="16"><img src="/src/blank.gif" border="0" alt=""></td>
-<td width="145" height="16"><img src="/src/blank.gif" border="0" alt=""></td>
-<td width="60" height="16"><img src="/src/blank.gif" border="0" alt=""></td>
-<td width="22" height="16"><img src="/src/blank.gif" border="0" alt=""></td>
-</tr>
-<tr>
-<td width="429" height="4" colspan="7"><img src="/src/blank.gif" border="0" alt=""></td>
-</tr>
-</tbody></table>
-</td>
-</tr>
-</tbody></table>
-</td>
-</tr>
-</tbody></table>
 
+<body marginwidth="0" marginheight="0">
+    <table width="390" border="0" cellspacing="0" cellpadding="0" align="left" bgcolor="#006699">
+    <tbody>
 
-</body></html>
+    <tr>
+    <td width="390" height="2" bgcolor="#f0f0f0"><img src="/src/blank.gif" border="0" alt=""></td>
+    </tr>
+
+    <tr>
+    <td width="390" height="4" bgcolor="#f0f0f0"><img src="/src/blank.gif" border="0" alt=""></td>
+    </tr>
+
+    <tr>
+    <td height="226" align="center" valign="top">
+        <table width="390" border="0" cellspacing="0" cellpadding="0" align="center">
+        <tbody>
+
+        <tr>
+        <td width="390" height="36" align="center" bgcolor="#f0f0f0"><img src="/src/info_setup_title.gif" border="0" alt=""></td>
+        </tr>
+
+        <tr>
+        <td width="390" height="190" align="center" valign="top" bgcolor="#f0f0f0">
+            <form method="GET" action="http://<!--#disp30-->/leds.cgi?para7=1">
+            <table width="390" border="0" cellpadding="0" cellspacing="0">
+            <tbody>
+
+            <tr>
+            <td height="25" width="32"><img src="/src/blank.gif" border="0" alt=""></td>
+            <td height="25" width="225" align="left"><font size="2">Flow Warning (LPM)</font></td>
+            <td height="25" width="140" align="right"><input id="id_p8" name="para8" size="10" value="7.0"></td>
+            <td height="25" width="32"><img src="/src/blank.gif" border="0" alt=""></td>
+            </tr>
+
+            <tr>
+            <td height="25" width="32"><img src="/src/blank.gif" border="0" alt=""></td>
+            <td height="25" width="225" align="left"><font size="2">Flow Fault (LPM)</font></td>
+            <td height="25" width="140" align="right"><input id="id_p9" name="para9" size="10" value="2.0"></td>
+            <td height="25" width="32"><img src="/src/blank.gif" border="0" alt=""></td>
+            </tr>
+
+            <tr>
+            <td height="25" width="32"><img src="/src/blank.gif" border="0" alt=""></td>
+            <td height="25" width="225" align="left"><font size="2">Leak Response</font></td>
+            <td height="25" width="140" align="right">
+            <select size="1" id="id_p10" name="para10">
+            <option value="0">Fastest</option>
+            <option value="1">Fast</option>
+            <option value="2" selected="">Normal</option>
+            <option value="3">Slow</option>
+            <option value="4">Slowest</option>
+            </select>
+            </td>
+            <td height="25" width="32"><img src="/src/blank.gif" border="0" alt=""></td>
+            </tr>
+
+            <tr>
+            <td height="25" width="32"><img src="/src/blank.gif" border="0" alt=""></td>
+            <td height="25" width="225" align="left"><font size="2">Stabilization Delay (SEC)</font></td>
+            <td height="25" width="140" align="right"><select size="1" id="id_p12" name="para12">
+            <option value="1">1</option>
+            <option value="2" selected="">2</option>
+            <option value="4">4</option>
+            <option value="8">8</option>
+            <option value="16">16</option>
+            </select>
+            </td>
+            <td height="25" width="32"><img src="/src/blank.gif" border="0" alt=""></td>
+            </tr>
+
+            <tr>
+            <td height="25" width="32"><img src="/src/blank.gif" border="0" alt=""></td>
+            <td height="25" width="225" align="left"><font size="2">Startup Leak (LPM)</font></td>
+            <td height="25" width="140" align="right"><select size="1" id="id_p13" name="para13">
+            <option value="2" selected="">2.0</option>
+            <option value="4">4.0</option>
+            <option value="6">6.0</option>
+            <option value="8">8.0</option>
+            <option value="10">10.0</option>
+            </select>
+            </td>
+            <td height="25" width="32"><img src="/src/blank.gif" border="0" alt=""></td>
+            </tr>
+
+            <input type="hidden" name="setup" value="0">
+            <tr>
+            <td height="33" colspan="4" align="center" valign="bottom">
+            <input type="button" value="Show Factory Settings" onclick="btn_click_default()">
+            <input type="submit" value="Submit" onclick="">
+            <input type="button" value="Cancel" onclick="btn_click_cancel()">
+            </td>
+            </tr>
+            </tbody>
+            </table>
+            </form>
+        </td>
+        </tr>
+
+    </td>
+    </tr>
+    </tbody>
+    </table>
+</body>
+</html>

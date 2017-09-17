@@ -41,7 +41,7 @@ void gen_mac_addr() {
 	}
 	else {
 		/* No mac generated for this board yet. */		
-		uint32_t ran_seed;
+		//uint32_t ran_seed;
 		
 		// Get random number from the unique chip ID and use them as mac addr 0~2
 		// here the UNIQUEID1 is ignored because it is always 0

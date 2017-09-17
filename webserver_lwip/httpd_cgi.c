@@ -45,14 +45,15 @@
 
 #include "ws_func.h"
 
+#include "bsp_eeprom_addr.h"
+
 #if WS_FIELDBUS_TYPE == FIELDBUS_TYPE_EIPS
 #include "netconf.h"
 #elif WS_FIELDBUS_TYPE == FIELDBUS_TYPE_PNIO
 #include <pn_includes.h>
 #include "pn_user.h"
 #include "pn_config.h"
-#elif  WS_FIELDBUS_TYPE == FIELDBUS_TYPE_NONE
-#include "netconf.h"
+#else
 #endif
 
 extern uint8_t flag_fieldbus_down;
@@ -418,12 +419,8 @@ u16_t ADC_Handler(int iIndex, char *pcInsert, int iInsertLen)
 #if WS_FIELDBUS_TYPE == FIELDBUS_TYPE_EIPS
 		temp_str_len = sprintf (temp_str, "%s", "eips");
 #elif WS_FIELDBUS_TYPE == FIELDBUS_TYPE_PNIO
-#ifdef USE_FLEXFLOW_FOR_ABB_PN_TYPE
-		temp_str_len = sprintf (temp_str, "%s", "abbpn");
-#else /* USE_FLEXFLOW_FOR_ABB_PN_TYPE */
 		temp_str_len = sprintf (temp_str, "%s", "pnio");
-#endif /* USE_FLEXFLOW_FOR_ABB_PN_TYPE */
-#elif WS_FIELDBUS_TYPE == FIELDBUS_TYPE_NONE
+#elif defined WS_FILEDBUS_NONE_BUT_DIDO
 		temp_str_len = sprintf (temp_str, "%s", "dido");
 #endif
 		break;
@@ -439,10 +436,8 @@ u16_t ADC_Handler(int iIndex, char *pcInsert, int iInsertLen)
 		ip0 = *(p_temp+3);
 		temp_str_len = sprintf (temp_str, "%d.%d.%d.%d", ip0, ip1, ip2, ip3);
 #else
-//		/* this is a dido version. use fixed IP for web server. */
-//		temp_str_len = sprintf (temp_str, "%s", "172.24.1.1");
-		/* Read directly the IP addr as well. */
-		temp_str_len = sprintf (temp_str, "%d.%d.%d.%d", uip_add_0, uip_add_1, uip_add_2, uip_add_3);
+		/* this is a dido version. use fixed IP for web server. */
+		temp_str_len = sprintf (temp_str, "%s", "172.24.1.1");
 #endif
 		break;
 	default:
@@ -576,6 +571,7 @@ const char * LEDS_CGI_Handler(int iIndex, int iNumParams, char *pcParam[], char 
 	    	  ws_i_web_reset = (ws_i_web_reset) ? 0 : 1;
 	    	  isNewCmdSubmit = 1;
 	    	  return "/src/controls.shtml";
+
 	      }
 	      else if (strcmp(pcParam[i] , "para2")==0) {
 	    	  ws_i_web_valveon = (ws_o_is_valve_on==1)?0:1;
@@ -645,6 +641,15 @@ const char * LEDS_CGI_Handler(int iIndex, int iNumParams, char *pcParam[], char 
 	    		  return "/src/info.shtml";
 	    	  }
 	      }
+//	      } else if (strcmp(pcParam[i], "update")==0) {
+//	          if(atoi(pcVale[i]) == 1)
+//	          {
+//	              //write
+//	              //JUMP_CONFIG jump_config = LONG_WAIT;
+//	              //EEPROMProgram ((uint32_t*)&jump_config, EEPROM_ADDR_BL_JUMP_CONFIG, EEPROM_LEN_BL_JUMP_CONFIG);
+//	              return "/src/jump_config_success.html";
+//	          }
+//	      }
 #if defined RESERVE_INTERNAL_PARA_SETTING
 	      // disabled as now we check and respond to leak_resp periodically in ws_process.
 	      // we can read and respond to new leak_resp in only read eth_input.

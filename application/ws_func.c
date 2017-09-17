@@ -33,6 +33,8 @@
 #include "utilities.h"
 #include "io_data_struct.h"
 
+#include "bsp_eeprom_const.h"
+
 #if WS_FIELDBUS_TYPE == FIELDBUS_TYPE_EIPS
 #include "netconf.h"
 #endif
@@ -84,6 +86,7 @@ uint8_t ws_i_bus_bypass = 0;
 static DIO_BLOCK_T ctrl_signal_web[3];
 static DIO_BLOCK_T ctrl_signal_bus[3];
 
+uint8_t ws_should_ack = 0;
 // input - properties
 double ws_i_warning_flow = 11.4;
 double ws_i_fault_flow = 7.6;
@@ -309,24 +312,24 @@ void ws_read_newctrlparas ()
 #ifdef RESERVE_INTERNAL_PARA_SETTING
 	if (isNewInternalSetting != 0) {
 		isNewInternalSetting = 0;
-		EEPROMProgram ((uint32_t*)&ws_para_sense_quantized_index, EEPROMAddrFromBlock(1)+36, 8);
-		EEPROMProgram ((uint32_t*)&threshold_leak_detection_quantized_index, EEPROMAddrFromBlock(1)+44, 8);
+		EEPROMProgram ((uint32_t*)&ws_para_sense_quantized_index, EEPROM_ADDR_SENSE_QTZ_ID, 8);
+		EEPROMProgram ((uint32_t*)&threshold_leak_detection_quantized_index, EEPROM_ADDR_LEAK_DET_QTZ_ID, 8);
 
 #if 0
 		// to fix the bug of using a fresh new board if only internal paras are set ever.
-		EEPROMProgram ((uint32_t*)&ws_i_warning_flow, EEPROMAddrFromBlock(1), 8);
-		EEPROMProgram ((uint32_t*)&ws_i_fault_flow, EEPROMAddrFromBlock(1)+8, 8);
-		EEPROMProgram ((uint32_t*)&ws_i_cmd_leak_response, EEPROMAddrFromBlock(1)+16, 4);
+		EEPROMProgram ((uint32_t*)&ws_i_warning_flow, EEPROM_ADDR_WARNING_FLOW, 8);
+		EEPROMProgram ((uint32_t*)&ws_i_fault_flow, EEPROM_ADDR_FAULT_FLOW, 8);
+		EEPROMProgram ((uint32_t*)&ws_i_cmd_leak_response, EEPROM_ADDR_LEAK_RESPONSE, 4);
 
-		EEPROMProgram ((uint32_t*)&ws_i_stablization_delay, EEPROMAddrFromBlock(1)+20, 8);
-		EEPROMProgram ((uint32_t*)&ws_i_startup_leak, EEPROMAddrFromBlock(1)+28, 8);
+		EEPROMProgram ((uint32_t*)&ws_i_stablization_delay, EEPROM_ADDR_DELAY, 8);
+		EEPROMProgram ((uint32_t*)&ws_i_startup_leak, EEPROM_ADDR_STARTUP_LEAK, 8);
 
 		// update new startup leak detection threshold.
 		ws_i_startup_leak_in_flowvolme_for_detection = ws_i_startup_leak/60*ws_i_stablization_delay;
 
 		flag_is_board_used = 167;
 		// store data to eeprom to indicate this board has been configured before.
-		EEPROMProgram ((uint32_t*)&flag_is_board_used, EEPROMAddrFromBlock(2)+16, 4);
+		EEPROMProgram ((uint32_t*)&flag_is_board_used, EEPROM_ADDR_IS_BOARD_USED, 4);
 #endif
 	}
 #endif
@@ -334,12 +337,12 @@ void ws_read_newctrlparas ()
 	if (isThereNewCtrParas !=0) {
 		isThereNewCtrParas = 0;
 
-		EEPROMProgram ((uint32_t*)&ws_i_warning_flow, EEPROMAddrFromBlock(1), 8);
-		EEPROMProgram ((uint32_t*)&ws_i_fault_flow, EEPROMAddrFromBlock(1)+8, 8);
-		EEPROMProgram ((uint32_t*)&ws_i_cmd_leak_response, EEPROMAddrFromBlock(1)+16, 4);
+		EEPROMProgram ((uint32_t*)&ws_i_warning_flow, EEPROM_ADDR_WARNING_FLOW, 8);
+		EEPROMProgram ((uint32_t*)&ws_i_fault_flow, EEPROM_ADDR_FAULT_FLOW, 8);
+		EEPROMProgram ((uint32_t*)&ws_i_cmd_leak_response, EEPROM_ADDR_LEAK_RESPONSE, 4);
 
-		EEPROMProgram ((uint32_t*)&ws_i_stablization_delay, EEPROMAddrFromBlock(1)+20, 8);
-		EEPROMProgram ((uint32_t*)&ws_i_startup_leak, EEPROMAddrFromBlock(1)+28, 8);
+		EEPROMProgram ((uint32_t*)&ws_i_stablization_delay, EEPROM_ADDR_DELAY, 8);
+		EEPROMProgram ((uint32_t*)&ws_i_startup_leak, EEPROM_ADDR_STARTUP_LEAK, 8);
 
 #ifdef DISABLE_INTERNAL_SENSE_CONFIG
 		// in such implementation, only leak_resp will be updated. no value of ws_para_sense_quantized_index
@@ -485,7 +488,7 @@ void ws_read_eth_input()
 	 * in di interrupt, ws_i_bus_reset, ws_i_bus_valveon, ws_i_bus_bypass is valued to reuse the cmd input channel with filedbus.
 	 * assumed that dido will never be down - that means no dido connection leads to all-zero cmd input.
 	 * */
-#if WS_FIELDBUS_TYPE != FIELDBUS_TYPE_NONE
+#ifndef WS_FILEDBUS_NONE_BUT_DIDO
 	if (flag_fieldbus_down) {
 		// fieldbus communication is down.
 		if (dio_detect_edge(&ctrl_signal_web[WS_CMD_INDEX_RESET])) {
@@ -499,9 +502,12 @@ void ws_read_eth_input()
 		}
 		return;
 	}
-#endif /* WS_FIELDBUS_TYPE != FIELDBUS_TYPE_NONE */
+#endif /* WS_FILEDBUS_NONE_BUT_DIDO */
 
-#if WS_FIELDBUS_TYPE != FIELDBUS_TYPE_NONE
+#ifdef WS_FILEDBUS_NONE_BUT_DIDO
+
+#else /* WS_FILEDBUS_NONE_BUT_DIDO */
+
 	// update the src signal from bus interface.
 	ws_i_bus_reset = ETH_IO_DATA_OBJ_INPUT.data.cmd_reset;
 #ifndef WS_VALVE_CTRL_INVERTED
@@ -510,7 +516,7 @@ void ws_read_eth_input()
 	ws_i_bus_valveon = ETH_IO_DATA_OBJ_INPUT.data.cmd_valve_ctr ? 0 : 1;
 #endif /* WS_VALVE_CTRL_INVERTED */
 	ws_i_bus_bypass = ETH_IO_DATA_OBJ_INPUT.data.cmd_bypass;
-#endif /* WS_FIELDBUS_TYPE != FIELDBUS_TYPE_NONE */
+#endif /* WS_FILEDBUS_NONE_BUT_DIDO */
 
 	// web channel is updated in httpd_cgi.c
 
@@ -579,14 +585,36 @@ void ws_read_eth_input()
 #else /* WS_VALVE_CTRL_INVERTED */
 	ws_i_bus_valveon = ETH_IO_DATA_OBJ_INPUT.data.cmd_valve_ctr ? 0 : 1;
 #endif /* WS_VALVE_CTRL_INVERTED */
+
 	ws_i_bus_bypass = ETH_IO_DATA_OBJ_INPUT.data.cmd_bypass;
 #endif
+
+	//
+	//  Below is added by TMS to process the setup data from TPU.
+	//  The development in the TPU side is completed by WangQi.
+	//
+	//  The control data includes: Flow Warning, Flow Fault, Leak
+	//  Response, Stablization Delay and Startup Leak.
+	//  We retrive the data from TPU only when the cmd_tpu_ctrl_update
+	//  is set to '1'.
+	//
+
+	if(ETH_IO_DATA_OBJ_INPUT.data.cmd_tpu_ctrl_update)
+	{
+	    ws_i_warning_flow       = ETH_IO_DATA_OBJ_INPUT.data.cmd_flow_warning;
+	    ws_i_fault_flow         = ETH_IO_DATA_OBJ_INPUT.data.cmd_flow_fault;
+	    ws_i_cmd_leak_response  = ETH_IO_DATA_OBJ_INPUT.data.cmd_leak_response;
+	    ws_i_stablization_delay = ETH_IO_DATA_OBJ_INPUT.data.cmd_delay;
+	    ws_i_startup_leak       = ETH_IO_DATA_OBJ_INPUT.data.cmd_startup_leak;
+
+	    ws_should_ack = 1;
+	}
 }
 
 
 void ws_update_eth_output ()
 {
-#if WS_FIELDBUS_TYPE != FIELDBUS_TYPE_NONE
+#ifndef WS_FILEDBUS_NONE_BUT_DIDO
 	//ETH_IO_DATA_OBJ_OUTPUT.data.nFlowrate= (uint8_t)(qv_flowrate_1 *10);       // feedback flowrate in 10*l/min.
 #ifndef WS_VALVE_CTRL_INVERTED
 	ETH_IO_DATA_OBJ_OUTPUT.data.isValveOn = ws_o_is_valve_on;
@@ -599,10 +627,23 @@ void ws_update_eth_output ()
 	ETH_IO_DATA_OBJ_OUTPUT.data.diWS_MinFlow = ws_o_is_minflow;
 	ETH_IO_DATA_OBJ_OUTPUT.data.diWS_PowerOk = 1;
 
+	// update the ack when ws_should_ack is 1
+	// reset it to 0 afterwards
+	// if ws_should_ack is 0, keep diWS_ACK and ws_should_ack being 0
+	ETH_IO_DATA_OBJ_OUTPUT.data.diWS_ACK = ws_should_ack;
+	ws_should_ack = 0;
+
+	//write the local control parameters to the test rack
+	ETH_IO_DATA_OBJ_OUTPUT.data.flow_warning = ws_i_warning_flow;
+	ETH_IO_DATA_OBJ_OUTPUT.data.flow_fault = ws_i_fault_flow;
+	ETH_IO_DATA_OBJ_OUTPUT.data.leak_response = ws_i_cmd_leak_response;
+	ETH_IO_DATA_OBJ_OUTPUT.data.delay = ws_i_stablization_delay;
+	ETH_IO_DATA_OBJ_OUTPUT.data.startup_leak = ws_i_startup_leak;
+
 	// optional, not standard configuration.
 	ETH_IO_DATA_OBJ_OUTPUT.data.nFlowrate = flow_aver_2;		//flowrate in 10*l/min
 
-#endif /* WS_FIELDBUS_TYPE != FIELDBUS_TYPE_NONE */
+#endif /* WS_FILEDBUS_NONE_BUT_DIDO */
 }
 
 // currently http input and output are updated directly in http SSI and CGI routines.
@@ -1004,16 +1045,8 @@ void ws_init ()
 
 void ws_status_update ()
 {
-	// Detection of leak is on top priority.
-	// So we check this firstly and return to ensure status is what we expect: ws_leak_detected.
-	if (ws_o_is_leak_detected == 1) {
-		ws_o_status_index = ws_leak_detected;
-		return;
-	}
-
 	if (ws_o_is_valve_on == 0) {
 		ws_o_status_index = ws_valve_off;
-		// return here to show valve_off on web against others, except Leak_Detected.
 		return;
 	}
 
@@ -1029,7 +1062,11 @@ void ws_status_update ()
 
 	if (ws_o_is_flow_ok == 1 && ws_o_is_Bypassed == 1) {
 		ws_o_status_index = ws_valve_on_and_bypassed;
-		// should return here to ensure when bypassed, we'll never show OkToWeld.
+		return;
+	}
+
+	if (ws_o_is_leak_detected == 1) {
+		ws_o_status_index = ws_leak_detected;
 		return;
 	}
 

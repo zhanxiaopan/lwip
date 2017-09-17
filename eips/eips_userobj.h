@@ -86,8 +86,8 @@
 #elif EIPS_USEROBJ_ASM_ELEMENT_SIZE == 2    /* WORDS */
     #define VS_MAX_DISCRETE_INPUT_UNITS  1
     #define VS_MAX_DISCRETE_OUTPUT_UNITS 1
-	#define	VS_MAX_DISCRETE_INPUTS_ON_UINT		(1)
-	#define	VS_MAX_DISCRETE_OUTPUTS_ON_UINT		(3)
+	#define	VS_MAX_DISCRETE_INPUTS_ON_UINT		(4)
+	#define	VS_MAX_DISCRETE_OUTPUTS_ON_UINT		(4)
 #else                                       /* BYTES */
     #define VS_MAX_DISCRETE_INPUT_UNITS  1
     #define VS_MAX_DISCRETE_OUTPUT_UNITS 1
