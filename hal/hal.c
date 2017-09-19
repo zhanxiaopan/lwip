@@ -514,7 +514,6 @@ void HAL_setupEthernet(uint8_t mac_addr[])
     SysCtlPeripheralEnable(SYSCTL_PERIPH_EPHY0);
     SysCtlPeripheralReset(SYSCTL_PERIPH_EMAC0);
     SysCtlPeripheralReset(SYSCTL_PERIPH_EPHY0);
-
     /* wait some cycles until the modules are fully activated */
     SysCtlDelay(1000);
 

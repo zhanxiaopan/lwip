@@ -182,7 +182,7 @@ void upgrader_process ()
 		g_upgrader.status = READY_TO_JUMP;
 
 		//config the waiting to be "no_wait"
-		jump_config = JUMP_CONFIG_NO_WAIT;
+		jump_config = JUMP_WAITING_TIME_NO;
 		EEPROMProgram ((uint32_t*)&jump_config, EEPROM_ADDR_BL_JUMP_CONFIG, EEPROM_LEN_BL_JUMP_CONFIG);
 
 		puts("Jumping");

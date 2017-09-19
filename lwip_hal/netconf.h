@@ -44,10 +44,10 @@ extern struct netif lwip_netif;			// Network Interface structure
 #define MAC_ADDR4   0x49
 #define MAC_ADDR5   0x76
 // Static IP ADDRESS: IP_ADDR0.IP_ADDR1.IP_ADDR2.IP_ADDR3
-#define IP_ADDR0   192
-#define IP_ADDR1   168
-#define IP_ADDR2   125
-#define IP_ADDR3   67
+#define IP_ADDR0   172
+#define IP_ADDR1   24
+#define IP_ADDR2   1
+#define IP_ADDR3   1
 // NETMASK: IP_ADDR0.IP_ADDR1.IP_ADDR2.IP_ADDR3
 #define NETMASK_ADDR0   255
 #define NETMASK_ADDR1   255

@@ -266,10 +266,18 @@ IOD_STATUS_T OAL_getMacAddr(
     char *macAddr                   /**< buffer to store MAC addr */
 )
 {
-    char confMacAddr[] = DEVICE_MAC_ADDR;   /**< MAC address from configuration */
+    //2017.09.18 edited by TMS
+    gen_mac_addr();
+    //char confMacAddr[];   /**< MAC address from configuration */
+    MAC_ADDR[0] =  get_mac_addr(0);//MAC_ADDR0;
+    MAC_ADDR[1] =  get_mac_addr(1);//MAC_ADDR1;
+    MAC_ADDR[2] =  get_mac_addr(2);//MAC_ADDR2;
+    MAC_ADDR[3] =  get_mac_addr(3);//MAC_ADDR3;
+    MAC_ADDR[4] =  get_mac_addr(4);//MAC_ADDR4;
+    MAC_ADDR[5] =  get_mac_addr(5);//MAC_ADDR5;
     UNUSEDARG(portIdx);
 
-    OAL_MEMCPY(macAddr, confMacAddr, MAC_ADDR_LEN);
+    OAL_MEMCPY(macAddr, MAC_ADDR, MAC_ADDR_LEN);
     return IOD_OK;
 }
 

@@ -111,7 +111,7 @@ void system_init()
     system_init_network();
 #endif
 #if WS_FIELDBUS_TYPE == FIELDBUS_TYPE_BL
-#ifdef __USE_LAUNCH_PAD
+#ifdef __USE_LAUNCH_PAD_not
     USER_SW_Test();
 #endif  /* __USE_LAUNCH_PAD */
     upgrader_init(&g_upgrader);
@@ -263,7 +263,7 @@ void 	USER_TIMER_TEST()
 }
 #endif
 
-#ifdef __USE_LAUNCH_PAD
+#ifdef __USE_LAUNCH_PAD_not
 /**
  *  @brief Read and store the input of on/off button on TIVA LaunchPad.
  *  @return none
@@ -289,7 +289,7 @@ void USER_SW_Test(void)
  *   - here we reset the IP address to default 192.168.125.67
  */
 void GPIOJ_ISR (void) {
-#ifdef __USE_LAUNCH_PAD
+#ifdef __USE_LAUNCH_PAD_not
 	if (HWREG(GPIO_PORTJ_BASE + 0x00000418) & 0x00000001) {
 		//GPIO_TagToggle(GPIOTag_USER_LED_1);
 		GPIOIntClear(GPIO_PORTJ_BASE, 0x00000001);

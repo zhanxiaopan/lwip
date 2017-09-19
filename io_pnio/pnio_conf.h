@@ -427,11 +427,16 @@
  * Default value:
  *   Device MAC address: 00:45:56:78:9A:BC
  */
-#define _LOCAL_STATIC_MAC_ADDR_INDEX (2)
-#if _LOCAL_STATIC_MAC_ADDR_INDEX == 1
-/* MAC ADDR #1*/
-//#define DEVICE_MAC_ADDR { 0x00, 0x45, 0x56, 0x78, 0x9a, 0xbc }
+#ifndef MAC_ADDR_LEN
+#define MAC_ADDR_LEN    6
+#endif
+static uint8_t MAC_ADDR[MAC_ADDR_LEN];
+#define _LOCAL_STATIC_MAC_ADDR_INDEX (0)
+#if _LOCAL_STATIC_MAC_ADDR_INDEX == 0
 #define DEVICE_MAC_ADDR MAC_ADDR
+#elif _LOCAL_STATIC_MAC_ADDR_INDEX == 1
+/* MAC ADDR #1*/
+#define DEVICE_MAC_ADDR { 0x00, 0x45, 0x56, 0x78, 0x9a, 0xbc }
 #elif _LOCAL_STATIC_MAC_ADDR_INDEX == 2
 /* MAC ADDR #2*/
 #define DEVICE_MAC_ADDR { 0x00, 0x45, 0x56, 0x78, 0x9a, 0xbd }
@@ -449,11 +454,7 @@
 #define DEVICE_MAC_ADDR { 0x00, 0x45, 0x56, 0x78, 0x9a, 0xc1 }
 #endif
 
-#ifndef MAC_ADDR_LEN
-#define MAC_ADDR_LEN    6
-#endif
 
-static uint8_t MAC_ADDR[MAC_ADDR_LEN];
 
 /* PORT1_ID, PORT1_INTERFACE
  *

@@ -352,15 +352,15 @@ void ws_read_newctrlparas ()
 	ws_read_get_sensitivity ();
 #endif /* DISABLE_INTERNAL_SENSE_CONFIG */
 
-		EEPROMProgram ((uint32_t*)&ws_para_sense_quantized_index, EEPROMAddrFromBlock(1)+36, 8);
-		EEPROMProgram ((uint32_t*)&threshold_leak_detection_quantized_index, EEPROMAddrFromBlock(1)+44, 8);
+		EEPROMProgram ((uint32_t*)&ws_para_sense_quantized_index, EEPROM_ADDR_SENSE_QTZ_ID, 8);
+		EEPROMProgram ((uint32_t*)&threshold_leak_detection_quantized_index, EEPROM_ADDR_LEAK_DET_QTZ_ID, 8);
 
 		// update new startup leak detection threshold.
 		ws_i_startup_leak_in_flowvolme_for_detection = ws_i_startup_leak/60*ws_i_stablization_delay;
 
 		flag_is_board_used = 167;
 		// store data to eeprom to indicate this board has been configured before.
-		EEPROMProgram ((uint32_t*)&flag_is_board_used, EEPROMAddrFromBlock(2)+16, 4);
+		EEPROMProgram ((uint32_t*)&flag_is_board_used, EEPROM_ADDR_LEAK_RESPONSE, 4);
 	}
 
 	if (ws_isNewIPAddr != 0) {
@@ -388,12 +388,12 @@ void ws_read_newctrlparas ()
 		ip_addr[i] = (uint8_t)atoi (ip_str);
 
 		// store the new IP addr into EEPROM.
-		EEPROMProgram ((uint32_t*)&ip_addr[0], EEPROMAddrFromBlock(2), 4);
-		EEPROMProgram ((uint32_t*)&ip_addr[1], EEPROMAddrFromBlock(2)+4, 4);
-		EEPROMProgram ((uint32_t*)&ip_addr[2], EEPROMAddrFromBlock(2)+8, 4);
-		EEPROMProgram ((uint32_t*)&ip_addr[3], EEPROMAddrFromBlock(2)+12, 4);
+		EEPROMProgram ((uint32_t*)&ip_addr[0], EEPROM_ADDR_IP_ADDR0, 4);
+		EEPROMProgram ((uint32_t*)&ip_addr[1], EEPROM_ADDR_IP_ADDR1, 4);
+		EEPROMProgram ((uint32_t*)&ip_addr[2], EEPROM_ADDR_IP_ADDR2, 4);
+		EEPROMProgram ((uint32_t*)&ip_addr[3], EEPROM_ADDR_IP_ADDR3, 4);
 
-		EEPROMProgram ((uint32_t*)&ws_is_new_ipaddr_configured, EEPROMAddrFromBlock(2)+16, 4);
+		EEPROMProgram ((uint32_t*)&ws_is_new_ipaddr_configured, EEPROM_ADDR_NEW_IP_IS_SAVED, 4);
 	}
 	else {
 		return;
@@ -1026,15 +1026,15 @@ void ws_init ()
 	if(flag_is_board_used == 167) {
 		// init ws related variables.
 		//read values from eeprom
-		EEPROMRead ((uint32_t*)&ws_i_warning_flow, EEPROMAddrFromBlock(1), 8);
-		EEPROMRead ((uint32_t*)&ws_i_fault_flow, EEPROMAddrFromBlock(1)+8, 8);
-		EEPROMRead ((uint32_t*)&ws_i_cmd_leak_response, EEPROMAddrFromBlock(1)+16, 4);
+		EEPROMRead ((uint32_t*)&ws_i_warning_flow, EEPROM_ADDR_WARNING_FLOW, 8);
+		EEPROMRead ((uint32_t*)&ws_i_fault_flow, EEPROM_ADDR_FAULT_FLOW, 8);
+		EEPROMRead ((uint32_t*)&ws_i_cmd_leak_response, EEPROM_ADDR_LEAK_RESPONSE, 4);
 
-		EEPROMRead ((uint32_t*)&ws_i_stablization_delay, EEPROMAddrFromBlock(1)+20, 8);
-		EEPROMRead ((uint32_t*)&ws_i_startup_leak, EEPROMAddrFromBlock(1)+28, 8);
+		EEPROMRead ((uint32_t*)&ws_i_stablization_delay, EEPROM_ADDR_DELAY, 8);
+		EEPROMRead ((uint32_t*)&ws_i_startup_leak, EEPROM_ADDR_STARTUP_LEAK, 8);
 
-		EEPROMRead ((uint32_t*)&ws_para_sense_quantized_index, EEPROMAddrFromBlock(1)+36, 8);
-		EEPROMRead ((uint32_t*)&threshold_leak_detection_quantized_index, EEPROMAddrFromBlock(1)+44, 8);
+		EEPROMRead ((uint32_t*)&ws_para_sense_quantized_index, EEPROM_ADDR_SENSE_QTZ_ID, 8);
+		EEPROMRead ((uint32_t*)&threshold_leak_detection_quantized_index, EEPROM_ADDR_LEAK_DET_QTZ_ID, 8);
 	}
 
 	// start up detection of cap loss is done by checking average of (flowin-flowout)

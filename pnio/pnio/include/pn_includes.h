@@ -19,6 +19,7 @@ extern "C" {
 #include <pn_types_indep.h>
 #include <pn_status.h>
 
+#include "RandomMAC.h"
 /* test if all mandatory defines are set in pnio_conf.h or at compiler level */
 #if defined(PN_CC_PACKED)
 #  if !defined(PN_CC_PACKED_PRE)

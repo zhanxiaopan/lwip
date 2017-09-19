@@ -19,6 +19,8 @@
 #include "system.h"
 #include "RandomMAC.h"
 
+#include <stdio.h> //delete mark
+
 extern void HAL_setupEthernet(uint8_t mac_addr[]);
 
 PN_LOG_SET_ID(PN_LOG_ID_APPLICATION)
@@ -62,6 +64,7 @@ void pnio_app_init(void)
     MAC_ADDR[5] =  get_mac_addr(5);//MAC_ADDR5;
     // Initialize the Ethernet Controller
     HAL_setupEthernet(MAC_ADDR);
+
     IntPrioritySet(INT_EMAC0, INTERRUPT_PRIORITY_HIGH);
 
     /* Initialize PNIO Stack with callback function */
@@ -96,7 +99,6 @@ void pnio_process(void)
     /* perform periodical stack tasks
      * (will sleep 1s on multithreaded architectures) */
     OAL_stack_exec();
-
 
 }
 

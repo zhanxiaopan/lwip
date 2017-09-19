@@ -45,7 +45,7 @@
 
 #include "ws_func.h"
 
-#include "bsp_eeprom_addr.h"
+#include "bsp_eeprom_const.h"
 
 #if WS_FIELDBUS_TYPE == FIELDBUS_TYPE_EIPS
 #include "netconf.h"
