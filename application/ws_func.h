@@ -90,9 +90,9 @@ extern uint8_t ws_i_bus_reset;
 extern uint8_t ws_i_bus_valveon;
 extern uint8_t ws_i_bus_bypass;
 
-extern void ws_init(void);
-extern void ws_process(void);
-
+void ws_init(void);
+void ws_process(void);
+void ws_dig_led_update_daemon();
 typedef enum
 {
 	ws_inflow_fault = 0,

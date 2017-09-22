@@ -32,7 +32,7 @@
 #include <stdlib.h>
 #include "utilities.h"
 #include "io_data_struct.h"
-
+#include "dig_led.h"
 #include "bsp_eeprom_const.h"
 
 #if WS_FIELDBUS_TYPE == FIELDBUS_TYPE_EIPS
@@ -443,7 +443,7 @@ void ws_read_get_sensitivity ()
 }
 #endif /* DISABLE_INTERNAL_SENSE_CONFIG */
 
-
+//TODO:cto
 void ws_handle_error_state()
 {
 	// once error flag is set, only clear it by reset cmd.
@@ -457,6 +457,8 @@ void ws_handle_error_state()
 		// with a reset operation, rest valve cmd as well.
 		// updated in 20170222, comment the code below to address new requirement: Reset should not re-open the valve.
 		// ws_i_cmd_valve_on = 1;
+
+		//added by TMS 0n 21092017
 	}
 
 	// to sync web cmd of reset.
@@ -641,7 +643,7 @@ void ws_update_eth_output ()
 	ETH_IO_DATA_OBJ_OUTPUT.data.startup_leak = ws_i_startup_leak;
 
 	// optional, not standard configuration.
-	ETH_IO_DATA_OBJ_OUTPUT.data.nFlowrate = flow_aver_2;		//flowrate in 10*l/min
+	ETH_IO_DATA_OBJ_OUTPUT.data.nFlowrate = (uint8_t)flow_aver_2*10;		//flowrate in 0.1*l/min
 
 #endif /* WS_FILEDBUS_NONE_BUT_DIDO */
 }
@@ -707,7 +709,6 @@ void ws_startup_detecion()
 	}
 }
 
-
 // detect the flow inlet
 // not sure about this point. does it make sense to have only sensor involved to detect supply flow?
 // besides, does this detection require smooth flowrate after filtering.
@@ -725,10 +726,21 @@ void ws_flowrate_detect_flowin ()
 	// and update flow status indication output accordingly.
     // this detection has only sensor 1 value involved.
 	// bypass will NOT disable this detection!
-	if (flowrate_to_detect > ws_i_warning_flow) {
+    // ***
+    // edited by TMS on 21-09-2017, add the caploss arbitration
+    if(ws_o_is_leak_detected) {
+        //ws_o_is_oktoweld = 0;
+        ws_o_is_minflow = 0;
+
+        ws_o_is_flow_ok = 0;
+        ws_o_is_flow_warning = 0;
+        ws_o_is_flow_fault = 1;
+        ws_o_inflow_status_index = 2;       //TODO: decide if we should add the status
+    }
+    else if (flowrate_to_detect > ws_i_warning_flow) {
 	//if (qv_flowrate_1 > ws_i_warning_flow || ws_i_cmd_bypass == 1) {
 		//if bypassed, or flow is ok, set of status monitor to OK.
-		ws_o_is_oktoweld = 1;
+		//ws_o_is_oktoweld = 1;
 		ws_o_is_minflow = 1;
 
 		ws_o_is_flow_ok = 1;
@@ -737,7 +749,7 @@ void ws_flowrate_detect_flowin ()
 		ws_o_inflow_status_index = 2;
 	}
 	else if (flowrate_to_detect > ws_i_fault_flow) {
-		ws_o_is_oktoweld = 1;
+		//ws_o_is_oktoweld = 1;
 		ws_o_is_minflow = 0;
 
 		ws_o_is_flow_ok = 0;
@@ -746,7 +758,7 @@ void ws_flowrate_detect_flowin ()
 		ws_o_inflow_status_index = 1;
 	}
 	else {
-		ws_o_is_oktoweld = 0;
+		//ws_o_is_oktoweld = 0;
 		ws_o_is_minflow = 0;
 
 		ws_o_is_flow_ok = 0;
@@ -754,6 +766,17 @@ void ws_flowrate_detect_flowin ()
 		ws_o_is_flow_fault = 1;
 		ws_o_inflow_status_index = 0;
 	}
+
+    //added by TMS on 21092017
+    //  flow ok should be only if:
+    //  1.  flow rate is larger than the warning flow rate,
+    //      which means ws_o_is_minflow is set to 1
+    //  2.  out of stabilization delay period
+    if( ws_flag_after_startup_delay == 1 && ws_o_is_minflow == 1 ) {
+        ws_o_is_oktoweld = 1;
+    } else {
+        ws_o_is_oktoweld = 0;
+    }
 }
 
 #ifdef USE_FLOWRATE_BENCHMARK
@@ -1157,4 +1180,10 @@ void ws_process ()
 
 	// update status bt a index. this will be used by http routine.
 	ws_status_update();
+}
+
+void ws_dig_led_update_daemon() {
+    float dig_led_val;
+    dig_led_val = (float)flow_aver_2;
+    dig_led_update(dig_led_val);
 }

@@ -8,7 +8,7 @@
 
 --retain=g_pfnVectors
 
-#define APP_BASE	0x00020000
+#define APP_BASE	0x00000000
 
 MEMORY
 {

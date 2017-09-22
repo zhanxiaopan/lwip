@@ -212,8 +212,8 @@ static void OAL_LwIPTimersRun()
 //*****************************************************************************
 void LwIPEthernetIntHandler(void)
 {
+    //printf("Ehternet ISR\n");
     uint32_t status;
-
     // Read and Clear the interrupt.
     status = EMACIntStatus(EMAC0_BASE, true);
     // If the interrupt came from the Ethernet and not our timer, clear it.

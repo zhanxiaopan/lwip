@@ -44,6 +44,10 @@ void LwIP_Init(void)
 #else
 	//IP4_ADDR(&ipaddr, IP_ADDR0, IP_ADDR1, IP_ADDR2, IP_ADDR3);
 	IP4_ADDR(&ipaddr, uip_add_0, uip_add_1, uip_add_2, uip_add_3);
+	printf("%d,",uip_add_0);
+	printf("%d,",uip_add_1);
+	printf("%d,",uip_add_2);
+	printf("%d\n",uip_add_3);
 	IP4_ADDR(&netmask, NETMASK_ADDR0, NETMASK_ADDR1 , NETMASK_ADDR2, NETMASK_ADDR3);
 	IP4_ADDR(&gw, GW_ADDR0, GW_ADDR1, GW_ADDR2, GW_ADDR3);
 #endif

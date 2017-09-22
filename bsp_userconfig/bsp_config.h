@@ -200,7 +200,9 @@ do                                    						\
 /*	IntPrioritySet(INT_UDMAERR, INTERRUPT_PRIORITY_PHER); */\
 	/* DCBUS - Temperature */								\
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_ADC0);				\
-	/* Ethernet */											\
+	/* Ethernet */	                                        \
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_EMAC0);           \
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_EPHY0);           \
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_TIMER0);			\
 	/* Console */											\
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_UART1);			\
@@ -261,6 +263,7 @@ uint8_t		Time_Blink250ms(void);
 uint8_t		Time_Blink500ms(void);
 uint8_t		Time_Blink1s(void);
 void 		TickLoop_PeriodicalCall (void (*fPointer)(void), uint16_t period, uint8_t isLastTaskInLoop);
+void        TickLoop_PeriodicalCallAtIdle (void (*fPointer)(void), uint16_t period, uint8_t isLastTaskInLoop);
 uint8_t 	TickLoop_IsActivated(void);
 
 

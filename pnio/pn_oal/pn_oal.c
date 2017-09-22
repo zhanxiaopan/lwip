@@ -77,6 +77,7 @@ IOD_STATUS_T OAL_ethMAUType(
      * Read the Ethernet PHY Basic Mode Status Register. 
      * The Addres 0 is used for the internal PHY.
      */
+    //printf("pn_oal::OAL_ethMAUType::MAP_EMACPHYRead\n");
     status = MAP_EMACPHYRead(EMAC0_BASE, 0, EPHY_BMSR);
 
     if (EPHY_BMSR_100BTXFD & status) {
@@ -138,6 +139,7 @@ IOD_STATUS_T OAL_ethPortState(
     /* Read the Ethernet PHY Basic Mode Status Register.
      * Address 0 is the internal PHY
      */
+    //printf("pn_oal::OAL_ethPortState::MAP_EMACPHYRead");
     status = MAP_EMACPHYRead(EMAC0_BASE, 0, EPHY_BMSR);
     *portState = (EPHY_BMSR_LINKSTAT & status) ? PNIO_LINKSTATE_UP : PNIO_LINKSTATE_DOWN;
 
@@ -186,10 +188,43 @@ void OAL_stack_exec(void)
  * This functions makes it easier to focus on one breakpoint while debugging.
  * See the stack for details of the caller.
  */
-void OAL_halt(void)
+//void OAL_halt(void)
+//{
+//    volatile unsigned int loop = 0;
+//    for (;; loop += 1);
+//}
+
+void OAL_halt(uint32_t index)
 {
-    volatile unsigned int loop = 0;
-    for (;; loop += 1);
+    switch(index) {
+    case 0:
+        while(1);
+        break;
+    case 1:
+        while(1);
+        break;
+    case 2:
+        while(1);
+        break;
+    case 3:
+        while(1);
+        break;
+    case 4:
+        while(1);
+        break;
+    case 5:
+        while(1);
+        break;
+    case 6:
+        while(1);
+        break;
+    case 7:
+        while(1);
+        break;
+    default:
+        while(1);
+        break;
+    }
 }
 
 
@@ -267,17 +302,17 @@ IOD_STATUS_T OAL_getMacAddr(
 )
 {
     //2017.09.18 edited by TMS
-    gen_mac_addr();
-    //char confMacAddr[];   /**< MAC address from configuration */
-    MAC_ADDR[0] =  get_mac_addr(0);//MAC_ADDR0;
-    MAC_ADDR[1] =  get_mac_addr(1);//MAC_ADDR1;
-    MAC_ADDR[2] =  get_mac_addr(2);//MAC_ADDR2;
-    MAC_ADDR[3] =  get_mac_addr(3);//MAC_ADDR3;
-    MAC_ADDR[4] =  get_mac_addr(4);//MAC_ADDR4;
-    MAC_ADDR[5] =  get_mac_addr(5);//MAC_ADDR5;
+//    gen_mac_addr();
+    char confMacAddr[6] = {1,2,3,4,5,6};   /**< MAC address from configuration */
+//    confMacAddr[0] =  get_mac_addr(0);//MAC_ADDR0;
+//    confMacAddr[1] =  get_mac_addr(1);//MAC_ADDR1;
+//    confMacAddr[2] =  get_mac_addr(2);//MAC_ADDR2;
+//    confMacAddr[3] =  get_mac_addr(3);//MAC_ADDR3;
+//    confMacAddr[4] =  get_mac_addr(4);//MAC_ADDR4;
+//    confMacAddr[5] =  get_mac_addr(5);//MAC_ADDR5;
     UNUSEDARG(portIdx);
-
-    OAL_MEMCPY(macAddr, MAC_ADDR, MAC_ADDR_LEN);
+    //printf("OAL_getMacAddr port:%d\n",portIdx);
+    OAL_MEMCPY(macAddr, confMacAddr, MAC_ADDR_LEN);
     return IOD_OK;
 }
 
@@ -349,7 +384,7 @@ IOD_STATUS_T OAL_nvsWriteData(
 CONFIG_NORETURN
 void OAL_shutdown(void)
 {
-    OAL_halt();
+    OAL_halt(0);
 }
 
 

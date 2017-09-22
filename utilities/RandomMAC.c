@@ -65,12 +65,12 @@ void gen_mac_addr() {
 //    } else  {
 //        printf("MAC ready");
 //    }
-//        printf("%X,",l_mac[0]);
-//        printf("%X,",l_mac[1]);
-//        printf("%X,",l_mac[2]);
-//        printf("%X,",l_mac[3]);
-//        printf("%X,",l_mac[4]);
-//        printf("%X\n",l_mac[5]);
+        printf("%X,",l_mac[0]);
+        printf("%X,",l_mac[1]);
+        printf("%X,",l_mac[2]);
+        printf("%X,",l_mac[3]);
+        printf("%X,",l_mac[4]);
+        printf("%X\n",l_mac[5]);
 }
 
 uint8_t get_mac_addr(uint32_t index) {

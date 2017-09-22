@@ -6,6 +6,7 @@
 /* Includes ---------------------------------------------------------- */
 #include "system.h"
 #include "sys_config.h"
+#include "dig_led.h"
 
 #if WS_FIELDBUS_TYPE == FIELDBUS_TYPE_EIPS
 #include "netconf.h"
@@ -76,11 +77,13 @@ void system_loop()
 	TickLoop_PeriodicalCall(ws_eip_led_ctrl, 100, 0);
 	TickLoop_PeriodicalCall(lwip_link_monitor, 1, 0);
 	TickLoop_PeriodicalCall(eips_process_loop, 10, 0);
-	TickLoop_PeriodicalCall(ws_process, WS_PROCESS_RUN_PERIOD, 1);
+	TickLoop_PeriodicalCall(ws_process, WS_PROCESS_RUN_PERIOD, 0);
+	TickLoop_PeriodicalCallAtIdle(ws_dig_led_update_daemon, WS_DIG_LED_UPDATE_PERIOD, 1);
 #elif WS_FIELDBUS_TYPE == FIELDBUS_TYPE_PNIO
 	TickLoop_PeriodicalCall(pnio_process, 10, 0);
 	TickLoop_PeriodicalCall(pnio_app_iodata_update, 10, 0);
-	TickLoop_PeriodicalCall(ws_process, WS_PROCESS_RUN_PERIOD, 1);
+	TickLoop_PeriodicalCall(ws_process, WS_PROCESS_RUN_PERIOD, 0);
+	TickLoop_PeriodicalCallAtIdle(ws_dig_led_update_daemon, WS_DIG_LED_UPDATE_PERIOD, 1);
 #elif WS_FIELDBUS_TYPE == FIELDBUS_TYPE_BL
     TickLoop_PeriodicalCall(EthernetLoop_UpdateLink, 1, 0);
     TickLoop_PeriodicalCall(EthernetLoop_TCP_Process, 1, 0);
@@ -102,6 +105,9 @@ void system_init()
 	
     // Init LEDs.
     system_init_leds();
+
+    // Init digtal led module
+    dig_led_init();
 #if WS_FIELDBUS_TYPE != FIELDBUS_TYPE_BL
     // Init application modules
 	flowsensor_init();
@@ -111,7 +117,7 @@ void system_init()
     system_init_network();
 #endif
 #if WS_FIELDBUS_TYPE == FIELDBUS_TYPE_BL
-#ifdef __USE_LAUNCH_PAD_not
+#ifdef __USE_LAUNCH_PAD
     USER_SW_Test();
 #endif  /* __USE_LAUNCH_PAD */
     upgrader_init(&g_upgrader);
@@ -263,7 +269,7 @@ void 	USER_TIMER_TEST()
 }
 #endif
 
-#ifdef __USE_LAUNCH_PAD_not
+#ifdef __USE_LAUNCH_PAD
 /**
  *  @brief Read and store the input of on/off button on TIVA LaunchPad.
  *  @return none
@@ -289,7 +295,7 @@ void USER_SW_Test(void)
  *   - here we reset the IP address to default 192.168.125.67
  */
 void GPIOJ_ISR (void) {
-#ifdef __USE_LAUNCH_PAD_not
+#ifdef __USE_LAUNCH_PAD
 	if (HWREG(GPIO_PORTJ_BASE + 0x00000418) & 0x00000001) {
 		//GPIO_TagToggle(GPIOTag_USER_LED_1);
 		GPIOIntClear(GPIO_PORTJ_BASE, 0x00000001);

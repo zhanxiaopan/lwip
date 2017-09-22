@@ -5,6 +5,7 @@
 #include "ff.h"
 #include <string.h>
 #include <stdint.h>
+#include <stdio.h>
 
 #ifndef USE_FILE_SYSTEM_IN_TFTP
 #include "upgrader.h"
@@ -516,6 +517,7 @@ int tftp_process_write(struct udp_pcb *upcb, struct ip_addr *to, unsigned short 
   */
 void process_tftp_request(struct pbuf *pkt_buf, struct ip_addr *addr, u16_t port)
 {
+//    printf("IP addr: %d comes\n",addr[1]);
   tftp_opcode op = tftp_decode_op(pkt_buf->payload);
   char FileName[30];
   struct udp_pcb *upcb;

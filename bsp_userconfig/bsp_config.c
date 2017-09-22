@@ -56,6 +56,8 @@ AliveMonitor_TypeDef alive_monitor_pn_dcp_cmd;
 volatile TIME_COUNTER_Union time_counter = {.time = 0};
 volatile uint32_t main_app_systick_counter = 0;
 
+volatile uint8_t time_slot_busy = 0;
+
 static uint8_t tickTaskActivate = 0;
 uint16_t overRunFlag = 0;
 uint8_t def_ipaddr_0 = 192;
@@ -111,6 +113,7 @@ void BSP_Init()
 	// De-initializes the GPIOs peripheral registers to their default reset values.
     BSP_GPIODeinit();
 	// Enables the clock of the used peripherals
+    printf("BSP_CLockEnable\n");
 	BSP_ClockEnable();
 
 	// Initialize User Modules
@@ -218,8 +221,12 @@ void SysTick_IntHandler()
     g_ui32LocalTimer += SYSTICK_MS;
 
     // Generate an Ethernet interrupt.
+    //printf("SysTick_IntHandler::HWREG\n");
     HWREG(NVIC_SW_TRIG) |= INT_EMAC0 - 16;
 #endif
+
+    //clear the time slot busy flag, added by Tms
+    time_slot_busy = 0;
 }
 /** 
   * @brief	Get the system time in ms.
@@ -242,13 +249,40 @@ uint8_t TickLoop_IsActivated ()
 //since we dont have any task register mechanism, so we judge the task loop via isLastTaskInLoop tag.
 void TickLoop_PeriodicalCall (void (*fPointer)(void), uint16_t period, uint8_t isLastTaskInLoop)
 {
-	sysloop_overrun = 1;
-	if (main_app_systick_counter % period == 0 && tickTaskActivate == 1) {
-		fPointer();
-	}
+    sysloop_overrun = 1;
+    if (main_app_systick_counter % period == 0 && tickTaskActivate == 1) {
+        fPointer();
 
-	if (isLastTaskInLoop == 1) tickTaskActivate = 0;
-	sysloop_overrun = 0;
+        //mark the time_slot_busy
+        if(!time_slot_busy && period > 1) time_slot_busy = 1;
+    }
+
+    if (isLastTaskInLoop == 1) tickTaskActivate = 0;
+    sysloop_overrun = 0;
+}
+
+/**
+ * TickLoop_PeriodicalCallAtIdle implements the function of fPointer when no other task has been
+ * implemented by TickLoop_PeriodicalCall. (The ones with period of 1ms does not count here!)
+ *
+ * It utilize the idle time slot of the processor for implementing the task which should not
+ * interference the timing of the other process.
+ *
+ * This function should be called after all the TickLoop_PeriodicalCall's.
+ *
+ * The ones with period of 1ms should be added later than the ones with longer period.
+ */
+void TickLoop_PeriodicalCallAtIdle (void (*fPointer)(void), uint16_t period, uint8_t isLastTaskInLoop)
+{
+    sysloop_overrun = 1;
+    if (main_app_systick_counter % period == 0 && tickTaskActivate == 1 && !time_slot_busy) {
+        fPointer();
+
+        if(period > 1) time_slot_busy = 1;
+    }
+
+    if (isLastTaskInLoop == 1) tickTaskActivate = 0;
+    sysloop_overrun = 0;
 }
 
 /**

@@ -18,7 +18,7 @@
 #define OAL_STRLEN              strlen
 #define OAL_STRNLEN             pstrnlen
 #define OAL_STRNCPY             strncpy
-#define OAL_ASSERT(x)           { if (!(x)) { PN_logErr("Assert: %s", #x); OAL_halt(); } }
+#define OAL_ASSERT(x)           { if (!(x)) { PN_logErr("Assert: %s", #x); OAL_halt(0); } }
 #define OAL_SNPRINTF            psnprintf
 #define OAL_VSNPRINTF           pvsnprintf
 #define OAL_ISALNUM             isalnum
