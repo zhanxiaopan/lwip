@@ -45,7 +45,6 @@
  */
 #include "tivaif.h"
 
-extern void LwIPEthernetIntHandler(void);
 
 /**
  * Sanity Check:  This interface driver will NOT work if the following defines
@@ -351,15 +350,13 @@ tivaif_hwinit(struct netif *p_netif)
   EMACIntEnable(EMAC0_BASE, (EMAC_INT_RECEIVE | EMAC_INT_TRANSMIT |
                 EMAC_INT_TX_STOPPED | EMAC_INT_RX_NO_BUFFER |
                 EMAC_INT_RX_STOPPED | EMAC_INT_PHY));
-  /* Enable the Ethernet interrupt. */
-  //IntRegister(INT_EMAC0,LwIPEthernetIntHandler);
-  //added by thomas
-  EMACIntClear(EMAC0_BASE, EMACIntStatus(EMAC0_BASE, true));
 
+  /* Enable the Ethernet interrupt. */
   IntEnable(INT_EMAC0);
-  printf("okay\n");
+
   /* Enable all processor interrupts. */
   IntMasterEnable();
+
   /* Tell the PHY to start an auto-negotiation cycle. */
   EMACPHYWrite(EMAC0_BASE, PHY_PHYS_ADDR, EPHY_BMCR, (EPHY_BMCR_ANEN |
                EPHY_BMCR_RESTARTAN));

@@ -101,7 +101,7 @@ IOD_STATUS_T OAL_lockGet(
 #ifdef CONFIG_DEBUG_CONTEXT_LOCKING
     if (g_lockCnt) {
         if (g_lockCtx != gLockContext) {
-            OAL_halt(0);
+            OAL_halt();
         }
     } else {
         g_lockCtx = gLockContext;
@@ -129,7 +129,7 @@ IOD_STATUS_T OAL_lockPut(
 
 #ifdef CONFIG_DEBUG_CONTEXT_LOCKING
     if (g_lockCtx != gLockContext) {
-        OAL_halt(0);
+        OAL_halt();
     }
 #endif
 

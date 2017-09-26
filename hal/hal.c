@@ -76,7 +76,7 @@ void HAL_setupTimer0(uint32_t sys_clock);
 
 void HAL_setup()
 {
-    //char mac_addr[] = DEVICE_MAC_ADDR; //here we use MAC_ADDR instead
+    char mac_addr[] = {MAC0,MAC1,MAC2,MAC3,MAC4,MAC5};
     // initialize the clock frequency
     g_ui32ClkFreq = HAL_setupClockFreq();
 
@@ -91,20 +91,12 @@ void HAL_setup()
 
     // initialize SysTick for a periodic interrupt.
     HAL_setupSysTick(g_ui32ClkFreq);
-    uint8_t mac_addr[6] = {1,2,3,4,5,6};
-//    gen_mac_addr();
-//    mac_addr[0] =  get_mac_addr(0);//MAC_ADDR0;
-//    mac_addr[1] =  get_mac_addr(1);//MAC_ADDR1;
-//    mac_addr[2] =  get_mac_addr(2);//MAC_ADDR2;
-//    mac_addr[3] =  get_mac_addr(3);//MAC_ADDR3;
-//    mac_addr[4] =  get_mac_addr(4);//MAC_ADDR4;
-//    mac_addr[5] =  get_mac_addr(5);//MAC_ADDR5;
+
     // Initialize the Ethernet Controller
     HAL_setupEthernet(mac_addr);
 
     // interrupt
     /* set interrupt priorities */
-    //printf("hal.c::HAL_setup()::IntPrioritySet\n");
     IntPrioritySet(INT_EMAC0, ETHERNET_INT_PRIORITY);
     IntPrioritySet(FAULT_SYSTICK, SYSTICK_INT_PRIORITY);
 
@@ -116,7 +108,6 @@ void HAL_setup()
 
     /* disable Ethernet interrupt */
     // it will be enabled in the TARGET_Ether_Open
-    //printf("hal.c::HAL_setup()::IntDisable\n");
     IntDisable(INT_EMAC0);
 
     // disable SPI interrupt
@@ -518,12 +509,12 @@ void HAL_setupSysTick(uint32_t sys_clk_hz)
 
 void HAL_setupEthernet(uint8_t mac_addr[])
 {
-    printf("hal.c::HAL_setupEthernet\n");
     /* Enable and reset the Ethernet modules */
     SysCtlPeripheralEnable(SYSCTL_PERIPH_EMAC0);
     SysCtlPeripheralEnable(SYSCTL_PERIPH_EPHY0);
     SysCtlPeripheralReset(SYSCTL_PERIPH_EMAC0);
     SysCtlPeripheralReset(SYSCTL_PERIPH_EPHY0);
+
     /* wait some cycles until the modules are fully activated */
     SysCtlDelay(1000);
 

@@ -456,7 +456,7 @@ void ws_handle_error_state()
 		// reset only take effect in case of an error.
 		// with a reset operation, rest valve cmd as well.
 		// updated in 20170222, comment the code below to address new requirement: Reset should not re-open the valve.
-		// ws_i_cmd_valve_on = 1;
+		ws_i_cmd_valve_on = 1;
 
 		//added by TMS 0n 21092017
 	}
@@ -603,8 +603,8 @@ void ws_read_eth_input()
 
 	if(ETH_IO_DATA_OBJ_INPUT.data.cmd_tpu_ctrl_update)
 	{
-	    ws_i_warning_flow       = ETH_IO_DATA_OBJ_INPUT.data.cmd_flow_warning;
-	    ws_i_fault_flow         = ETH_IO_DATA_OBJ_INPUT.data.cmd_flow_fault;
+	    ws_i_warning_flow       = ETH_IO_DATA_OBJ_INPUT.data.cmd_flow_warning / 10.0;
+	    ws_i_fault_flow         = ETH_IO_DATA_OBJ_INPUT.data.cmd_flow_fault / 10.0;
 	    ws_i_cmd_leak_response  = ETH_IO_DATA_OBJ_INPUT.data.cmd_leak_response;
 	    ws_i_stablization_delay = ETH_IO_DATA_OBJ_INPUT.data.cmd_delay;
 	    ws_i_startup_leak       = ETH_IO_DATA_OBJ_INPUT.data.cmd_startup_leak;
@@ -636,8 +636,8 @@ void ws_update_eth_output ()
 	ws_should_ack = 0;
 
 	//write the local control parameters to the test rack
-	ETH_IO_DATA_OBJ_OUTPUT.data.flow_warning = ws_i_warning_flow;
-	ETH_IO_DATA_OBJ_OUTPUT.data.flow_fault = ws_i_fault_flow;
+	ETH_IO_DATA_OBJ_OUTPUT.data.flow_warning = ws_i_warning_flow * 10.0;
+	ETH_IO_DATA_OBJ_OUTPUT.data.flow_fault = ws_i_fault_flow * 10.0;
 	ETH_IO_DATA_OBJ_OUTPUT.data.leak_response = ws_i_cmd_leak_response;
 	ETH_IO_DATA_OBJ_OUTPUT.data.delay = ws_i_stablization_delay;
 	ETH_IO_DATA_OBJ_OUTPUT.data.startup_leak = ws_i_startup_leak;
@@ -735,7 +735,7 @@ void ws_flowrate_detect_flowin ()
         ws_o_is_flow_ok = 0;
         ws_o_is_flow_warning = 0;
         ws_o_is_flow_fault = 1;
-        ws_o_inflow_status_index = 2;       //TODO: decide if we should add the status
+        ws_o_inflow_status_index = 0;       //TODO: decide if we should add the status
     }
     else if (flowrate_to_detect > ws_i_warning_flow) {
 	//if (qv_flowrate_1 > ws_i_warning_flow || ws_i_cmd_bypass == 1) {

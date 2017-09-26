@@ -69,11 +69,14 @@ uint8_t isto_info_update = 1; // 0 stop the update, 1 updating!
 /* we will use character "t" as tag for CGI */
 char const* TAGCHAR = "disp1";
 
+char const* SELECTED ="selected=\"selected\"";
+char const* NONE = "";
+
 #ifdef ENABLE_DATA_TXT_LOG
 #define SSI_TAG_NUM (25)
 #else
 #ifdef USE_WS_ORIGIN_WEBFILES
-#define SSI_TAG_NUM (30)
+#define SSI_TAG_NUM (45)
 #else
 #define SSI_TAG_NUM (23)
 #endif
@@ -83,8 +86,8 @@ char const* TAGS[SSI_TAG_NUM] = {"disp1",
 						"disp2",
 						"disp3",
 						"disp4",
-						"disp5",
-						"disp6",
+						"disp_f_w",      //5
+						"disp_f_f",
 						"disp7",
 						"disp8",
 						"disp9",
@@ -115,7 +118,22 @@ char const* TAGS[SSI_TAG_NUM] = {"disp1",
 						"info_update",
 						"disp28",
 						"disp29",
-						"disp30"
+						"disp30",
+						"dsp_lr0",
+						"dsp_lr1",
+						"dsp_lr2",
+						"dsp_lr3",
+						"dsp_lr4",
+						"dsp_sd1",
+						"dsp_sd2",
+						"dsp_sd4",
+						"dsp_sd8",
+						"dsp_sd16",
+						"dsp_sl2",
+						"dsp_sl4",
+						"dsp_sl6",
+						"dsp_sl8",
+						"dsp_sl10"
 #endif /* ENABLE_DATA_TXT_LOG */
 };
 
@@ -440,6 +458,96 @@ u16_t ADC_Handler(int iIndex, char *pcInsert, int iInsertLen)
 		temp_str_len = sprintf (temp_str, "%s", "172.24.1.1");
 #endif
 		break;
+	case 30: //dispFlowWarning
+	    if(ws_i_cmd_leak_response==0)
+	        temp_str_len = sprintf (temp_str, "%s",SELECTED);
+	    else
+            temp_str_len = sprintf (temp_str, "%s",NONE);
+	    break;
+	case 31:
+        if(ws_i_cmd_leak_response==1)
+            temp_str_len = sprintf (temp_str, "%s",SELECTED);
+        else
+            temp_str_len = sprintf (temp_str, "%s",NONE);
+	    break;
+	case 32:
+        if(ws_i_cmd_leak_response==2)
+            temp_str_len = sprintf (temp_str, "%s",SELECTED);
+        else
+            temp_str_len = sprintf (temp_str, "%s",NONE);
+	    break;
+	case 33:
+        if(ws_i_cmd_leak_response==3)
+            temp_str_len = sprintf (temp_str, "%s",SELECTED);
+        else
+            temp_str_len = sprintf (temp_str, "%s",NONE);
+	    break;
+	case 34:
+        if(ws_i_cmd_leak_response==4)
+            temp_str_len = sprintf (temp_str, "%s",SELECTED);
+        else
+            temp_str_len = sprintf (temp_str, "%s",NONE);
+	    break;
+	case 35:
+        if(ws_i_stablization_delay==1)
+            temp_str_len = sprintf (temp_str, "%s",SELECTED);
+        else
+            temp_str_len = sprintf (temp_str, "%s",NONE);
+	    break;
+	case 36:
+        if(ws_i_stablization_delay==2)
+            temp_str_len = sprintf (temp_str, "%s",SELECTED);
+        else
+            temp_str_len = sprintf (temp_str, "%s",NONE);
+	    break;
+	case 37:
+        if(ws_i_stablization_delay==4)
+            temp_str_len = sprintf (temp_str, "%s",SELECTED);
+        else
+            temp_str_len = sprintf (temp_str, "%s",NONE);
+	    break;
+	case 38:
+        if(ws_i_stablization_delay==8)
+            temp_str_len = sprintf (temp_str, "%s",SELECTED);
+        else
+            temp_str_len = sprintf (temp_str, "%s",NONE);
+	    break;
+	case 39:
+        if(ws_i_stablization_delay==16)
+            temp_str_len = sprintf (temp_str, "%s",SELECTED);
+        else
+            temp_str_len = sprintf (temp_str, "%s",NONE);
+	    break;
+	case 40:
+        if(ws_i_startup_leak==2)
+            temp_str_len = sprintf (temp_str, "%s",SELECTED);
+        else
+            temp_str_len = sprintf (temp_str, "%s",NONE);
+	    break;
+	case 41:
+        if(ws_i_startup_leak==4)
+            temp_str_len = sprintf (temp_str, "%s",SELECTED);
+        else
+            temp_str_len = sprintf (temp_str, "%s",NONE);
+	    break;
+	case 42:
+        if(ws_i_startup_leak==6)
+            temp_str_len = sprintf (temp_str, "%s",SELECTED);
+        else
+            temp_str_len = sprintf (temp_str, "%s",NONE);
+	    break;
+	case 43:
+        if(ws_i_startup_leak==8)
+            temp_str_len = sprintf (temp_str, "%s",SELECTED);
+        else
+            temp_str_len = sprintf (temp_str, "%s",NONE);
+	    break;
+	case 44:
+        if(ws_i_startup_leak==10)
+            temp_str_len = sprintf (temp_str, "%s",SELECTED);
+        else
+            temp_str_len = sprintf (temp_str, "%s",NONE);
+	    break;
 	default:
 		break;
 #endif /* USE_WS_ORIGIN_WEBFILES */
@@ -640,6 +748,8 @@ const char * LEDS_CGI_Handler(int iIndex, int iNumParams, char *pcParam[], char 
 	    		  isto_info_update =  1;
 	    		  return "/src/info.shtml";
 	    	  }
+	      } else if (strcmp(pcParam[i],"displayVal")==0) {
+
 	      }
 //	      } else if (strcmp(pcParam[i], "update")==0) {
 //	          if(atoi(pcVale[i]) == 1)

@@ -2,6 +2,42 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
 <meta http-equiv="Pragma" content="no-cache">
+<script type="text/javascript">
+function fetch_current_paravalue()
+{
+    var t_str_1;
+    var t_str_2;
+    document.getElementById("id_p8").value = document.getElementById("cur_flow_warn").innerText;
+    document.getElementById("id_p9").value = document.getElementById("cur_flow_fault").innerText;
+    t_str_1 = document.getElementById("cur_leak_resp").innerText; 
+    if (t_str_1 == "Fastest") {
+        t_str_2 = 0;
+    }
+    else if (t_str_1 == "Fast") {
+        t_str_2 = 1;
+    }
+    else if (t_str_1 == "Normal") {
+        t_str_2 = 2;
+    }
+    else if (t_str_1 == "Slow") {
+        t_str_2 = 3;
+    }
+    else if (t_str_1 == "Slowest") {
+        t_str_2 = 4;
+    }
+    else {
+        t_str_2 = 2;
+    }
+    document.getElementById("id_p10").selectedIndex = t_str_2;
+    
+    t_str_1 = document.getElementById("cur_sta_delay").innerText;
+    t_str_2 = parseInt(t_str_1);
+    document.getElementById("id_p12").value = t_str_2;
+    t_str_1 = document.getElementById("cur_sta_leak").innerText;
+    t_str_2 = parseInt(t_str_1);
+    document.getElementById("id_p13").value = t_str_2;
+}
+</script>
 </head>
 
 <body marginwidth="0" marginheight="0">

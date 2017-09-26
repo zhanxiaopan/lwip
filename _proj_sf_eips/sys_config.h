@@ -78,7 +78,7 @@ extern "C" {
  * e.g. 5 means ws_process is called every 5 ms.
  * */
 #define WS_PROCESS_RUN_PERIOD (5)
-
+#define WS_DIG_LED_UPDATE_PERIOD    493
 
 /*
  * Define to calculate the flowrate by counting directly the pulse number within a predefined time.

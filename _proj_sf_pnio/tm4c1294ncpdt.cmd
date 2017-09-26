@@ -8,11 +8,9 @@
 
 --retain=g_pfnVectors
 
-#define APP_BASE	0x00000000
-
 MEMORY
 {
-    FLASH (RX) : origin = APP_BASE, length = 0x000D0000
+    FLASH (RX) : origin = 0x00000000, length = 0x000D0000
     SRAM (RWX) : origin = 0x20000000, length = 0x00038000
     SRAM_STACK (RWX) : origin = 0x20038000, length = 0x00008000
 }
@@ -66,7 +64,7 @@ SECTIONS
 
 SECTIONS
 {
-    .intvecs:   > APP_BASE
+    .intvecs:   > 0x00000000
     .text   :   > FLASH
     .const  :   > FLASH
     .cinit  :   > FLASH

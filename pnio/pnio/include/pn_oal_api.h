@@ -58,8 +58,7 @@ void OAL_ethShutdown(void);
  * This functions makes it easier to focus on one breakpoint while debugging.
  * See the stack for details of the caller.
  */
-//CONFIG_NORETURN_PRE void OAL_halt(void) CONFIG_NORETURN;
-CONFIG_NORETURN_PRE void OAL_halt(uint32_t index) CONFIG_NORETURN;
+CONFIG_NORETURN_PRE void OAL_halt(void) CONFIG_NORETURN;
 
 /** Shutdown the OAL module
  *

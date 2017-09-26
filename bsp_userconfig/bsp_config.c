@@ -113,7 +113,6 @@ void BSP_Init()
 	// De-initializes the GPIOs peripheral registers to their default reset values.
     BSP_GPIODeinit();
 	// Enables the clock of the used peripherals
-    printf("BSP_CLockEnable\n");
 	BSP_ClockEnable();
 
 	// Initialize User Modules

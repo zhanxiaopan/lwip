@@ -79,7 +79,7 @@ PN_BOOL_T PN_utilIsIm2DateTime(const unsigned char *pStr, unsigned int len);
  *
  * This macro halts the device if a given pointer is zero.
  */
-#define PN_HALT_IF_NULL(x) if (!x) { OAL_halt(0); }
+#define PN_HALT_IF_NULL(x) if (!x) { OAL_halt(); }
 
 
 /***************************************************************************/
@@ -88,7 +88,7 @@ PN_BOOL_T PN_utilIsIm2DateTime(const unsigned char *pStr, unsigned int len);
  * This macro halts the device if the active flag of a given structure pointer
  * isn't true.
  */
-#define PN_HALT_IF_INACTIVE(x) if (PN_TRUE != x->active) { OAL_halt(0); }
+#define PN_HALT_IF_INACTIVE(x) if (PN_TRUE != x->active) { OAL_halt(); }
 
 
 /***************************************************************************/
@@ -96,7 +96,7 @@ PN_BOOL_T PN_utilIsIm2DateTime(const unsigned char *pStr, unsigned int len);
  *
  * This macro halts the device if condition doesnt match - like ASSERT.
  */
-#define PN_HALT_IF_FALSE(x) if (!(x)) { OAL_halt(0); }
+#define PN_HALT_IF_FALSE(x) if (!(x)) { OAL_halt(); }
 
 
 #endif /* PN_UTILS_H */
