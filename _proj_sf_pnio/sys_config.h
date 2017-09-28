@@ -72,15 +72,16 @@ extern "C" {
  * Invert valve control signal.
  * In GM's FANUC deployment, 0 means valve-open. WS_EIPS follow this rule.
  * */
-//#define WS_VALVE_CTRL_INVERTED
+#define WS_VALVE_CTRL_INVERTED
 
 /*
  * Supposed that only EIPS version should have valve control signal inverted.
  * PNIO or DIDO version should NOT invert the signal.
  * */
-#if defined WS_VALVE_CTRL_INVERTED && WS_FIELDBUS_TYPE != FIELDBUS_TYPE_EIPS
-#warning "Valve control signal should only be inverted in EIPS version!"
-#endif
+//commented by TMS since we change the requirement
+//#if defined WS_VALVE_CTRL_INVERTED && WS_FIELDBUS_TYPE != FIELDBUS_TYPE_EIPS
+//#warning "Valve control signal should only be inverted in EIPS version!"
+//#endif
 
 /*
  * WS_process call period in unit of ms.

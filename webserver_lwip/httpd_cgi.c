@@ -71,71 +71,18 @@ char const* TAGCHAR = "disp1";
 
 char const* SELECTED ="selected=\"selected\"";
 char const* NONE = "";
+char const* STR_TRUE = "true";
+char const* STR_FALSE = "false";
 
 #ifdef ENABLE_DATA_TXT_LOG
 #define SSI_TAG_NUM (25)
 #else
 #ifdef USE_WS_ORIGIN_WEBFILES
-#define SSI_TAG_NUM (45)
+#define SSI_TAG_NUM (50)
 #else
 #define SSI_TAG_NUM (23)
 #endif
 #endif
-//char const** TAGS = &TAGCHAR;
-char const* TAGS[SSI_TAG_NUM] = {"disp1",
-						"disp2",
-						"disp3",
-						"disp4",
-						"disp_f_w",      //5
-						"disp_f_f",
-						"disp7",
-						"disp8",
-						"disp9",
-						"disp10",
-						"disp11",
-						"disp12",
-						"disp13",
-						"disp14",
-						"disp15",
-						"disp16",
-						"disp17",
-						"disp18",
-						"disp19",
-						"disp20",
-						"disp21",
-						"disp22",
-						"disp23"
-#ifdef ENABLE_DATA_TXT_LOG
-						,
-						"disp24",
-						"disp25"
-#endif /* ENABLE_DATA_TXT_LOG */
-#ifdef USE_WS_ORIGIN_WEBFILES
-						,
-						"flow_0",
-						"flow_1",
-						"flow_2",
-						"info_update",
-						"disp28",
-						"disp29",
-						"disp30",
-						"dsp_lr0",
-						"dsp_lr1",
-						"dsp_lr2",
-						"dsp_lr3",
-						"dsp_lr4",
-						"dsp_sd1",
-						"dsp_sd2",
-						"dsp_sd4",
-						"dsp_sd8",
-						"dsp_sd16",
-						"dsp_sl2",
-						"dsp_sl4",
-						"dsp_sl6",
-						"dsp_sl8",
-						"dsp_sl10"
-#endif /* ENABLE_DATA_TXT_LOG */
-};
 
 /* CGI handler for LED control */ 
 const char * LEDS_CGI_Handler(int iIndex, int iNumParams, char *pcParam[], char *pcValue[]);
@@ -547,6 +494,32 @@ u16_t ADC_Handler(int iIndex, char *pcInsert, int iInsertLen)
             temp_str_len = sprintf (temp_str, "%s",SELECTED);
         else
             temp_str_len = sprintf (temp_str, "%s",NONE);
+	    break;
+	case VAR_STPO:
+	    if(isto_info_update == 0)
+	        temp_str_len = sprintf (temp_str, "%s",STR_TRUE);
+	    else
+	        temp_str_len = sprintf (temp_str, "%s",STR_FALSE);
+	     break;
+	case VAR_LR:
+	    temp_str_len = sprintf (temp_str, "%d", ws_i_cmd_leak_response);
+	    break;
+	case VAR_SD:
+	    temp_str_len = sprintf (temp_str, "%d", (uint32_t)ws_i_stablization_delay);
+	    break;
+	case VAR_SL:
+	    temp_str_len = sprintf (temp_str, "%d", (uint32_t)ws_i_startup_leak);
+	    break;
+	case VAR_UPD:
+	    if(param_should_update)
+	    {
+	        param_should_update = 0;
+	        temp_str_len = sprintf (temp_str, "%s", STR_TRUE);
+	    }
+	    else
+	    {
+	        temp_str_len = sprintf (temp_str, "%s", STR_FALSE);
+	    }
 	    break;
 	default:
 		break;

@@ -146,7 +146,6 @@ void OAL_ethRecv(
     if (PN_FALSE == gEthInitFlag) {
         return;
     }
-    printf("OAL_ethRecv\n");
     /* check port index range */
     if (CONFIG_TARGET_ETH_PORT_COUNT <= portIdx) {
         PN_logErr("port index out of range: %"FMT_u32, portIdx);

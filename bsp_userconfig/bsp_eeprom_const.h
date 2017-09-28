@@ -24,8 +24,10 @@
 #define EEPROM_ADDR_LEAK_DET_QTZ_ID EEPROMAddrFromBlock(1)+44
 
 #define EEPROM_ADDR_IS_BOARD_USED   EEPROMAddrFromBlock(2)+16
+#define EEPROM_VAL_IS_BOARD_USED    167
 
 #define EEPROM_ADDR_NEW_IP_IS_SAVED EEPROMAddrFromBlock(2)+16
+#define EEPROM_VAL_NEW_IP_SAVED     167
 
 #define EEPROM_ADDR_IP_ADDR0        EEPROMAddrFromBlock(2)
 #define EEPROM_ADDR_IP_ADDR1        EEPROMAddrFromBlock(2)+4

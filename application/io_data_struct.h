@@ -63,7 +63,7 @@ typedef union IO_DATA_OUTPUT_T
 	{
 		// must to have according to specs
 		uint8_t 	diWS_OkToWeld:1;		// diGxWS_OktoWeld diGxWS_OktoWeld output for ws itself.
-		uint8_t		isValveOn:1;			// diGxWS_ValveClsd 1: valve on, 0: valve off (opposite ??? )
+		uint8_t		isValveOff:1;			// diGxWS_ValveClsd 1: valve on, 0: valve off (opposite ??? )
 		uint8_t		isBypassed:1;			// diGxWS_Bypassed 1: bypassed, 0: not bypassed
 		uint8_t 	diWS_MinFlow:1;			// diGxWS_MinFlow
 		uint8_t		diWS_CapLoss:1;			// diGxWS_CapLoss

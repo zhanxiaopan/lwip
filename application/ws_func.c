@@ -60,6 +60,12 @@ FLOWRATE_LQR_T lqr_fr2;
 
 extern uint8_t flag_fieldbus_down;			// indicate fieldbus (eips/pnio) is lost.
 
+//vars for debug
+uint32_t debug_count_status = 0;
+uint32_t debug_count_ack = 0;
+uint32_t debug_count_status_changed = 0;
+uint32_t debug_last_status = 0;
+
 /* Exported variables ------------------------------------------------ */
 // input - cmd
 // the really active ones
@@ -87,6 +93,9 @@ static DIO_BLOCK_T ctrl_signal_web[3];
 static DIO_BLOCK_T ctrl_signal_bus[3];
 
 uint8_t ws_should_ack = 0;
+uint8_t ws_valve_is_auto_off = 0;
+volatile uint8_t param_should_update = 0;
+
 // input - properties
 double ws_i_warning_flow = 11.4;
 double ws_i_fault_flow = 7.6;
@@ -327,7 +336,7 @@ void ws_read_newctrlparas ()
 		// update new startup leak detection threshold.
 		ws_i_startup_leak_in_flowvolme_for_detection = ws_i_startup_leak/60*ws_i_stablization_delay;
 
-		flag_is_board_used = 167;
+		flag_is_board_used = EEPROM_VAL_IS_BOARD_USED;
 		// store data to eeprom to indicate this board has been configured before.
 		EEPROMProgram ((uint32_t*)&flag_is_board_used, EEPROM_ADDR_IS_BOARD_USED, 4);
 #endif
@@ -358,14 +367,14 @@ void ws_read_newctrlparas ()
 		// update new startup leak detection threshold.
 		ws_i_startup_leak_in_flowvolme_for_detection = ws_i_startup_leak/60*ws_i_stablization_delay;
 
-		flag_is_board_used = 167;
+		flag_is_board_used = EEPROM_VAL_IS_BOARD_USED;
 		// store data to eeprom to indicate this board has been configured before.
-		EEPROMProgram ((uint32_t*)&flag_is_board_used, EEPROM_ADDR_LEAK_RESPONSE, 4);
+		EEPROMProgram ((uint32_t*)&flag_is_board_used, EEPROM_ADDR_IS_BOARD_USED, 4);
 	}
 
 	if (ws_isNewIPAddr != 0) {
 		ws_isNewIPAddr = 0;
-		ws_is_new_ipaddr_configured = 167;
+		ws_is_new_ipaddr_configured = EEPROM_VAL_NEW_IP_SAVED;
 
 		pStart = ws_i_ipaddr_text;
 		for (i = 0; i < 3; i++) {
@@ -456,7 +465,14 @@ void ws_handle_error_state()
 		// reset only take effect in case of an error.
 		// with a reset operation, rest valve cmd as well.
 		// updated in 20170222, comment the code below to address new requirement: Reset should not re-open the valve.
-		ws_i_cmd_valve_on = 1;
+
+		// updated in 20170927, automatically turn on the valve if the valve is previously turned off against
+		// caploss
+		if(ws_valve_is_auto_off)
+		{
+		    ws_i_cmd_valve_on = 1;
+		    ws_valve_is_auto_off = 0;
+		}
 
 		//added by TMS 0n 21092017
 	}
@@ -498,6 +514,7 @@ void ws_read_eth_input()
 		}
 		if (dio_detect_edge(&ctrl_signal_web[WS_CMD_INDEX_VALVEON])) {
 		ws_i_cmd_valve_on = 2 - dio_detect_edge(&ctrl_signal_web[WS_CMD_INDEX_VALVEON]);
+
 		}
 		if (dio_detect_edge(&ctrl_signal_web[WS_CMD_INDEX_BYPASS])) {
 			ws_i_cmd_bypass = 2 - dio_detect_edge(&ctrl_signal_web[WS_CMD_INDEX_BYPASS]);
@@ -549,11 +566,13 @@ void ws_read_eth_input()
 	if (dio_detect_edge(&ctrl_signal_web[WS_CMD_INDEX_VALVEON]) || dio_detect_edge(&ctrl_signal_bus[WS_CMD_INDEX_VALVEON])) {
 		if (dio_detect_edge(&ctrl_signal_bus[WS_CMD_INDEX_VALVEON])) {
 			ws_i_cmd_valve_on = 2 - dio_detect_edge(&ctrl_signal_bus[WS_CMD_INDEX_VALVEON]);
+
 		}
 
 		if (dio_detect_edge(&ctrl_signal_web[WS_CMD_INDEX_VALVEON])) {
 			if (ws_i_bus_valveon == 0) return;
 			ws_i_cmd_valve_on = 2 - dio_detect_edge(&ctrl_signal_web[WS_CMD_INDEX_VALVEON]);
+
 		}
 	}
 
@@ -603,14 +622,27 @@ void ws_read_eth_input()
 
 	if(ETH_IO_DATA_OBJ_INPUT.data.cmd_tpu_ctrl_update)
 	{
-	    ws_i_warning_flow       = ETH_IO_DATA_OBJ_INPUT.data.cmd_flow_warning / 10.0;
-	    ws_i_fault_flow         = ETH_IO_DATA_OBJ_INPUT.data.cmd_flow_fault / 10.0;
-	    ws_i_cmd_leak_response  = ETH_IO_DATA_OBJ_INPUT.data.cmd_leak_response;
-	    ws_i_stablization_delay = ETH_IO_DATA_OBJ_INPUT.data.cmd_delay;
-	    ws_i_startup_leak       = ETH_IO_DATA_OBJ_INPUT.data.cmd_startup_leak;
+	    uint8_t temp_warning = ETH_IO_DATA_OBJ_INPUT.data.cmd_flow_warning;
+	    uint8_t temp_fault = ETH_IO_DATA_OBJ_INPUT.data.cmd_flow_fault;
 
-	    ws_should_ack = 1;
+	    if(temp_warning > temp_fault)
+	    {
+	        param_should_update = 1;
+	        isThereNewCtrParas = 1;
+            ws_i_warning_flow       = ETH_IO_DATA_OBJ_INPUT.data.cmd_flow_warning / 10.0;
+            ws_i_fault_flow         = ETH_IO_DATA_OBJ_INPUT.data.cmd_flow_fault / 10.0;
+            ws_i_cmd_leak_response  = ETH_IO_DATA_OBJ_INPUT.data.cmd_leak_response;
+            ws_i_stablization_delay = ETH_IO_DATA_OBJ_INPUT.data.cmd_delay;
+            ws_i_startup_leak       = ETH_IO_DATA_OBJ_INPUT.data.cmd_startup_leak;
+
+            ws_should_ack = 1;
+            debug_count_status++;
+            if(debug_last_status != ws_should_ack)
+                debug_count_status_changed++;
+            //printf("NEW PARAM\n");
+	    }
 	}
+	debug_last_status = ws_should_ack;
 }
 
 
@@ -621,7 +653,7 @@ void ws_update_eth_output ()
 #ifndef WS_VALVE_CTRL_INVERTED
 	ETH_IO_DATA_OBJ_OUTPUT.data.isValveOn = ws_o_is_valve_on;
 #else
-	ETH_IO_DATA_OBJ_OUTPUT.data.isValveOn = ws_o_is_valve_on ? 0 : 1;
+	ETH_IO_DATA_OBJ_OUTPUT.data.isValveOff = !ws_o_is_valve_on;
 #endif
 	ETH_IO_DATA_OBJ_OUTPUT.data.isBypassed = ws_o_is_Bypassed;
 	ETH_IO_DATA_OBJ_OUTPUT.data.diWS_CapLoss = ws_o_is_leak_detected;
@@ -632,19 +664,22 @@ void ws_update_eth_output ()
 	// update the ack when ws_should_ack is 1
 	// reset it to 0 afterwards
 	// if ws_should_ack is 0, keep diWS_ACK and ws_should_ack being 0
-	ETH_IO_DATA_OBJ_OUTPUT.data.diWS_ACK = ws_should_ack;
-	ws_should_ack = 0;
 
 	//write the local control parameters to the test rack
-	ETH_IO_DATA_OBJ_OUTPUT.data.flow_warning = ws_i_warning_flow * 10.0;
-	ETH_IO_DATA_OBJ_OUTPUT.data.flow_fault = ws_i_fault_flow * 10.0;
-	ETH_IO_DATA_OBJ_OUTPUT.data.leak_response = ws_i_cmd_leak_response;
-	ETH_IO_DATA_OBJ_OUTPUT.data.delay = ws_i_stablization_delay;
-	ETH_IO_DATA_OBJ_OUTPUT.data.startup_leak = ws_i_startup_leak;
+	ETH_IO_DATA_OBJ_OUTPUT.data.flow_warning = (uint8_t)(ws_i_warning_flow * 10.0);
+	ETH_IO_DATA_OBJ_OUTPUT.data.flow_fault = (uint8_t)(ws_i_fault_flow * 10.0);
+	ETH_IO_DATA_OBJ_OUTPUT.data.leak_response = (uint8_t)ws_i_cmd_leak_response;
+	ETH_IO_DATA_OBJ_OUTPUT.data.delay = (uint8_t)ws_i_stablization_delay;
+	ETH_IO_DATA_OBJ_OUTPUT.data.startup_leak = (uint8_t)ws_i_startup_leak;
 
 	// optional, not standard configuration.
-	ETH_IO_DATA_OBJ_OUTPUT.data.nFlowrate = (uint8_t)flow_aver_2*10;		//flowrate in 0.1*l/min
+	ETH_IO_DATA_OBJ_OUTPUT.data.nFlowrate = (uint8_t)(flow_aver_2*10.0);		//flowrate in 0.1*l/min
 
+	ETH_IO_DATA_OBJ_OUTPUT.data.diWS_ACK = ws_should_ack;
+	if(ws_should_ack)
+	    //printf("ack\n");
+	debug_count_ack++;
+	ws_should_ack = 0;
 #endif /* WS_FILEDBUS_NONE_BUT_DIDO */
 }
 
@@ -683,6 +718,7 @@ void ws_valve_control ()
 			GPIO_TagWrite(GPIOTag_VALVE_CMD, 0);
 			ws_o_is_valve_on = 0;
 		}
+		ws_valve_is_auto_off = 0;
 	}
 	else {
 		//if in err state, keep the valve off, regardless of the value of ws_i_cmd_valve_on
@@ -692,6 +728,7 @@ void ws_valve_control ()
 		//ws_i_cmd_valve_on = 0;
 		// but we still report the right valve status back to host controller.
 		ws_o_is_valve_on = 0;
+		ws_valve_is_auto_off = 1;
 	}
 
 	//if (ws_o_is_valve_on) ws_i_web_valveon = 1;
@@ -772,7 +809,7 @@ void ws_flowrate_detect_flowin ()
     //  1.  flow rate is larger than the warning flow rate,
     //      which means ws_o_is_minflow is set to 1
     //  2.  out of stabilization delay period
-    if( ws_flag_after_startup_delay == 1 && ws_o_is_minflow == 1 ) {
+    if( ws_flag_after_startup_delay == 1 && ws_o_is_flow_fault == 0 ) {
         ws_o_is_oktoweld = 1;
     } else {
         ws_o_is_oktoweld = 0;
@@ -985,6 +1022,7 @@ void ws_flowrate_detect_leakage ()
     	ws_o_is_leak_detected = 1;
 
     	if (ws_o_is_Bypassed == 0) {
+    	    //printf("leak detected!\n");
     		ws_attr_err_flag = 1;		// set error flag here. Once it's set, it will be reset only by reset cmd.
     		// set ws_o_is_oktoweld to 0 if leak is detected.
     		ws_o_is_oktoweld = 0;
@@ -1044,9 +1082,9 @@ void ws_init ()
 //		return;
 //	}
     
-	EEPROMRead ((uint32_t*)&flag_is_board_used, EEPROMAddrFromBlock(2)+16, 4);
+	EEPROMRead ((uint32_t*)&flag_is_board_used, EEPROM_ADDR_IS_BOARD_USED, 4);
 
-	if(flag_is_board_used == 167) {
+	if(flag_is_board_used == EEPROM_VAL_IS_BOARD_USED) {
 		// init ws related variables.
 		//read values from eeprom
 		EEPROMRead ((uint32_t*)&ws_i_warning_flow, EEPROM_ADDR_WARNING_FLOW, 8);
