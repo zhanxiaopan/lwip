@@ -95,8 +95,21 @@ uint8_t ws_i_bus_bypass = 0;
 static DIO_BLOCK_T ctrl_signal_web[3];
 static DIO_BLOCK_T ctrl_signal_bus[3];
 
+/**
+ * The flag which indicates the ack to
+ * be sent after receiving the ctrl param 
+ * from the TPU.
+ */
 uint8_t ws_should_ack = 0;
+/**
+ * The flag which indicates the valve is turned 
+ * off against the error.
+ */
 uint8_t ws_valve_is_auto_off = 0;
+/**
+ * The flag which indicates that the setup params
+ * on the webpage should be updated.
+ */
 volatile uint8_t param_should_update = 0;
 
 // input - properties
@@ -455,7 +468,6 @@ void ws_read_get_sensitivity ()
 }
 #endif /* DISABLE_INTERNAL_SENSE_CONFIG */
 
-//TODO:cto
 void ws_handle_error_state()
 {
 	// once error flag is set, only clear it by reset cmd.
@@ -682,7 +694,6 @@ void ws_update_eth_output ()
 
 	ETH_IO_DATA_OBJ_OUTPUT.data.sys_error = ws_attr_err_flag;
 	if(ws_should_ack)
-	    //printf("ack\n");
 	    debug_count_ack++;
 	ws_should_ack = 0;
 #endif /* WS_FILEDBUS_NONE_BUT_DIDO */
@@ -809,7 +820,7 @@ void ws_flowrate_detect_flowin ()
 		ws_o_inflow_status_index = 0;
 	}
 
-    //added by TMS on 21092017
+    //added by TMS on 27/09/2017
     //  flow ok should be only if:
     //  1.  flow rate is larger than the warning flow rate,
     //      which means ws_o_is_minflow is set to 1
@@ -822,13 +833,14 @@ void ws_flowrate_detect_flowin ()
         }
         else
         {
+            ws_o_is_oktoweld = 0;
+            //disabled by TMS on 07/10/2017
 #ifdef TURN_OFF_VALVE_IF_FLOW_FAULT_AFTER_DELAY
             //
             //  edited by TMS
             //  error if the flow rate is lower than faulty flow rate
             //  after the valve is on for a certain period.
             //
-            ws_o_is_oktoweld = 0;
             if(ws_o_is_valve_on && (!ws_o_is_leak_detected || ws_o_is_Bypassed))
             {
                 ws_attr_err_flag = 1;
@@ -1234,6 +1246,7 @@ void ws_process ()
 
 	ws_read_eth_input();
 	ws_handle_error_state();
+	
 	// control actuator.
 	// read the setting of bypass
 	ws_bypass_control();
@@ -1250,7 +1263,14 @@ void ws_process ()
 	ws_update_flow_benchmark();
 #endif
 	ws_flowrate_detect_leakage();
+	
+	//
+	//added by TMS to detect if the cable 
+	//for the flowsensor is corrected plugged 
+	//in.
+	//
 	ws_sensor_absence_detection();
+	
 #ifdef USE_FLOWRATE_BENCHMARK
 	ws_update_weighted_index_threshold();
 #endif
@@ -1268,6 +1288,10 @@ void ws_process ()
 	ws_status_update();
 }
 
+/**
+ * the daemon process which synchronize the value on 
+ * the LED display with "flow_aver_2".
+ */
 void ws_dig_led_update_daemon() {
     float dig_led_val;
     dig_led_val = (float)flow_aver_2;

@@ -22,9 +22,6 @@
 #include "pn_oal_eth.h"
 #include "tivaif.h"
 
-
-//extern uint32_t g_ui32ClkFreq;
-
 struct netif g_netif;
 
 ip_addr_t g_ip_addr;
@@ -33,8 +30,6 @@ extern uint32_t g_ui32LocalTimer;
 static uint32_t g_ui32TCPTimer = 0;
 static uint32_t g_ui32HostTimer = 0;
 static uint32_t g_ui32ARPTimer = 0;
-
-//struct timer periodic_timer;
 
 static PN_LOCK_T udp_chan_mutex;
 static HAL_UDP_CHAN_T udp_chan_slots[HAL_NUM_UDP_PORTS];
@@ -212,7 +207,6 @@ static void OAL_LwIPTimersRun()
 //*****************************************************************************
 void LwIPEthernetIntHandler(void)
 {
-    //printf("Ehternet ISR\n");
     uint32_t status;
     // Read and Clear the interrupt.
     status = EMACIntStatus(EMAC0_BASE, true);

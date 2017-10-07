@@ -95,6 +95,7 @@ extern volatile uint8_t param_should_update;
 void ws_init(void);
 void ws_process(void);
 void ws_dig_led_update_daemon();
+
 typedef enum
 {
 	ws_inflow_fault = 0,
@@ -108,6 +109,11 @@ typedef enum
 	ws_valve_flowon_warning = 9
 } typedef_ws_status;
 
+/**
+ * If the inactive state last longer than 
+ * this period, the sensor is consider to 
+ * be disconnected.
+ */
 #define WS_SENSOR_ABSENCE_DELAY     100
 
 #endif /* WS_FUNC_H_ */

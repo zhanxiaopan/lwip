@@ -11,6 +11,10 @@
 #include "sysctl.h"
 #include "watchdog.h"
 
+/**
+ * Initialize the peripheral (Watchdog0)
+ * for reset.
+ */
 void resetInit()
 {
 
@@ -36,14 +40,23 @@ void resetInit()
     WatchdogResetEnable(WATCHDOG0_BASE);
 }
 
+/**
+ * Reset the board with Watchdog
+ */
 void resetLaunch() {
     //
     // Enable the watchdog timer.
     //
     WatchdogEnable(WATCHDOG0_BASE);
-    //
 }
 
+/**
+ * Check if the system is reset by
+ * "resetLaunch()" with Watchdog.
+ *
+ * @return return true if the uC is
+ * reset by Watchdog0
+ */
 bool resetIsByWatchdog() {
     uint32_t cause = SysCtlResetCauseGet();
     SysCtlResetCauseClear(cause);

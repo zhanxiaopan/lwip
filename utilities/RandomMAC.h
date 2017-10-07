@@ -22,6 +22,5 @@ extern uint8_t MAC4;
 extern uint8_t MAC5;
 
 void gen_mac_addr();
-//uint8_t get_mac_addr(uint32_t index);
 
 #endif

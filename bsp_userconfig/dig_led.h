@@ -19,6 +19,10 @@
  */
 void dig_led_update(float data);
 
+/**
+ * Initialize the Port A and K as GPIO outputs for
+ * the digital LED module.
+ */
 void dig_led_init();
 
 #endif /* _DIG_LED_H_ */

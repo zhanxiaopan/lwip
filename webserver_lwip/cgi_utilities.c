@@ -4,7 +4,8 @@
  *  Created on: Sep 28, 2017
  *      Author: CNTHXIE
  */
-
+#include <string.h>
+#include <math.h>
 
 // convert int to c type string.
 // only fit int within 0~2^16

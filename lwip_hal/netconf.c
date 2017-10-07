@@ -135,13 +135,6 @@ void Ethernet_InitMACPHYDMA()
 
     // Program the hardware with its MAC address (for filtering).
     uint8_t e_mac[6] = {MAC0,MAC1,MAC2,MAC3,MAC4,MAC5};
-//    gen_mac_addr();
-//    MAC_ADDR[0] =  get_mac_addr(0);
-//    MAC_ADDR[1] =  get_mac_addr(1);
-//    MAC_ADDR[2] =  get_mac_addr(2);
-//    MAC_ADDR[3] =  get_mac_addr(3);
-//    MAC_ADDR[4] =  get_mac_addr(4);
-//    MAC_ADDR[5] =  get_mac_addr(5);
     EMACAddrSet(EMAC0_BASE, 0, e_mac);
 
     // Set the interrupt priority to peripheral

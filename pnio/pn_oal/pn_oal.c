@@ -266,13 +266,7 @@ IOD_STATUS_T OAL_getMacAddr(
     char *macAddr                   /**< buffer to store MAC addr */
 )
 {
-    char confMacAddr[] = {MAC0,MAC1,MAC2,MAC3,MAC4,MAC5};   /**< MAC address from configuration */
-//    printf("%x\n",MAC0);
-//    printf("%x\n",MAC1);
-//    printf("%x\n",MAC2);
-//    printf("%x\n",MAC3);
-//    printf("%x\n",MAC4);
-//    printf("%x\n",MAC5);
+    char confMacAddr[] = {MAC0,MAC1,MAC2,MAC3,MAC4,MAC5};   // MAC address from configuration
     UNUSEDARG(portIdx);
 
     OAL_MEMCPY(macAddr, confMacAddr, MAC_ADDR_LEN);
@@ -407,19 +401,6 @@ void OAL_setLeds(
 {
     UNUSEDARG(leds);
 }
-
-
-/** Main Function
- *
- * The function that is first called by the C library.
- * It has to make sure that main_appl is called at the end.
- */
-//int main(void)
-//{
-//    main_appl();
-//    return 0;
-//}
-
 
 /** Get Current Tick Count  - 64 Bit
  *

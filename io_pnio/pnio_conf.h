@@ -430,6 +430,10 @@
 #ifndef MAC_ADDR_LEN
 #define MAC_ADDR_LEN    6
 #endif
+/**
+ * This var stores the randomly generated
+ * MAC Addr.
+ */
 static uint8_t MAC_ADDR[MAC_ADDR_LEN];
 #define _LOCAL_STATIC_MAC_ADDR_INDEX (0)
 #if _LOCAL_STATIC_MAC_ADDR_INDEX == 0

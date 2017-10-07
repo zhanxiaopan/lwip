@@ -56,6 +56,13 @@ AliveMonitor_TypeDef alive_monitor_pn_dcp_cmd;
 volatile TIME_COUNTER_Union time_counter = {.time = 0};
 volatile uint32_t main_app_systick_counter = 0;
 
+/**
+ * If a process with high priority is 
+ * executed and its period is longer than 
+ * 1ms, this flag is set to 1.
+ * If so, the process with lower priority 
+ * will not be executed in this time slot.
+ */
 volatile uint8_t time_slot_busy = 0;
 
 static uint8_t tickTaskActivate = 0;
@@ -220,7 +227,6 @@ void SysTick_IntHandler()
     g_ui32LocalTimer += SYSTICK_MS;
 
     // Generate an Ethernet interrupt.
-    //printf("SysTick_IntHandler::HWREG\n");
     HWREG(NVIC_SW_TRIG) |= INT_EMAC0 - 16;
 #endif
 

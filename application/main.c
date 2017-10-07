@@ -1,6 +1,7 @@
 /**
- *  \file new 1
- *  \brief Brief
+ *  \file main.c
+ *  \brief
+ *  modified by TMS in Sept. 2017
  */
 
 #include "bsp_config.h"
@@ -12,6 +13,13 @@
 #endif
 
 int main(void) {
+	//==
+	//The following section is only avaliable
+	//in the Bootloader project.
+	//It redirect the program to 0x20000 if the 
+	//board is reset by "resetLaunch()" with Watch-\
+	//dog.
+	//==
 #if WS_FIELDBUS_TYPE == FIELDBUS_TYPE_BL
     if(resetIsByWatchdog()) {
         //vtalbe
@@ -24,10 +32,8 @@ int main(void) {
               "    bx      r0\n");
     }
 #endif
+	//initialization of the system
 	system_init();
-	while(1)
-	{
-
-		system_loop();
-	}
+	//major loop of the system
+	while(1) system_loop();
 }
