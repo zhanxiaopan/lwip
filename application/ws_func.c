@@ -66,6 +66,9 @@ uint32_t debug_count_ack = 0;
 uint32_t debug_count_status_changed = 0;
 uint32_t debug_last_status = 0;
 
+uint32_t debug_sensor_error_count       = 0;
+uint32_t debug_flow_fault_error_count   = 0;
+
 /* Exported variables ------------------------------------------------ */
 // input - cmd
 // the really active ones
@@ -242,7 +245,7 @@ void ws_read_flowsensor1 ()
 	uint16_t ws_flow_sensor_freq = 0;	// sensor pulse output freq in Hz
 	double q0_axis_intercept = 0;
     
-    // update the value of ws_flow_sensor_freq of snesor 1.
+    // update the value of ws_flow_sensor_freq of sensor 1.
 	if (alive_monitor_1.AliveFlag == 1) {
 		ws_flow_sensor_freq = fls_1.pulse_freq;
 	}
@@ -676,9 +679,11 @@ void ws_update_eth_output ()
 	ETH_IO_DATA_OBJ_OUTPUT.data.nFlowrate = (uint8_t)(flow_aver_2*10.0);		//flowrate in 0.1*l/min
 
 	ETH_IO_DATA_OBJ_OUTPUT.data.diWS_ACK = ws_should_ack;
+
+	ETH_IO_DATA_OBJ_OUTPUT.data.sys_error = ws_attr_err_flag;
 	if(ws_should_ack)
 	    //printf("ack\n");
-	debug_count_ack++;
+	    debug_count_ack++;
 	ws_should_ack = 0;
 #endif /* WS_FILEDBUS_NONE_BUT_DIDO */
 }
@@ -765,7 +770,7 @@ void ws_flowrate_detect_flowin ()
 	// bypass will NOT disable this detection!
     // ***
     // edited by TMS on 21-09-2017, add the caploss arbitration
-    if(ws_o_is_leak_detected) {
+    if(ws_o_is_leak_detected && !ws_o_is_Bypassed) {
         //ws_o_is_oktoweld = 0;
         ws_o_is_minflow = 0;
 
@@ -809,11 +814,28 @@ void ws_flowrate_detect_flowin ()
     //  1.  flow rate is larger than the warning flow rate,
     //      which means ws_o_is_minflow is set to 1
     //  2.  out of stabilization delay period
-    if( ws_flag_after_startup_delay == 1 && ws_o_is_flow_fault == 0 ) {
-        ws_o_is_oktoweld = 1;
-    } else {
-        ws_o_is_oktoweld = 0;
-    }
+
+    if( ws_flag_after_startup_delay == 1 )
+        if( ws_o_is_flow_fault == 0 )
+        {
+            ws_o_is_oktoweld = 1;
+        }
+        else
+        {
+#ifdef TURN_OFF_VALVE_IF_FLOW_FAULT_AFTER_DELAY
+            //
+            //  edited by TMS
+            //  error if the flow rate is lower than faulty flow rate
+            //  after the valve is on for a certain period.
+            //
+            ws_o_is_oktoweld = 0;
+            if(ws_o_is_valve_on && (!ws_o_is_leak_detected || ws_o_is_Bypassed))
+            {
+                ws_attr_err_flag = 1;
+                debug_flow_fault_error_count++;
+            }
+#endif
+        }
 }
 
 #ifdef USE_FLOWRATE_BENCHMARK
@@ -1014,11 +1036,11 @@ void ws_flowrate_detect_leakage ()
 //    if ((leak_index_average > threshold_leak_detection_quantized_index && leak_detection_quantized_index > threshold_leak_detection_quantized_index && dif_flowrate_ramp > ws_def_dif_flowrate_ramp)
 //    		|| (leak_index_average > 0.05 && leak_detection_quantized_index > 0.05)
 
-    if ( leak_index_with_est > weighted_leak_index
+    if ( leak_index_with_est > weighted_leak_index)
 #else
 	if ((leak_index_average > threshold_leak_detection_quantized_index && leak_detection_quantized_index > threshold_leak_detection_quantized_index)
 #endif
-    ) {
+     {
     	ws_o_is_leak_detected = 1;
 
     	if (ws_o_is_Bypassed == 0) {
@@ -1177,6 +1199,31 @@ void ws_sense_data_write2fifo () {
 }
 #endif /* ENABLE_DATA_TXT_LOG */
 
+/**
+ * Added by TMS
+ * Detect if the sensor cable is unpluged
+ * set the error flag if the sensor is not
+ * connected for WS_SENSOR_ABSENCE_DELAY ms.
+ */
+uint8_t ws_sensor_absense_count = 0;
+void ws_sensor_absence_detection() {
+#ifdef FLOW_SENSOR_ABSENCE_DETECTION
+    //disable the detect if the system is already in error state
+    if(!ws_attr_err_flag && ws_flag_after_startup_delay && ws_o_is_valve_on && !ws_o_is_leak_detected)
+        if(alive_monitor_1.AliveFlag==0||alive_monitor_2.AliveFlag==0)
+        {
+            ws_sensor_absense_count+= WS_PROCESS_RUN_PERIOD;
+            if(ws_sensor_absense_count >= WS_SENSOR_ABSENCE_DELAY) {
+                ws_attr_err_flag = 1;
+                debug_sensor_error_count++;
+            }
+        } else {
+            ws_sensor_absense_count = 0;
+        }
+    else
+        ws_sensor_absense_count = 0;
+#endif
+}
 
 // no method in this fun is subject to the risk of being blocked.
 // this fun should be called by main loop periodically.
@@ -1203,6 +1250,7 @@ void ws_process ()
 	ws_update_flow_benchmark();
 #endif
 	ws_flowrate_detect_leakage();
+	ws_sensor_absence_detection();
 #ifdef USE_FLOWRATE_BENCHMARK
 	ws_update_weighted_index_threshold();
 #endif

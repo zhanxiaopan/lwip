@@ -93,7 +93,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="webserver_lwip/fs_origin|webserver_lwip/fs_datalog|webserver_lwip/fs|webserver_lwip/run_makefsfile _origin.cmd|webserver_lwip/makefsfile.exe|webserver_lwip/run_makefsfile.cmd|webserver_lwip/run_makefsfile_datalog.cmd" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="webserver_lwip/fs_origin|webserver_lwip/fs_datalog|webserver_lwip/run_makefsfile _origin.cmd|webserver_lwip/makefsfile.exe|webserver_lwip/run_makefsfile.cmd|webserver_lwip/run_makefsfile_datalog.cmd" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>

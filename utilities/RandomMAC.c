@@ -40,8 +40,8 @@ void gen_mac_addr() {
         EEPROMRead ((uint32_t*)&flag_mac_exist, EEPROM_ADDR_MAC_EXIST, 4);
 
         /* Check whether mac exist already and then read or generate mac addr accordingly. */
-        //if (flag_mac_exist == EEPROM_FLAG_MAC_EXIST) {
-        if(0) {
+        if (flag_mac_exist == EEPROM_FLAG_MAC_EXIST) {
+        //if(0) {
             /* MAC is set already. Read it from EEPROM */
             EEPROMRead ((uint32_t*)&l_mac[0], EEPROM_ADDR_MAC0, 8);	// This would read value to mac0, mac1, mac2 and mac3.
             //EEPROMRead ((uint32_t*)&l_mac[4], EEPROMAddrFromBlock(3)+8, 4);	// This would read value to mac4, mac5, mac6 and mac7.

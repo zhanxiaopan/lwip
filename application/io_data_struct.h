@@ -68,7 +68,7 @@ typedef union IO_DATA_OUTPUT_T
 		uint8_t 	diWS_MinFlow:1;			// diGxWS_MinFlow
 		uint8_t		diWS_CapLoss:1;			// diGxWS_CapLoss
 		uint8_t		diWS_ACK:1;			    // #added by TMS
-		uint8_t		t2o_rvd_bit1:1;			// reserved
+		uint8_t		sys_error:1;			// reserved
 		uint8_t		diWS_PowerOk:1;			// diGxWS_PowerOK
 
 		// defined by ourselves

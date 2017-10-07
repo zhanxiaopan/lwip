@@ -90,6 +90,8 @@ extern uint8_t ws_i_bus_reset;
 extern uint8_t ws_i_bus_valveon;
 extern uint8_t ws_i_bus_bypass;
 
+extern volatile uint8_t param_should_update;
+
 void ws_init(void);
 void ws_process(void);
 void ws_dig_led_update_daemon();
@@ -106,6 +108,6 @@ typedef enum
 	ws_valve_flowon_warning = 9
 } typedef_ws_status;
 
-
+#define WS_SENSOR_ABSENCE_DELAY     100
 
 #endif /* WS_FUNC_H_ */
