@@ -107,6 +107,15 @@ extern "C" {
  * */
 #define USE_LSR_FOR_LEAK_DETECT
 
+/*
+ * comment this marco to disable the error state when the flow is in "flow fault" region
+ */
+//#define TURN_OFF_VALVE_IF_FLOW_FAULT_AFTER_DELAY
+
+/*
+ * comment this marco to disable the detection of flow sensor absence
+ */
+//#define FLOW_SENSOR_ABSENCE_DETECTION
 
 /*
  * If XM4C129ENCPDT chip is used, uncomment the macro below.
