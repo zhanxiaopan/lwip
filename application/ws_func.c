@@ -1018,7 +1018,9 @@ void ws_flowrate_detect_leakage ()
     // even cal is done, detecion will only be active after startup_delay.
     // take care all calculation must still be done before this check as it could return directly.
     // for leak status check, only comparison could behind this check.
-    if (ws_flag_after_startup_delay == 0) {
+    if (ws_flag_after_startup_delay == 0)
+    	return;
+    //{
     	// no need to check. return directly.
     	// previous understanding of startup leak is wrong.
 
@@ -1028,8 +1030,8 @@ void ws_flowrate_detect_leakage ()
 //    		ws_o_is_leak_detected = 1;
 //    	}
     	// skip the following leakage detection since it's still within "startup delay".
-    	return;
-    }
+    	//return;
+    //}
 
     // even the calculation is done, we dont update leak detection result if last error is not cleared.
     // note that cal is still done before this return.
@@ -1140,34 +1142,38 @@ void ws_init ()
 
 void ws_status_update ()
 {
-	if (ws_o_is_valve_on == 0) {
-		ws_o_status_index = ws_valve_off;
-		return;
+	//
+	//Debug by TMS:
+	//	1. "caploss" triggers "valve off". However, the webpage
+	//		should show "CAP OFF" instead of "FLOW OFF".
+	//	2. decide the status according to ws_o_is_XXXX variables
+	//
+	//bypassed?
+	if (ws_o_is_flow_ok && ws_o_is_Bypassed) {
+			ws_o_status_index = ws_valve_on_and_bypassed;
 	}
-
-	if (ws_o_is_valve_on !=0 && flow_aver_1 <0.6) {
-		ws_o_status_index = ws_valve_on_but_flowis0;
-		return;
-	}
-
-	if (ws_o_is_valve_on !=0 && flow_aver_1 < (ws_i_warning_flow-1.5) ) {
-		ws_o_status_index = ws_valve_flowon_warning;
-		return;
-	}
-
-	if (ws_o_is_flow_ok == 1 && ws_o_is_Bypassed == 1) {
-		ws_o_status_index = ws_valve_on_and_bypassed;
-		return;
-	}
-
-	if (ws_o_is_leak_detected == 1) {
+	//cap off
+	else if (ws_o_is_leak_detected) {
 		ws_o_status_index = ws_leak_detected;
-		return;
 	}
-
-	if (ws_o_is_valve_on ==1 && ws_o_is_flow_ok==1 && ws_o_is_leak_detected==0) {
+	//valve off
+	else if (!ws_o_is_valve_on) {
+		ws_o_status_index = ws_valve_off;
+	}
+	//valve on but no flow
+	//else if (flow_aver_1 <0.6) {
+	else if (ws_o_is_flow_fault) {
+		ws_o_status_index = ws_valve_on_but_flowis0;
+	}
+	//valve on but the flow rate is lower than ws_i_warning_flow
+	//else if (flow_aver_1 < (ws_i_warning_flow-1.5) ) {
+	else if (ws_o_is_flow_warning) {
+		ws_o_status_index = ws_valve_flowon_warning;
+	}
+	//ok to weld?
+	else if(ws_o_is_oktoweld) {
+	//if (ws_o_is_valve_on ==1 && ws_o_is_flow_ok==1 && ws_o_is_leak_detected==0) {
 		ws_o_status_index = ws_ok_to_weld;
-		return;
 	}
 }
 

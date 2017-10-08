@@ -56,6 +56,9 @@
 #else
 #endif
 
+#include "httpd_cgi.h"
+#include "cgi_utilities.h"
+
 extern uint8_t flag_fieldbus_down;
 
 //tSSIHandler ADC_Page_SSI_Handler;
@@ -65,85 +68,6 @@ uint32_t val_to_display = 0;
 uint32_t val_to_display2 = 9999;
 char text_to_display1[str_buf_len_1] = {' '};
 uint8_t isto_info_update = 1; // 0 stop the update, 1 updating!
-
-/* we will use character "t" as tag for CGI */
-char const* TAGCHAR = "disp1";
-
-char const* SELECTED ="selected=\"selected\"";
-char const* NONE = "";
-char const* STR_TRUE = "true";
-char const* STR_FALSE = "false";
-
-#ifdef ENABLE_DATA_TXT_LOG
-#define SSI_TAG_NUM (25)
-#else
-#ifdef USE_WS_ORIGIN_WEBFILES
-#define SSI_TAG_NUM (50)
-#else
-#define SSI_TAG_NUM (23)
-#endif
-#endif
-
-/* CGI handler for LED control */ 
-const char * LEDS_CGI_Handler(int iIndex, int iNumParams, char *pcParam[], char *pcValue[]);
-
-/* Html request for "/leds.cgi" will start LEDS_CGI_Handler */
-const tCGI LEDS_CGI={"/leds.cgi", LEDS_CGI_Handler};
-
-/* Cgi call table, only one CGI used */
-tCGI CGI_TAB[1];
-
-// convert int to c type string.
-// only fit int within 0~2^16
-void int2cstr (int val, char *str_ary)
-{
-	char digit[5] = {0};
-	char dec_order = 5;
-	int i = 0;
-
-	digit[0] = val/10000;
-	digit[1] = (val-digit[0]*10000)/1000;
-	digit[2] = (val-digit[0]*10000 - digit[1]*1000)/100;
-	digit[3] = (val-digit[0]*10000-digit[1]*1000-digit[2]*100)/10;
-	digit[4] = val-digit[0]*10000-digit[1]*1000-digit[2]*100-digit[3]*10;
-
-	if (digit[0]) dec_order = 5;
-	else if(digit[1]) dec_order = 4;
-	else if(digit[2]) dec_order = 3;
-	else if(digit[3]) dec_order = 2;
-	//else if(digit[4]) dec_order = 1;
-	else dec_order = 1;
-
-	for (i = 0; i < dec_order; i++) {
-		*(str_ary + i) 	= (char) (digit[5-dec_order+i] + 0x30);
-	}
-	*(char *)(str_ary + dec_order)	= (char) 0;
-
-}
-
-// convert double to c type string
-// only fit the double within 1.00~65535.99
-void double2cstr (double val, char *str_ary)
-{
-	int d_int_part = 0;
-	int d_dec_part2bit = 0;
-	int dec_point_pos = 0;
-	char dec[3] = {'.', 0, 0};
-
-	d_int_part = floor(val);
-	d_dec_part2bit = floor ((double )(val - d_int_part) * 100);
-	dec[1] = d_dec_part2bit/10;
-	dec[2] = d_dec_part2bit - dec[1]*10;
-
-	dec[1] += 0x30;
-	dec[2] += 0x30;
-
-	int2cstr(d_int_part, str_ary);
-	dec_point_pos = strlen(str_ary);
-	memcpy((char*)(str_ary+dec_point_pos), dec, 3);
-
-}
-
 
 /**
   * @brief  SSI handler, update status/info accordingly.
@@ -190,7 +114,7 @@ u16_t ADC_Handler(int iIndex, char *pcInsert, int iInsertLen)
 		else temp_str_len = sprintf (temp_str, "%s", "OFF");
 		break;
 	case 3: /* value of flowrate */
-		temp_str_len = sprintf (temp_str, "%.2f", flow_aver_1);
+		temp_str_len = sprintf (temp_str, "%.2f", FLOW_AVER);
 		break;
 	case 4: /* current setting of flowrate warnning */
 		temp_str_len = sprintf (temp_str, "%.2f", ws_i_warning_flow);
@@ -279,13 +203,13 @@ u16_t ADC_Handler(int iIndex, char *pcInsert, int iInsertLen)
 	default: /* default */
 		break;
 #else /* USE_WS_ORIGIN_WEBFILES */
-	case 0:	/* flow ok status */
+	case DISP1:	/* flow ok status */
 		// 0-fault, 1-warning, 2-ok, 3-closed.
 		if (ws_o_is_valve_on == 0) tmpvar = 3;
 		else tmpvar = ws_o_inflow_status_index;
 		temp_str_len = sprintf (temp_str, "./status_flow_%d.gif", tmpvar);
 		break;
-	case 1: /*valve state*/
+	case DISP2: /*valve state*/
 		if (ws_o_is_valve_on == 0) {
 			if (ws_i_bus_valveon == 0 && flag_fieldbus_down == 0) {
 				temp_str_len = sprintf (temp_str, "%s", "./status_valve_closed_locked.gif");
@@ -296,7 +220,7 @@ u16_t ADC_Handler(int iIndex, char *pcInsert, int iInsertLen)
 		}
 		else temp_str_len = sprintf (temp_str, "%s", "./status_valve_open.gif");
 		break;
-	case 2: /*  detection bypass? */
+	case DISP3: /*  detection bypass? */
 		if ((ws_i_bus_bypass == 1 && ws_o_is_Bypassed==1)) {
 			// return pic with lock.
 			tmpvar = 2;
@@ -307,19 +231,19 @@ u16_t ADC_Handler(int iIndex, char *pcInsert, int iInsertLen)
 		temp_str_len = sprintf (temp_str, "./status_detection_%d.gif", tmpvar);
 
 		break;
-	case 3: /* value of flowrate */
+	case DISP4: /* value of flowrate */
 		temp_str_len = sprintf (temp_str, "%.1f", flow_aver_2);
 		break;
-	case 4: /* current setting of flowrate warnning */
+	case DISP_F_W: /* current setting of flowrate warnning */
 		temp_str_len = sprintf (temp_str, "%.1f", ws_i_warning_flow);
 		break;
-	case 5: /* current setting of flowrate fault */
+	case DISP_F_F: /* current setting of flowrate fault */
 		temp_str_len = sprintf (temp_str, "%.1f", ws_i_fault_flow);
 		break;
-	case 8: /* time tick in sec*/
+	case DISP9: /* time tick in sec*/
 		temp_str_len = sprintf (temp_str, "%d", test_time_tick_in_http);
 		break;
-	case 9: /* leak response in text */
+	case DISP10: /* leak response in text */
 		if (ws_i_cmd_leak_response == 0) temp_str_len = sprintf (temp_str, "%s", "Fastest");
 		else if (ws_i_cmd_leak_response == 1) temp_str_len = sprintf (temp_str, "%s", "Fast");
 		else if (ws_i_cmd_leak_response == 2) temp_str_len = sprintf (temp_str, "%s", "Normal");
@@ -327,35 +251,24 @@ u16_t ADC_Handler(int iIndex, char *pcInsert, int iInsertLen)
 		else if (ws_i_cmd_leak_response == 4) temp_str_len = sprintf (temp_str, "%s", "Slowest");
 		else temp_str_len = sprintf (temp_str, "%s", "Wrong input setting");
 		break;
-	/*
-	 * 	ws_inflow_fault = 0,
-		ws_inflow_warn =1,
-		ws_inflow_ok =2,
-		ws_leak_detected = 3,
-		ws_ok_to_weld = 4,
-		ws_valve_off =5,
-		ws_valve_on_but_flowis0 = 6,
-		ws_valve_on_and_bypassed = 7,
-		ws_valve_flowon_warning = 9
-	 *  */
-	case 15: /* ws status in text, according to current ws_o_status_index value  */
+	case DISP16: /* ws status in text, according to current ws_o_status_index value  */
 		temp_str_len = sprintf (temp_str, "/src/info_st_%d.gif", ws_o_status_index);
 		break;
-	case 16: /* current startup delay */
+	case DISP17: /* current startup delay */
 		temp_str_len = sprintf (temp_str, "%.1f", ws_i_stablization_delay);
 		break;
-	case 17: /* current startup leak threshold  */
+	case DISP18: /* current startup leak threshold  */
 		temp_str_len = sprintf (temp_str, "%.1f", ws_i_startup_leak);
 		break;
-	case 21: /* show ws_para_sense_quantized_index */
+	case DISP22: /* show ws_para_sense_quantized_index */
 		temp_str_len = sprintf (temp_str, "%.3f", ws_para_sense_quantized_index);
 		break;
-	case 22: /* show threshold_deviation_int */
+	case DISP23: /* show threshold_deviation_int */
 		temp_str_len = sprintf (temp_str, "%.3f", threshold_leak_detection_quantized_index);
 		break;
 	/* pare flowrate into singel num*/
-	case 23: /* current startup delay */
-		tmpvar = (uint8_t)floor(flow_aver_1);
+	case FLOW_0: /* current startup delay */
+		tmpvar = (uint8_t)floor(FLOW_AVER);
 		tmpvar = tmpvar / 10;
 		if (tmpvar == 0) {
 			temp_str_len = sprintf (temp_str, "%s", "flowrate_blank.gif");
@@ -364,23 +277,23 @@ u16_t ADC_Handler(int iIndex, char *pcInsert, int iInsertLen)
 			temp_str_len = sprintf (temp_str, "./flowrate_%d.gif", tmpvar);
 		}
 		break;
-	case 24: /* current startup delay */
-		tmpvar = (uint8_t)floor(flow_aver_1);
+	case FLOW_1: /* current startup delay */
+		tmpvar = (uint8_t)floor(FLOW_AVER);
 		tmpvar = tmpvar % 10;
 		temp_str_len = sprintf (temp_str, "./flowrate_%d.gif", tmpvar);
 		break;
-	case 25: /* current startup delay */
-		tmpvar = (uint8_t)floor((flow_aver_1 - floor(flow_aver_1))*10);
+	case FLOW_2: /* current startup delay */
+		tmpvar = (uint8_t)floor((FLOW_AVER - floor(FLOW_AVER))*10);
 		temp_str_len = sprintf (temp_str, "./flowrate_%d.gif", tmpvar);
 		break;
-	case 26: /* info_update */
-		tmpvar = (uint8_t)floor((flow_aver_1 - floor(flow_aver_1))*10);
+	case INFO_UPDATE: /* info_update */
+		tmpvar = (uint8_t)floor((FLOW_AVER - floor(FLOW_AVER))*10);
 		temp_str_len = sprintf (temp_str, "./flowrate_%d.gif", tmpvar);
 		break;
-	case 27: /* ws var, ver of bus */
+	case DISP28: /* ws var, ver of bus */
 		temp_str_len = sprintf (temp_str, "%s", "V2.1.0");
 		break;
-	case 28: /* ws logo (eips/pnio/dido) */
+	case DISP29: /* ws logo (eips/pnio/dido) */
 #if WS_FIELDBUS_TYPE == FIELDBUS_TYPE_EIPS
 		temp_str_len = sprintf (temp_str, "%s", "eips");
 #elif WS_FIELDBUS_TYPE == FIELDBUS_TYPE_PNIO
@@ -389,7 +302,7 @@ u16_t ADC_Handler(int iIndex, char *pcInsert, int iInsertLen)
 		temp_str_len = sprintf (temp_str, "%s", "dido");
 #endif
 		break;
-	case 29: /* ws variant of bus(eips, pnio, dido) */
+	case DISP30: /* ws variant of bus(eips, pnio, dido) */
 #if WS_FIELDBUS_TYPE == FIELDBUS_TYPE_EIPS
 		temp_str_len = sprintf (temp_str, "%d.%d.%d.%d", uip_add_0, uip_add_1, uip_add_2, uip_add_3);
 #elif WS_FIELDBUS_TYPE == FIELDBUS_TYPE_PNIO
@@ -405,91 +318,91 @@ u16_t ADC_Handler(int iIndex, char *pcInsert, int iInsertLen)
 		temp_str_len = sprintf (temp_str, "%s", "172.24.1.1");
 #endif
 		break;
-	case 30: //dispFlowWarning
+	case DSP_LR0: //dispFlowWarning
 	    if(ws_i_cmd_leak_response==0)
 	        temp_str_len = sprintf (temp_str, "%s",SELECTED);
 	    else
             temp_str_len = sprintf (temp_str, "%s",NONE);
 	    break;
-	case 31:
+	case DSP_LR1:
         if(ws_i_cmd_leak_response==1)
             temp_str_len = sprintf (temp_str, "%s",SELECTED);
         else
             temp_str_len = sprintf (temp_str, "%s",NONE);
 	    break;
-	case 32:
+	case DSP_LR2:
         if(ws_i_cmd_leak_response==2)
             temp_str_len = sprintf (temp_str, "%s",SELECTED);
         else
             temp_str_len = sprintf (temp_str, "%s",NONE);
 	    break;
-	case 33:
+	case DSP_LR3:
         if(ws_i_cmd_leak_response==3)
             temp_str_len = sprintf (temp_str, "%s",SELECTED);
         else
             temp_str_len = sprintf (temp_str, "%s",NONE);
 	    break;
-	case 34:
+	case DSP_LR4:
         if(ws_i_cmd_leak_response==4)
             temp_str_len = sprintf (temp_str, "%s",SELECTED);
         else
             temp_str_len = sprintf (temp_str, "%s",NONE);
 	    break;
-	case 35:
+	case DSP_SD1:
         if(ws_i_stablization_delay==1)
             temp_str_len = sprintf (temp_str, "%s",SELECTED);
         else
             temp_str_len = sprintf (temp_str, "%s",NONE);
 	    break;
-	case 36:
+	case DSP_SD2:
         if(ws_i_stablization_delay==2)
             temp_str_len = sprintf (temp_str, "%s",SELECTED);
         else
             temp_str_len = sprintf (temp_str, "%s",NONE);
 	    break;
-	case 37:
+	case DSP_SD4:
         if(ws_i_stablization_delay==4)
             temp_str_len = sprintf (temp_str, "%s",SELECTED);
         else
             temp_str_len = sprintf (temp_str, "%s",NONE);
 	    break;
-	case 38:
+	case DSP_SD8:
         if(ws_i_stablization_delay==8)
             temp_str_len = sprintf (temp_str, "%s",SELECTED);
         else
             temp_str_len = sprintf (temp_str, "%s",NONE);
 	    break;
-	case 39:
+	case DSP_SD16:
         if(ws_i_stablization_delay==16)
             temp_str_len = sprintf (temp_str, "%s",SELECTED);
         else
             temp_str_len = sprintf (temp_str, "%s",NONE);
 	    break;
-	case 40:
+	case DSP_SL2:
         if(ws_i_startup_leak==2)
             temp_str_len = sprintf (temp_str, "%s",SELECTED);
         else
             temp_str_len = sprintf (temp_str, "%s",NONE);
 	    break;
-	case 41:
+	case DSP_SL4:
         if(ws_i_startup_leak==4)
             temp_str_len = sprintf (temp_str, "%s",SELECTED);
         else
             temp_str_len = sprintf (temp_str, "%s",NONE);
 	    break;
-	case 42:
+	case DSP_SL6:
         if(ws_i_startup_leak==6)
             temp_str_len = sprintf (temp_str, "%s",SELECTED);
         else
             temp_str_len = sprintf (temp_str, "%s",NONE);
 	    break;
-	case 43:
+	case DSP_SL8:
         if(ws_i_startup_leak==8)
             temp_str_len = sprintf (temp_str, "%s",SELECTED);
         else
             temp_str_len = sprintf (temp_str, "%s",NONE);
 	    break;
-	case 44:
+	case DSP_SL10:
         if(ws_i_startup_leak==10)
             temp_str_len = sprintf (temp_str, "%s",SELECTED);
         else
