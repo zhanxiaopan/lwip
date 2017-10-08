@@ -1,0 +1,37 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta http-equiv="Cache-Control" content="no-cache">
+<meta http-equiv="Cache-Control" content="no-store">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Refresh" content="1">
+<script type="text/javascript">
+function update_background_data()
+{
+	g_setup_on = <!--#var_stpo-->;
+	g_flow_waring = <!--#disp_f_w-->;
+	g_flow_fault = <!--#disp_f_f-->;
+	g_leak_rsp = <!--#var_lr-->;
+	g_stb_delay = <!--#var_sd-->;
+	g_startup_leak = <!--#var_sl-->;
+	g_should_update = <!--#var_upd-->;
+}
+</script>
+
+<script type="text/javascript" src="hidden.js">
+</script>
+</head>
+<body marginwidth="0" marginheight="0">
+<form name="embedded_data">
+<span type="hidden" id="flow0_src"><!--#flow_0--></span>
+<span type="hidden" id="flow1_src"><!--#flow_1--></span>
+<span type="hidden" id="flow2_src"><!--#flow_2--></span>
+<input type="hidden" name="flow_unit" value="flowrate_lpm.gif">
+<span type="hidden" id="status0_src"><!--#disp1--></span>
+<span type="hidden" id="status1_src"><!--#disp2--></span>
+<span type="hidden" id="status2_src"><!--#disp3--></span>
+<span type="hidden" id="info_src"><!--#disp16--></span>
+</form>
+<script type="text/javascript">
+update_background_data();
+update_status();
+update_info();
+</script></body></html>

@@ -1,0 +1,66 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta http-equiv="Cache-Control" content="no-cache">
+<meta http-equiv="Cache-Control" content="no-store">
+<meta http-equiv="Pragma" content="no-cache">
+<script type="text/javascript" src="hidden.js">
+</script>
+<script type="text/javascript">
+function btn_click_setup()
+            {
+                var xmlhttp;
+                if (window.XMLHttpRequest)
+                  {
+                  xmlhttp=new XMLHttpRequest();
+                  }
+                else
+                  {
+                  xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+                  }
+                xmlhttp.onreadystatechange=function()
+                  {
+                  if (xmlhttp.readyState==4 && xmlhttp.status==200)
+                    {
+                    window.parent.info_frame.document.getElementById("setup_info").innerHTML=xmlhttp.responseText;
+                    }
+                  }
+                xmlhttp.open("GET","/leds.cgi?para5=&randpara=" + Math.random(),true);
+                xmlhttp.send();
+            }
+</script>
+</head>
+
+<body marginwidth="0" marginheight="0">
+<table width="600" height="70" border="0" cellpadding="0" cellspacing="0" align="left" bgcolor="#666666">
+<tbody>
+	<tr>
+		<td width="151" height="58">
+		<img src="/src/btn_setup.gif" border="0" onclick="btn_click_setup()" alt="SETUP">
+		</td>
+
+
+		<td width="151" height="58">
+		<a href="http://<!--#disp30-->/leds.cgi?para1=reset1">
+		<img src="/src/btn_reset.gif" border="0" alt="RESET">
+		</a>
+		</td>
+
+		
+		<td width="151" height="58">
+		<a href="http://<!--#disp30-->/leds.cgi?para2=valve1">
+		<img src="/src/btn_valve.gif" border="0" alt="VALVE">
+		</a>
+		</td>
+
+		
+		<td width="151" height="58">
+		<a href="http://<!--#disp30-->/leds.cgi?para3=bypass1">
+		<img src="/src/btn_bypass.gif" border="0" alt="BYPASS">
+		</a>
+		</td>
+
+	</tr>
+</tbody>
+</table>
+</body>
+
+</html>

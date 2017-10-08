@@ -1,1 +1,0 @@
-makefsfile -i fs -o fsdata_custom.h -r -h -q

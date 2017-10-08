@@ -1,0 +1,116 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta http-equiv="Pragma" content="no-cache">
+<script type="text/javascript" src="hidden.js">
+</script>
+<script type="text/javascript">
+</script>
+</head>
+
+<body marginwidth="0" marginheight="0">
+    <table width="390" border="0" cellspacing="0" cellpadding="0" align="left" bgcolor="#006699">
+    <tbody>
+
+    <tr>
+    <td width="390" height="2" bgcolor="#f0f0f0"><img src="/src/blank.gif" border="0" alt=""></td>
+    </tr>
+
+    <tr>
+    <td width="390" height="4" bgcolor="#f0f0f0"><img src="/src/blank.gif" border="0" alt=""></td>
+    </tr>
+
+    <tr>
+    <td height="226" align="center" valign="top">
+        <table width="390" border="0" cellspacing="0" cellpadding="0" align="center">
+        <tbody>
+
+        <tr>
+        <td width="390" height="36" align="center" bgcolor="#f0f0f0"><img src="/src/info_setup_title.gif" border="0" alt=""></td>
+        </tr>
+
+        <tr>
+        <td width="390" height="190" align="center" valign="top" bgcolor="#f0f0f0">
+            <form method="GET" action="http://<!--#disp30-->/leds.cgi?para7=1">
+            <table width="390" border="0" cellpadding="0" cellspacing="0">
+            <tbody>
+
+            <tr>
+            <td height="25" width="32"><img src="/src/blank.gif" border="0" alt=""></td>
+            <td height="25" width="225" align="left"><font size="2">Flow Warning (LPM)</font></td>
+            <td height="25" width="140" align="right"><input id="id_setup_flow_warning" name="para8" size="10" value="<!--#disp_f_w--> "></td>
+            <td height="25" width="32"><img src="/src/blank.gif" border="0" alt=""></td>
+            </tr>
+
+            <tr>
+            <td height="25" width="32"><img src="/src/blank.gif" border="0" alt=""></td>
+            <td height="25" width="225" align="left"><font size="2">Flow Fault (LPM)</font></td>
+            <td height="25" width="140" align="right"><input id="id_setup_flow_fault" name="para9" size="10" value="<!--#disp_f_f-->"></td>
+            <td height="25" width="32"><img src="/src/blank.gif" border="0" alt=""></td>
+            </tr>
+
+            <tr>
+            <td height="25" width="32"><img src="/src/blank.gif" border="0" alt=""></td>
+            <td height="25" width="225" align="left"><font size="2">Leak Response</font></td>
+            <td height="25" width="140" align="right">
+            <select size="1" id="id_setup_lr" name="para10">
+            <option value="0" <!--#dsp_lr0-->> Fastest</option>
+            <option value="1" <!--#dsp_lr1-->> Fast</option>
+            <option value="2" <!--#dsp_lr2-->> Normal</option>
+            <option value="3" <!--#dsp_lr3-->> Slow</option>
+            <option value="4" <!--#dsp_lr4-->> Slowest</option>
+            </select>
+            </td>
+            <td height="25" width="32"><img src="/src/blank.gif" border="0" alt=""></td>
+            </tr>
+
+            <tr>
+            <td height="25" width="32"><img src="/src/blank.gif" border="0" alt=""></td>
+            <td height="25" width="225" align="left"><font size="2">Stabilization Delay (SEC)</font></td>
+            <td height="25" width="140" align="right">
+			<select size="1" id="id_setup_sd" name="para12">
+            <option value="1" <!--#dsp_sd1-->>1</option>
+            <option value="2" <!--#dsp_sd2-->>2</option>
+            <option value="4" <!--#dsp_sd4-->>4</option>
+            <option value="8" <!--#dsp_sd8-->>8</option>
+            <option value="16" <!--#dsp_sd16-->>16</option>
+            </select>
+            </td>
+            <td height="25" width="32"><img src="/src/blank.gif" border="0" alt=""></td>
+            </tr>
+
+            <tr>
+            <td height="25" width="32"><img src="/src/blank.gif" border="0" alt=""></td>
+            <td height="25" width="225" align="left"><font size="2">Startup Leak (LPM)</font></td>
+            <td height="25" width="140" align="right">
+			<select size="1" id="id_setup_sl" name="para13">
+            <option value="2" <!--#dsp_sl2-->>2.0</option>
+            <option value="4" <!--#dsp_sl4-->>4.0</option>
+            <option value="6" <!--#dsp_sl6-->>6.0</option>
+            <option value="8" <!--#dsp_sl8-->>8.0</option>
+            <option value="10" <!--#dsp_sl10-->>10.0</option>
+            </select>
+            </td>
+            <td height="25" width="32"><img src="/src/blank.gif" border="0" alt=""></td>
+            </tr>
+
+            <input type="hidden" name="setup" value="0">
+            <tr>
+            <td height="33" colspan="4" align="center" valign="bottom">
+            <input type="button" value="Show Factory Settings" onclick="btn_click_default()">
+            <input type="submit" value="Submit" onclick="">
+            <input type="button" value="Cancel" onclick="btn_click_cancel()">
+            </td>
+            </tr>
+            </tbody>
+            </table>
+            </form>
+        </td>
+        </tr>
+
+    </td>
+    </tr>
+    </tbody>
+    </table>
+</body>
+</html>

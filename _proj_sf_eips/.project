@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>sf_eips_v2.1</name>
+	<name>sf_eips_v2.3</name>
 	<comment></comment>
 	<projects>
 	</projects>
@@ -28,53 +28,57 @@
 		<link>
 			<name>TivaWare</name>
 			<type>2</type>
-			<locationURI>SRC_POOL/TivaWare</locationURI>
+			<locationURI>SRC_POOL1/TivaWare</locationURI>
 		</link>
 		<link>
 			<name>application</name>
 			<type>2</type>
-			<locationURI>SRC_POOL/application</locationURI>
+			<locationURI>SRC_POOL1/application</locationURI>
 		</link>
 		<link>
 			<name>bsp_userconfig</name>
 			<type>2</type>
-			<locationURI>SRC_POOL/bsp_userconfig</locationURI>
+			<locationURI>SRC_POOL1/bsp_userconfig</locationURI>
 		</link>
 		<link>
 			<name>eips</name>
 			<type>2</type>
-			<locationURI>SRC_POOL/eips</locationURI>
+			<locationURI>SRC_POOL1/eips</locationURI>
 		</link>
 		<link>
 			<name>io_eips</name>
 			<type>2</type>
-			<locationURI>SRC_POOL/io_eips</locationURI>
+			<locationURI>SRC_POOL1/io_eips</locationURI>
 		</link>
 		<link>
 			<name>lwip-1.4.1</name>
 			<type>2</type>
-			<locationURI>SRC_POOL/lwip-1.4.1</locationURI>
+			<locationURI>SRC_POOL1/lwip-1.4.1</locationURI>
 		</link>
 		<link>
 			<name>lwip_hal</name>
 			<type>2</type>
-			<locationURI>SRC_POOL/lwip_hal</locationURI>
+			<locationURI>SRC_POOL1/lwip_hal</locationURI>
 		</link>
 		<link>
 			<name>utilities</name>
 			<type>2</type>
-			<locationURI>SRC_POOL/utilities</locationURI>
+			<locationURI>SRC_POOL1/utilities</locationURI>
 		</link>
 		<link>
 			<name>webserver_lwip</name>
 			<type>2</type>
-			<locationURI>SRC_POOL/webserver_lwip</locationURI>
+			<locationURI>SRC_POOL1/webserver_lwip</locationURI>
 		</link>
 	</linkedResources>
 	<variableList>
 		<variable>
 			<name>SRC_POOL</name>
 			<value>$%7BPARENT-1-PROJECT_LOC%7D</value>
+		</variable>
+		<variable>
+			<name>SRC_POOL1</name>
+			<value>$%7BSRC_POOL%7D/sf_src_pool_v2.1.3_277</value>
 		</variable>
 	</variableList>
 </projectDescription>
