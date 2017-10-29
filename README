@@ -1,7 +1,9 @@
 _proj_sf_bl
+_proj_sf_clean
 _proj_sf_dido
 _proj_sf_eips
 _proj_sf_pnio
+_proj_sf_pnio2		#PNIO with IO, read as PNIO squared
   - CCS project folders
 
 application
