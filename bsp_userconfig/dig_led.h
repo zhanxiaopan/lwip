@@ -19,6 +19,9 @@
  */
 void dig_led_update(float data);
 
+void dig_led_write_blank();
+void dig_led_write_decimal(uint16_t decimal, uint16_t dot_pos);
+
 /**
  * Initialize the Port A and K as GPIO outputs for
  * the digital LED module.

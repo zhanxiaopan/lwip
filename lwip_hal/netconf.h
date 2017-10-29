@@ -59,10 +59,23 @@ extern struct netif lwip_netif;			// Network Interface structure
 #define GW_ADDR2   0
 #define GW_ADDR3   0
 
-extern	uint8_t uip_add_0;
-extern	uint8_t uip_add_1;
-extern	uint8_t uip_add_2;
-extern	uint8_t uip_add_3;
+//extern	uint8_t uip_add_0;
+//extern	uint8_t uip_add_1;
+//extern	uint8_t uip_add_2;
+//extern	uint8_t uip_add_3;
+typedef union{
+	struct
+	{
+		uint8_t uip_add_0;
+		uint8_t uip_add_1;
+		uint8_t uip_add_2;
+		uint8_t uip_add_3;
+	} byte;
+	uint8_t array[4];
+	uint32_t raw;
+} ip_addr_union;
+
+extern ip_addr_union ip_addr;
 
 /* Exported functions -------------------------------------------------------------------------------*/
 void	Ethernet_InitMACPHYDMA(void);

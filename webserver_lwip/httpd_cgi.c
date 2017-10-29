@@ -72,6 +72,7 @@ uint8_t isto_info_update = 1; // 0 stop the update, 1 updating!
 /**
   * @brief  SSI handler, update status/info accordingly.
   */
+extern volatile uint8_t eips_conn_established;		//added by TMS
 u16_t ADC_Handler(int iIndex, char *pcInsert, int iInsertLen)
 {
   // update values tag by tag
@@ -291,20 +292,21 @@ u16_t ADC_Handler(int iIndex, char *pcInsert, int iInsertLen)
 		temp_str_len = sprintf (temp_str, "./flowrate_%d.gif", tmpvar);
 		break;
 	case DISP28: /* ws var, ver of bus */
-		temp_str_len = sprintf (temp_str, "%s", "V2.1.0");
+		temp_str_len = sprintf (temp_str, "%s", "V2.3.0");
 		break;
-	case DISP29: /* ws logo (eips/pnio/dido) */
+	case IE_PTC: /* ws logo (eips/pnio/dido) */
 #if WS_FIELDBUS_TYPE == FIELDBUS_TYPE_EIPS
-		temp_str_len = sprintf (temp_str, "%s", "eips");
+		temp_str_len = sprintf (temp_str, "%s", "EN");
 #elif WS_FIELDBUS_TYPE == FIELDBUS_TYPE_PNIO
-		temp_str_len = sprintf (temp_str, "%s", "pnio");
+		temp_str_len = sprintf (temp_str, "%s", "PN");
 #elif defined WS_FILEDBUS_NONE_BUT_DIDO
-		temp_str_len = sprintf (temp_str, "%s", "dido");
+		temp_str_len = sprintf (temp_str, "%s", "IO");
 #endif
 		break;
-	case DISP30: /* ws variant of bus(eips, pnio, dido) */
+	case IPADDR: /* ip address */
 #if WS_FIELDBUS_TYPE == FIELDBUS_TYPE_EIPS
-		temp_str_len = sprintf (temp_str, "%d.%d.%d.%d", uip_add_0, uip_add_1, uip_add_2, uip_add_3);
+		temp_str_len = sprintf (temp_str, "%d.%d.%d.%d", ip_addr.byte.uip_add_0, ip_addr.byte.uip_add_1, ip_addr.byte.uip_add_2, ip_addr.byte.uip_add_3);
+		//temp_str_len = sprintf (temp_str, "%d.%d.%d.%d", uip_addr[0], uip_addr[1], uip_addr[2], uip_addr[3]);
 #elif WS_FIELDBUS_TYPE == FIELDBUS_TYPE_PNIO
 		IOD_cfgGet(CFG_KEY_NET_TEMP_IP, &pnio_ip);
 		p_temp = (uint8_t*)&pnio_ip;
@@ -434,6 +436,15 @@ u16_t ADC_Handler(int iIndex, char *pcInsert, int iInsertLen)
 	        temp_str_len = sprintf (temp_str, "%s", STR_FALSE);
 	    }
 	    break;
+	case IP_DIS:
+#if WS_FIELDBUS_TYPE == FIELDBUS_TYPE_EIPS
+		if(eips_conn_established)
+			temp_str_len = sprintf (temp_str, "%s", "disabled");
+		else
+			temp_str_len = sprintf (temp_str, "%s", "");
+#else
+		temp_str_len = sprintf (temp_str, "%s", "disabled");
+#endif
 	default:
 		break;
 #endif /* USE_WS_ORIGIN_WEBFILES */
@@ -616,6 +627,11 @@ const char * LEDS_CGI_Handler(int iIndex, int iNumParams, char *pcParam[], char 
 	    	  // read startup threshold, shall not return here.
 	    	  ws_i_startup_leak = (double)atoi(pcValue[i]);
 	    	  isThereNewCtrParas = 1;
+	      }else if (strcmp(pcParam[i] , "cfg_ip_addr")==0) {
+	    	  // new IP addr input, shall not return here.
+	    	  //ws_i_ipaddr_text = pcValue[i];
+	    	  memcpy (ws_i_ipaddr_text,  pcValue[i], 20);
+	    	  ws_isNewIPAddr = 1;
 	      }
 	      else if (strcmp(pcParam[i] , "para11")==0) {
 	    	  // go back (cancel the setting)

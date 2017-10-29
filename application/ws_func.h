@@ -95,6 +95,8 @@ extern volatile uint8_t param_should_update;
 void ws_init(void);
 void ws_process(void);
 void ws_dig_led_update_daemon();
+void ws_gpio_init(void);
+void ws_update_io(void);
 
 typedef enum
 {

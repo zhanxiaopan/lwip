@@ -286,7 +286,7 @@ NOTE: This method requires the user to format ALL data in little
 #define EIPS_USER_MAX_NUM_TIMERS    10
 
 /* we need a semaphore to ensure we don't print too fast */
-#define EIPS_DEBUG		1	/* 1: enable debug printing */
+#define EIPS_DEBUG		0	/* 1: enable debug printing */
 #define EIPS_PRINTALL	0	/* 0: just user printing (eips_user_printf)
 							   1: assembly configuration print at start up
 							   2: show all TCP and UDP traffic */

@@ -9,8 +9,6 @@
 /* Includes ---------------------------------------------------------- */
 #include "eips_main.h"
 #include "eips_system.h"
-
-
 /* Private declaration ----------------------------------------------- */
 #define EIPS_IODATA_T2O iodata_out
 #define EIPS_IODATA_O2T iodata_in
@@ -21,6 +19,8 @@
 #if EIPS_IODATA_SIZE_O2T != IO_DATA_INTPUT_LEN || EIPS_IODATA_SIZE_T2O != IO_DATA_OUTPUT_LEN
 #error "Wrong size definition in EIPS IO data!"
 #endif
+
+volatile uint8_t eips_conn_established = 0;
 
 void eips_userobj_callback(uint8_t nEvent, uint16_t nInst, uint8_t *pDataBuf, uint16_t nDataLen);
 
@@ -36,10 +36,8 @@ uint8_t flag_fieldbus_down = 1;
  */
 void eips_process_loop (void)
 {
-	// todo: add poll rate check, whether it's 10ms.
-    
     eips_userobj_data_send(EIPS_IODATA_T2O.row, EIPS_IODATA_SIZE_T2O);
-	eips_rtasys_process(10); // signal 10ms between calls
+	eips_rtasys_process(EIPS_REFRESHING_RATE); // signal EIPS_REFRESHING_RATE ms between calls
 }
 
 /**

@@ -59,8 +59,8 @@ typedef enum
     FLOW_2,
     INFO_UPDATE,
     DISP28,
-    DISP29,
-    DISP30,
+    IE_PTC,
+    IPADDR,
     DSP_LR0,
     DSP_LR1,
     DSP_LR2,
@@ -81,6 +81,7 @@ typedef enum
     VAR_SD,
     VAR_SL,
     VAR_UPD,
+	IP_DIS,
     SSI_TAG_NUM // Here the SSI_TAG_NUM will automatically increase!
 #endif
 }   TAG_INDEXS;
@@ -122,8 +123,8 @@ char const* TAGS[SSI_TAG_NUM] = {
     "flow_2",
     "info_update",
     "disp28",
-    "disp29",
-    "disp30",
+    "ie_ptc",		//Industrial Ethernet Protocol
+    "ipaddr",
     "dsp_lr0",
     "dsp_lr1",
     "dsp_lr2",
@@ -143,7 +144,8 @@ char const* TAGS[SSI_TAG_NUM] = {
     "reserved0",
     "var_sd",
     "var_sl",
-    "var_upd"
+    "var_upd",
+	"ip_dis"
 #endif /* ENABLE_DATA_TXT_LOG */
 };
 

@@ -75,16 +75,18 @@ void system_loop()
 	TickLoop_PeriodicalCall(ws_dido_update, 100, 0);
 	TickLoop_PeriodicalCall(ws_process, WS_PROCESS_RUN_PERIOD, 1);
 #elif WS_FIELDBUS_TYPE == FIELDBUS_TYPE_EIPS
-	TickLoop_PeriodicalCall(ws_eip_led_ctrl, 100, 0);
+	TickLoop_PeriodicalCall(ws_eip_led_ctrl, 101, 0);
 	TickLoop_PeriodicalCall(lwip_link_monitor, 1, 0);
-	TickLoop_PeriodicalCall(eips_process_loop, 10, 0);
+	TickLoop_PeriodicalCall(eips_process_loop, EIPS_REFRESHING_RATE, 0);
 	TickLoop_PeriodicalCall(ws_process, WS_PROCESS_RUN_PERIOD, 0);
-	TickLoop_PeriodicalCallAtIdle(ws_dig_led_update_daemon, WS_DIG_LED_UPDATE_PERIOD, 1);
-#elif WS_FIELDBUS_TYPE == FIELDBUS_TYPE_PNIO
+	TickLoop_PeriodicalCallAtIdle(ws_dig_led_update_daemon, WS_DIG_LED_UPDATE_PERIOD, 0);
+	TickLoop_PeriodicalCallAtIdle(ws_update_io, 1, 1);
+#elif WS_FIELDBUS_TYPE == FIELDBUS_TYPE_PNIO || WS_FIELDBUS_TYPE == FIELDBUS_TYPE_PNIOIO
 	TickLoop_PeriodicalCall(pnio_process, 8, 0);
 	TickLoop_PeriodicalCall(pnio_app_iodata_update, 8, 0);
 	TickLoop_PeriodicalCall(ws_process, WS_PROCESS_RUN_PERIOD, 0);
-	TickLoop_PeriodicalCallAtIdle(ws_dig_led_update_daemon, WS_DIG_LED_UPDATE_PERIOD, 1);
+	TickLoop_PeriodicalCallAtIdle(ws_dig_led_update_daemon, WS_DIG_LED_UPDATE_PERIOD, 0);
+	TickLoop_PeriodicalCallAtIdle(ws_update_io, 1, 1);
 #elif WS_FIELDBUS_TYPE == FIELDBUS_TYPE_BL
     TickLoop_PeriodicalCall(EthernetLoop_UpdateLink, 1, 0);
     TickLoop_PeriodicalCall(EthernetLoop_TCP_Process, 1, 0);
@@ -104,6 +106,8 @@ void system_init()
 	// Init the bsp.
 	BSP_Init();
 	
+	ws_gpio_init();
+
     // Init LEDs.
     system_init_leds();
 
@@ -253,9 +257,6 @@ void ws_dido_update ()
  */
 void ws_eip_led_ctrl ()
 {
-#ifndef __USE_LAUNCH_PAD
-	//bicolor_led_control(&sys_led_ms);
-#endif /* __USE_LAUNCH_PAD */
 	bicolor_led_control(&sys_led_ns);
 }
 
@@ -322,7 +323,7 @@ void GPIOJ_ISR (void) {
  *  @details serve for DIN/DOUT untility
  */
 void GPIOE_ISR (void) {
-#if WS_FIELDBUS_TYPE == FIELDBUS_TYPE_NONE
+#if WS_FIELDBUS_TYPE == FIELDBUS_TYPE_NONE || WS_FIELDBUS_TYPE == FIELDBUS_TYPE_PNIOIO
 	if (HWREG(GPIO_PORTE_BASE + 0x00000418) & 0x00000001) {
 		GPIOIntClear(GPIO_PORTE_BASE, 0x00000001);
 		ws_i_bus_reset = GPIO_TagRead(GPIOTag_DIN_1);

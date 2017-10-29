@@ -12,6 +12,7 @@
 #include "inc/hw_emac.h"
 #include "inc/hw_nvic.h"
 #include "RandomMAC.h"
+#include "bsp_eeprom_const.h"
 
 /* Private declarations ------------------------------------------------ */
 #ifdef USE_DHCP
@@ -29,11 +30,12 @@ void LWIP_LinkCallback(struct netif *netif);
 
 /* Exported variables ------------------------------------------------- */
 // global ip addr variables
-uint8_t uip_add_0 = IP_ADDR0;
-uint8_t uip_add_1 = IP_ADDR1;
-uint8_t uip_add_2 = IP_ADDR2;
-uint8_t uip_add_3 = IP_ADDR3;
+//uint8_t uip_add_0 = IP_ADDR0;
+//uint8_t uip_add_1 = IP_ADDR1;
+//uint8_t uip_add_2 = IP_ADDR2;
+//uint8_t uip_add_3 = IP_ADDR3;
 
+ip_addr_union ip_addr;
 
 /* Exported functions ------------------------------------------------- */
 /**
@@ -43,6 +45,21 @@ uint8_t uip_add_3 = IP_ADDR3;
   */
 void lwip_user_init(void)
 {
+	uint32_t ws_is_new_ipaddr_configured = 0;
+	EEPROMRead ((uint32_t*)&ws_is_new_ipaddr_configured, EEPROM_ADDR_NEW_IP_IS_SAVED, 4);
+
+	if(ws_is_new_ipaddr_configured == EEPROM_VAL_NEW_IP_SAVED)
+	{
+		EEPROMRead ((uint32_t*)ip_addr.array, EEPROM_ADDR_IP_ADDR0, 4);
+	}
+	else
+	{
+		ip_addr.byte.uip_add_0 = IP_ADDR0;
+		ip_addr.byte.uip_add_1 = IP_ADDR1;
+		ip_addr.byte.uip_add_2 = IP_ADDR2;
+		ip_addr.byte.uip_add_3 = IP_ADDR3;
+	}
+
 	// config IP addr.
 	struct ip_addr ipaddr, netmask, gw;
 
@@ -52,7 +69,10 @@ void lwip_user_init(void)
 	gw.addr = 0;
 #else
 	//IP4_ADDR(&ipaddr, IP_ADDR0, IP_ADDR1, IP_ADDR2, IP_ADDR3);
-	IP4_ADDR(&ipaddr, uip_add_0, uip_add_1, uip_add_2, uip_add_3);
+	IP4_ADDR(&ipaddr,
+			ip_addr.byte.uip_add_0, ip_addr.byte.uip_add_1,
+			ip_addr.byte.uip_add_2, ip_addr.byte.uip_add_3
+			);
 	IP4_ADDR(&netmask, NETMASK_ADDR0, NETMASK_ADDR1 , NETMASK_ADDR2, NETMASK_ADDR3);
 	IP4_ADDR(&gw, GW_ADDR0, GW_ADDR1, GW_ADDR2, GW_ADDR3);
 #endif
@@ -291,7 +311,7 @@ void LWIP_LinkCallback(struct netif *netif)
 		DHCP_state = DHCP_START;
 #else
 //		IP4_ADDR(&ipaddr, IP_ADDR0, IP_ADDR1, IP_ADDR2, IP_ADDR3);
-		IP4_ADDR(&ipaddr, uip_add_0, uip_add_1, uip_add_2, uip_add_3);
+		IP4_ADDR(&ipaddr, ip_addr.byte.uip_add_0, ip_addr.byte.uip_add_1, ip_addr.byte.uip_add_2, ip_addr.byte.uip_add_3);
 		IP4_ADDR(&netmask, NETMASK_ADDR0, NETMASK_ADDR1 , NETMASK_ADDR2, NETMASK_ADDR3);
 		IP4_ADDR(&gw, GW_ADDR0, GW_ADDR1, GW_ADDR2, GW_ADDR3);
 #endif

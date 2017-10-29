@@ -231,6 +231,7 @@ This function controls the Network LED.
 ======================================================================= */
 #ifdef EIPS_NTWK_LED_USED
 #include "system.h"
+extern volatile uint8_t eips_conn_established;		//added by TMS
 void eips_usersys_nsLedUpdate (uint8 led_state)
 {
     static uint8 first_time = 1;
@@ -253,12 +254,15 @@ void eips_usersys_nsLedUpdate (uint8 led_state)
     last_state = led_state;
 
     /* switch on the state */
+    eips_conn_established = false;
+
     switch(led_state)
     {
         /* switch on the valid LED states */
         case EIPS_LEDSTATE_OFF:
         	led_bicolor_setstate(&eip_led_ns, LED_BI_STATE_OFF);
         	//eip_ns_led.state = BCLEDSTATE_OFF;
+        	eips_conn_established = false;
             eips_user_dbprint0("NS LED: Off\r\n");
             break;
         case EIPS_LEDSTATE_FLASH_GREEN:
@@ -274,6 +278,7 @@ void eips_usersys_nsLedUpdate (uint8 led_state)
         case EIPS_LEDSTATE_STEADY_GREEN:
         	led_bicolor_setstate(&eip_led_ns, LED_BI_STATE_STEADY_GREEN);
         	//eip_ns_led.state = BCLEDSTATE_STEADY_GREEN;
+        	eips_conn_established = true;
             eips_user_dbprint0("NS LED: Steady Green\r\n");
             break;
         case EIPS_LEDSTATE_STEADY_RED:

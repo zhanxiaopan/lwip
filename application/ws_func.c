@@ -327,7 +327,7 @@ void ws_read_flowsensor2 ()
 
 void ws_read_newctrlparas ()
 {
-	uint8_t ip_addr[4] = {0, 0, 0, 0};
+	uint8_t _ip_addr[4] = {0, 0, 0, 0};
 	char ip_str[4] = {'0', '0', '0', '\0'};
 	uint8_t i = 0;
 	char *pStart;
@@ -390,7 +390,10 @@ void ws_read_newctrlparas ()
 
 	if (ws_isNewIPAddr != 0) {
 		ws_isNewIPAddr = 0;
+#if WS_FIELDBUS_TYPE == FIELDBUS_TYPE_EIPS
 		ws_is_new_ipaddr_configured = EEPROM_VAL_NEW_IP_SAVED;
+
+		uint32_t temp_ip_byte = 0;
 
 		pStart = ws_i_ipaddr_text;
 		for (i = 0; i < 3; i++) {
@@ -398,9 +401,12 @@ void ws_read_newctrlparas ()
 			if (pEnd) {
 				*pEnd = '\0';
 				memcpy (ip_str, pStart, pEnd-pStart+1);
-				ip_addr[i] = (uint8_t)atoi (ip_str);
-				if (ip_addr[i] >= 255 || ip_addr[i] <= 0) {
+				temp_ip_byte = strtol(ip_str,0,0);
+				//_ip_addr[i] = (uint8_t)atoi (ip_str);
+				if (temp_ip_byte >= 255 || temp_ip_byte <= 0) {
 					return;
+				} else {
+					_ip_addr[i] = (uint8_t)temp_ip_byte;
 				}
 			}
 			else {
@@ -409,16 +415,23 @@ void ws_read_newctrlparas ()
 			}
 			pStart = pEnd+1;
 		}
+
 		memcpy (ip_str, pStart, 4);	//there would be null char to indicate the end of num.
-		ip_addr[i] = (uint8_t)atoi (ip_str);
+		temp_ip_byte = strtol(ip_str,0,0);
+		if(temp_ip_byte > 0 && temp_ip_byte < 255)
+			_ip_addr[i] = (uint8_t)temp_ip_byte;
+		else
+			return;
 
-		// store the new IP addr into EEPROM.
-		EEPROMProgram ((uint32_t*)&ip_addr[0], EEPROM_ADDR_IP_ADDR0, 4);
-		EEPROMProgram ((uint32_t*)&ip_addr[1], EEPROM_ADDR_IP_ADDR1, 4);
-		EEPROMProgram ((uint32_t*)&ip_addr[2], EEPROM_ADDR_IP_ADDR2, 4);
-		EEPROMProgram ((uint32_t*)&ip_addr[3], EEPROM_ADDR_IP_ADDR3, 4);
+		if(((uint32_t*)_ip_addr)[0] != ip_addr.raw) {
+			// store the new IP addr into EEPROM.
+			EEPROMProgram ((uint32_t*)&_ip_addr[0], EEPROM_ADDR_IP_ADDR0, 4);
 
-		EEPROMProgram ((uint32_t*)&ws_is_new_ipaddr_configured, EEPROM_ADDR_NEW_IP_IS_SAVED, 4);
+			EEPROMProgram ((uint32_t*)&ws_is_new_ipaddr_configured, EEPROM_ADDR_NEW_IP_IS_SAVED, 4);
+
+			SysCtlReset();
+		}
+#endif
 	}
 	else {
 		return;
@@ -644,8 +657,8 @@ void ws_read_eth_input()
 	    {
 	        param_should_update = 1;
 	        isThereNewCtrParas = 1;
-            ws_i_warning_flow       = ETH_IO_DATA_OBJ_INPUT.data.cmd_flow_warning / 10.0;
-            ws_i_fault_flow         = ETH_IO_DATA_OBJ_INPUT.data.cmd_flow_fault / 10.0;
+            ws_i_warning_flow       = (double)temp_warning / 10.0;
+            ws_i_fault_flow         = (double)temp_fault / 10.0;
             ws_i_cmd_leak_response  = ETH_IO_DATA_OBJ_INPUT.data.cmd_leak_response;
             ws_i_stablization_delay = ETH_IO_DATA_OBJ_INPUT.data.cmd_delay;
             ws_i_startup_leak       = ETH_IO_DATA_OBJ_INPUT.data.cmd_startup_leak;
@@ -654,7 +667,6 @@ void ws_read_eth_input()
             debug_count_status++;
             if(debug_last_status != ws_should_ack)
                 debug_count_status_changed++;
-            //printf("NEW PARAM\n");
 	    }
 	}
 	debug_last_status = ws_should_ack;
@@ -916,11 +928,11 @@ double weighted_rampgap_threshold = 0;
 void ws_update_weighted_index_threshold () {
 	// we thought here floware of 12lpm should have threshold of 0.045.
 	weighted_leak_index = threshold_leak_detection_quantized_index - (12 - (flow_aver_1 + flow_aver_2)/2)*0.004;
-//	weighted_leak_index = 0.002143*flowrate_benchmark_1 + 0.019286;
-//	weighted_leak_index = 0.002143*(flowrate_benchmark_1 + flowrate_benchmark_2)/2 + 0.019286;
-//	weighted_leak_index = 0.002143*(flow_aver_1 + flow_aver_2)/2 + 0.019286;
-//	weighted_leak_index = flowrate_benchmark_1 / 12 * threshold_leak_detection_quantized_index;
-//	weighted_leak_index = flowrate_benchmark_2 / 12 * threshold_leak_detection_quantized_index;
+	//	weighted_leak_index = 0.002143*flowrate_benchmark_1 + 0.019286;
+	//	weighted_leak_index = 0.002143*(flowrate_benchmark_1 + flowrate_benchmark_2)/2 + 0.019286;
+	//	weighted_leak_index = 0.002143*(flow_aver_1 + flow_aver_2)/2 + 0.019286;
+	//	weighted_leak_index = flowrate_benchmark_1 / 12 * threshold_leak_detection_quantized_index;
+	//	weighted_leak_index = flowrate_benchmark_2 / 12 * threshold_leak_detection_quantized_index;
 	if (weighted_leak_index < 0.005) weighted_leak_index = 0.005;
 	if (weighted_leak_index > 0.2) weighted_leak_index = 0.2;
 	weighted_rampgap_threshold = flowrate_benchmark_1 / 12 * ws_def_dif_flowrate_ramp;
@@ -932,8 +944,6 @@ void ws_update_weighted_index_threshold () {
 void ws_flowrate_detect_leakage ()
 {
     uint16_t i = qv_buf_size - 1;
-
-	//uint16_t order = qv_buf_size;
 
     // for effiency, calculate moving average in advance of buffer update.
 #if 0
@@ -968,11 +978,12 @@ void ws_flowrate_detect_leakage ()
     qv_flowrate_buf_1[0] = qv_flowrate_1;
     qv_flowrate_buf_2[0] = qv_flowrate_2;
     
-    /*
-     * calculate and check whether leak condition is met.
-     * even in case of bypass or within startup delay, all calculation will still be completed, just without comparision.
-     * in case of software bypass, still record/report the leak detection result, but without setting err flag.
-     * */
+
+	// calculate and check whether leak condition is met.
+	// even in case of bypass or within startup delay, all
+    // calculation will still be completed, just without comparision.
+	// in case of software bypass, still record/report the leak detection
+    // result, but without setting err flag.
     leak_detection_quantized_index = flow_dev_aver_quar * ws_process_interval * qv_buf_size / 60000 * ws_para_sense_quantized_index + flow_dev_int * (1 - ws_para_sense_quantized_index);
 
     // calculate the moving average of leak index and update the data buffer.
@@ -987,8 +998,6 @@ void ws_flowrate_detect_leakage ()
     // use LSR to calculate the ramp of 2 flowrates.
 #if 0
 	// only for the test of LQR calculation.
-//    flow_aver_1 = (double)Time_GetMs()/1000;
-//    flow_aver_2 = (double)Time_GetMs()/2000;
     flow_aver_1 = (double)sin((double)Time_GetMs()/1000) * 200;
     flow_aver_2 = (double)cos((double)Time_GetMs()/2000) * 200;
 #endif
@@ -1013,25 +1022,11 @@ void ws_flowrate_detect_leakage ()
     leak_index_with_est = leak_index_average + est_flow_dev;
 #endif
 
-
-
     // even cal is done, detecion will only be active after startup_delay.
     // take care all calculation must still be done before this check as it could return directly.
     // for leak status check, only comparison could behind this check.
     if (ws_flag_after_startup_delay == 0)
     	return;
-    //{
-    	// no need to check. return directly.
-    	// previous understanding of startup leak is wrong.
-
-//    	// only detect startup leak detection for cap loss when pressure applied in the pipe
-//    	if(flow_dev_int > ws_i_startup_leak_in_flowvolme_for_detection) {
-//    		ws_o_is_caploss = 1;
-//    		ws_o_is_leak_detected = 1;
-//    	}
-    	// skip the following leakage detection since it's still within "startup delay".
-    	//return;
-    //}
 
     // even the calculation is done, we dont update leak detection result if last error is not cleared.
     // note that cal is still done before this return.
@@ -1219,7 +1214,7 @@ void ws_sense_data_write2fifo () {
 
 /**
  * Added by TMS
- * Detect if the sensor cable is unpluged
+ * Detect if the sensor cable is unplugged
  * set the error flag if the sensor is not
  * connected for WS_SENSOR_ABSENCE_DELAY ms.
  */
@@ -1285,8 +1280,6 @@ void ws_process ()
 	ws_sense_data_write2fifo();
 #endif /* ENABLE_DATA_TXT_LOG */
 
-
-
 	// update output in ETH.
 	ws_update_eth_output();
 
@@ -1294,12 +1287,106 @@ void ws_process ()
 	ws_status_update();
 }
 
+#if WS_FIELDBUS_TYPE == FIELDBUS_TYPE_EIPS
+uint8_t led_ip_display_index = 0;
+void _ws_display_ip()
+{
+	switch (led_ip_display_index)
+	{
+		case 1:
+		case 3:
+		case 5:
+		case 7:
+			dig_led_write_decimal(ip_addr.array[((led_ip_display_index-1)/2)], 0);
+			break;
+		default:
+			dig_led_write_blank();
+			break;
+	}
+
+	if (++led_ip_display_index>7)
+		led_ip_display_index = 0;
+}
+#endif
+
 /**
  * the daemon process which synchronize the value on 
  * the LED display with "flow_aver_2".
  */
+#if WS_FIELDBUS_TYPE == FIELDBUS_TYPE_EIPS
+extern volatile uint8_t eips_conn_established;		//added by TMS
+uint32_t led_mac_display_delay = 0;
+#endif
+
 void ws_dig_led_update_daemon() {
+#if WS_FIELDBUS_TYPE == FIELDBUS_TYPE_EIPS
+	//if network connection established
+	if(eips_conn_established) {
+	    float dig_led_val = flow_aver_2<0?0:(float)flow_aver_2;
+	    dig_led_update(dig_led_val);
+	    led_ip_display_index = 0;
+	} else {
+
+		led_mac_display_delay+=WS_DIG_LED_UPDATE_PERIOD;
+		if(led_mac_display_delay > 950)	//around 1s
+		{
+			led_mac_display_delay = 0;
+			_ws_display_ip();
+		}
+
+	}
+#else
     float dig_led_val;
-    dig_led_val = (float)flow_aver_2;
+    dig_led_val = flow_aver_2<0?0:(float)flow_aver_2;
     dig_led_update(dig_led_val);
+#endif
+}
+
+/*
+ * Functions for GPIO
+ */
+#define GPIOTAG_DIN_ALL (GPIOTag_DIN_1 | GPIOTag_DIN_2 | GPIOTag_DIN_3)
+#define GPIOTAG_DOUT_ALL (GPIOTag_DOUT_1 | GPIOTag_DOUT_2 | GPIOTag_DOUT_3)
+
+#if WS_FIELDBUS_TYPE != FIELDBUS_TYPE_PNIOIO
+uint8_t _ws_dout_old = 0;
+#endif
+
+void ws_gpio_init() {
+
+	GPIO_TagConfigProperties(
+			GPIOTAG_DIN_ALL,
+			GPIO_SET_IN_PULLDOWN, GPIO_SPD_HIGH);
+
+	GPIO_TagConfigProperties(
+			GPIOTAG_DOUT_ALL,
+			GPIO_SET_OUT_PUSHPULL, GPIO_SPD_HIGH);
+
+#if WS_FIELDBUS_TYPE != FIELDBUS_TYPE_PNIOIO
+	GPIOIntDisable(GPIO_PORTE_BASE, GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_2);
+#endif
+}
+
+uint8_t _ws_dout_old_oktoweld = 0;
+uint8_t _ws_dout_old_flow_warning = 0;
+uint8_t _ws_dout_old_leak_detected = 0;
+void ws_update_io() {
+#if WS_FIELDBUS_TYPE != FIELDBUS_TYPE_PNIOIO
+	ETH_IO_DATA_OBJ_OUTPUT.data.gpio_din_1_3 = GPIO_TagRead(GPIOTAG_DIN_ALL);
+	//write only once
+	GPIO_TagWriteOnce(GPIOTAG_DOUT_ALL, (uint8_t*)&_ws_dout_old, ETH_IO_DATA_OBJ_INPUT.data.gpio_dout_1_3);
+#else
+	if(_ws_dout_old_oktoweld != ws_o_is_oktoweld) {
+		GPIO_TagWrite(GPIOTag_DOUT_1, ws_o_is_oktoweld);
+		_ws_dout_old_oktoweld = ws_o_is_oktoweld;
+	}
+	if(_ws_dout_old_flow_warning != ws_o_is_flow_warning) {
+		GPIO_TagWrite(GPIOTag_DOUT_2, ws_o_is_flow_warning);
+		_ws_dout_old_flow_warning = ws_o_is_flow_warning;
+	}
+	if(_ws_dout_old_leak_detected != ws_o_is_leak_detected) {
+		GPIO_TagWrite(GPIOTag_DOUT_3, ws_o_is_leak_detected);
+		_ws_dout_old_leak_detected = ws_o_is_leak_detected;
+	}
+#endif
 }

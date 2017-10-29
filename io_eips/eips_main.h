@@ -13,6 +13,7 @@ extern "C" {
 /* Includes ----------------------- */
 #include "io_data_struct.h"
 
+#define EIPS_REFRESHING_RATE	8
 /* Exported macros ----------------------- */
 
 /* Exported constants ----------------------- */

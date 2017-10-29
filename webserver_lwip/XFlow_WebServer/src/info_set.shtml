@@ -26,12 +26,12 @@
         <tbody>
 
         <tr>
-        <td width="390" height="36" align="center" bgcolor="#f0f0f0"><img src="/src/info_setup_title.gif" border="0" alt=""></td>
+        <td width="390" height="11" align="center" bgcolor="#f0f0f0"><img src="/src/info_setup_title.gif" border="0" alt=""></td>
         </tr>
 
         <tr>
-        <td width="390" height="190" align="center" valign="top" bgcolor="#f0f0f0">
-            <form method="GET" action="http://<!--#disp30-->/leds.cgi?para7=1">
+        <td width="390" height="215" align="center" valign="top" bgcolor="#f0f0f0">
+            <form method="GET" action="http://<!--#ipaddr-->/leds.cgi?para7=1">
             <table width="390" border="0" cellpadding="0" cellspacing="0">
             <tbody>
 
@@ -90,6 +90,15 @@
             <option value="8" <!--#dsp_sl8-->>8.0</option>
             <option value="10" <!--#dsp_sl10-->>10.0</option>
             </select>
+            </td>
+            <td height="25" width="32"><img src="/src/blank.gif" border="0" alt=""></td>
+            </tr>
+			
+			<tr>
+            <td height="25" width="32"><img src="/src/blank.gif" border="0" alt=""></td>
+            <td height="25" width="225" align="left"><font size="2">IP Address</font></td>
+            <td height="25" width="140" align="right">
+			<input id="id_setup_ip" name="cfg_ip_addr" size="10" value="<!--#ipaddr-->" <!--#ip_dis-->>
             </td>
             <td height="25" width="32"><img src="/src/blank.gif" border="0" alt=""></td>
             </tr>

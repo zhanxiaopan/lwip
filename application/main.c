@@ -11,13 +11,12 @@
 #if WS_FIELDBUS_TYPE == FIELDBUS_TYPE_BL
 #include "reset.h"
 #endif
-
 int main(void) {
 	//==
 	//The following section is only avaliable
 	//in the Bootloader project.
-	//It redirect the program to 0x20000 if the 
-	//board is reset by "resetLaunch()" with Watch-\
+	//It redirects the program to 0x20000 if the
+	//uC is reset by "resetLaunch()" with Watch-\
 	//dog.
 	//==
 #if WS_FIELDBUS_TYPE == FIELDBUS_TYPE_BL

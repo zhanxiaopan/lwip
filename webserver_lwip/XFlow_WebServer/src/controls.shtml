@@ -39,21 +39,21 @@ function btn_click_setup()
 
 
 		<td width="151" height="58">
-		<a href="http://<!--#disp30-->/leds.cgi?para1=reset1">
+		<a href="http://<!--#ipaddr-->/leds.cgi?para1=reset1">
 		<img src="/src/btn_reset.gif" border="0" alt="RESET">
 		</a>
 		</td>
 
 		
 		<td width="151" height="58">
-		<a href="http://<!--#disp30-->/leds.cgi?para2=valve1">
+		<a href="http://<!--#ipaddr-->/leds.cgi?para2=valve1">
 		<img src="/src/btn_valve.gif" border="0" alt="VALVE">
 		</a>
 		</td>
 
 		
 		<td width="151" height="58">
-		<a href="http://<!--#disp30-->/leds.cgi?para3=bypass1">
+		<a href="http://<!--#ipaddr-->/leds.cgi?para3=bypass1">
 		<img src="/src/btn_bypass.gif" border="0" alt="BYPASS">
 		</a>
 		</td>

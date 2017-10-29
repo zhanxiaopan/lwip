@@ -45,9 +45,9 @@ function btn_click_cancel()
 
 <!-- CSS goes in the document HEAD or added to your external stylesheet -->
 <style type="text/css">
-.header .im1{width: 222px;height: 56px;border: none;}
+.header .im1{background-color: #656766; width: 222px;height: 56px;border: none;}
 .header .im2{width: 167px;height: 56px;border: none;}
-.header .im3{width: 98px;height: 56px;border: none;}
+.header .im3{background-color: #656766; width: 98px;height: 56px;border: none;}
 .header .im4{width: 113px;height: 56px;border: none;}
 </style>
 
@@ -56,17 +56,17 @@ function btn_click_cancel()
 
 <table style="padding: 0px;background-color: #f0f0f0; border="0" cellspacing="0" cellpadding="0" >
 <tr class="header">
-	<td>
-	<img class="im1" src="/src/Header_Blank.gif">
+	<td class="im1">
+	<!-- img class="im1" src="/src/Header_Blank.gif" -->
   </td>
   <td>
-	<img class="im2" src="/src/Header_FlexFlow.gif">
+	<img class="im2" src="/src/Header_SmartFlow.gif">
+  </td>
+  <td class="im3">
+	<!-- img class="im3" src="/src/Header_Blank.gif" -->
   </td>
   <td>
-	<img class="im3" src="/src/Header_Blank.gif">
-  </td>
-  <td>
-	<img class="im4" src="/src/Header_PN.gif">
+	<img class="im4" src="/src/Header_<!--#ie_ptc-->.gif">
 	</td>
 </tr>
 </table>
