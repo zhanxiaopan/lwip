@@ -55,7 +55,7 @@ void dig_led_write_blank()
 void dig_led_write_decimal(uint16_t decimal, uint16_t dot_pos)
 {
     uint16_t data_bcd;
-
+    bool first_dig_led_is_zero = false;
     // step 0: check and bound the input
     if (decimal > 999)
     {
@@ -103,17 +103,31 @@ void dig_led_write_decimal(uint16_t decimal, uint16_t dot_pos)
     {
     	// the first digit is 0, then blank
     	GPIOPinWrite(GPIO_PORTA_BASE, 0x0F, 0xF);
+    	first_dig_led_is_zero = true;
     }
-
-    if (data_bcd&0xF0)
+/*
+ * Next lines 113-131 were modified on 23/Sept./2017
+ * to fix the problem that the second dig_led blink
+ * when first was not.
+ */
+    if (first_dig_led_is_zero)
     {
-		// the second digit is not 0
-		GPIOPinWrite(GPIO_PORTA_BASE, 0xF0, data_bcd&0xF0);
+        if (data_bcd&0xF0)
+        {
+            // the second digit is not 0
+            GPIOPinWrite(GPIO_PORTA_BASE, 0xF0, data_bcd&0xF0);
+        }
+        else
+        {
+
+            // the first and second digit is 0, blank
+            GPIOPinWrite(GPIO_PORTA_BASE, 0xF0, 0xF0);
+        }
     }
     else
     {
-    	// the second digit is 0, blank
-    	GPIOPinWrite(GPIO_PORTA_BASE, 0xF0, 0xF0);
+        // the first digit is not 0, then do not blank
+        GPIOPinWrite(GPIO_PORTA_BASE, 0xF0, data_bcd&0xF0);
     }
 
 	// the third digital
