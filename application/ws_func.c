@@ -1240,7 +1240,7 @@ void ws_sensor_absence_detection() {
 
 // no method in this fun is subject to the risk of being blocked.
 // this fun should be called by main loop periodically.
-void ws_process ()
+void ws_process()
 {
 	// read cmd/paras input
 	ws_read_newctrlparas();
@@ -1372,10 +1372,14 @@ uint8_t _ws_dout_old_flow_warning = 0;
 uint8_t _ws_dout_old_leak_detected = 0;
 void ws_update_io() {
 #if WS_FIELDBUS_TYPE != FIELDBUS_TYPE_PNIOIO
-	ETH_IO_DATA_OBJ_OUTPUT.data.gpio_din_1_3 = GPIO_TagRead(GPIOTAG_DIN_ALL);
+	ETH_IO_DATA_OBJ_OUTPUT.data.gpio_din_1_3 = GPIO_TagStateRead(GPIOTAG_DIN_ALL);
 	//write only once
-	GPIO_TagWriteOnce(GPIOTAG_DOUT_ALL, (uint8_t*)&_ws_dout_old, ETH_IO_DATA_OBJ_INPUT.data.gpio_dout_1_3);
+	GPIO_TagStateWriteOnce(GPIOTAG_DOUT_ALL, (uint8_t*)&_ws_dout_old, ETH_IO_DATA_OBJ_INPUT.data.gpio_dout_1_3);
 #else
+	ws_i_web_reset = GPIO_TagRead(GPIOTag_DIN_1);
+	uint8_t temppp  = GPIO_TagStateRead(GPIOTAG_DIN_ALL);
+	ws_i_web_valveon = GPIO_TagRead(GPIOTag_DIN_2);
+	ws_i_web_bypass = GPIO_TagRead(GPIOTag_DIN_3);
 	if(_ws_dout_old_oktoweld != ws_o_is_oktoweld) {
 		GPIO_TagWrite(GPIOTag_DOUT_1, ws_o_is_oktoweld);
 		_ws_dout_old_oktoweld = ws_o_is_oktoweld;

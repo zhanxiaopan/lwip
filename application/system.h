@@ -119,10 +119,13 @@ extern uint8_t cmd_di_4;
 #elif WS_FIELDBUS_TYPE == FIELDBUS_TYPE_PNIO
 #define pnio_led_ms sys_led_ms
 #define pnio_led_ns sys_led_ns
+#elif WS_FIELDBUS_TYPE == FIELDBUS_TYPE_PNIOIO
+#define pnio_led_ms sys_led_ms
+#define pnio_led_ns sys_led_ns
 #endif /* WS_FIELDBUS_TYPE == FIELDBUS_TYPE_EIPS */
 
-extern BICOLOR_LED_T sys_led_ms;
 extern BICOLOR_LED_T sys_led_ns;
+extern BICOLOR_LED_T sys_led_ms;
 
 #ifdef __cplusplus
 }

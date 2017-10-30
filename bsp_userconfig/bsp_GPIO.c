@@ -146,6 +146,17 @@ uint8_t GPIO_TagRead(GPIOTag_TypeDef tag)
 	return (GPIOPinRead(tempPinInfo.GPIO_PORTx_BASE, tempPinInfo.GPIO_PIN_x)==0?0:1);
 }
 /**
+  * @brief  Similar function as TagRead's. The difference is the return value is a 8-bit uint number rather than 1 or 0
+  * @param  tag: The tag that specify the IO port and pins.
+  * @retval The specified pin value.
+  * @note   Recommend to only use it for general-purpose DI and DO, not for AF mode.
+  */
+uint8_t GPIO_TagStateRead(GPIOTag_TypeDef tag)
+{
+    GPIO_pinInfo tempPinInfo = GPIO_Tag2PinInfo(tag);
+    return (GPIOPinRead(tempPinInfo.GPIO_PORTx_BASE, tempPinInfo.GPIO_PIN_x));
+}
+/**
   * @brief	Write the output value of the specific GPIO pin.
   * @param	tag: The tag that specify the IO port and pin.
   * @param	bitVal: The value to be written to the pin. 0 or !0(mostly use 0 or 1).
@@ -179,6 +190,19 @@ void GPIO_TagWriteOnce(GPIOTag_TypeDef tag, uint8_t * bitOldVal, uint8_t bitNewV
     *bitOldVal = bitNewVal;
     GPIO_TagWrite(tag, bitNewVal);
   }
+}
+/**
+  * @brief  Similar function as TagRead's. The difference is the written value is a 8-bit uint number rather than 1 or 0
+  * @param  tag: The tag that specify the IO port and pins.
+  * @param  bitVal:  The value to be written to the pin. 0 or !0(mostly use 0 or 1).
+  * @retval none.
+  */
+void GPIO_TagStateWriteOnce(GPIOTag_TypeDef tag, uint8_t * bitOldVal, uint8_t bitNewVal)
+{
+  if (*bitOldVal!=bitNewVal) {
+    *bitOldVal = bitNewVal;
+    GPIO_pinInfo tempPinInfo = GPIO_Tag2PinInfo(tag);
+    GPIOPinWrite(tempPinInfo.GPIO_PORTx_BASE, tempPinInfo.GPIO_PIN_x, bitNewVal);  }
 }
 /**
   * @brief	Toggle the output value of the specific GPIO pin.

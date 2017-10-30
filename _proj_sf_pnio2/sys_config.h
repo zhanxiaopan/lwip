@@ -18,7 +18,7 @@ extern "C" {
 #define FIELDBUS_TYPE_PNIO	(2)
 #define FIELDBUS_TYPE_PNIOIO (3)
 #define WS_FIELDBUS_TYPE FIELDBUS_TYPE_PNIOIO
-#if WS_FIELDBUS_TYPE > FIELDBUS_TYPE_PNIO
+#if WS_FIELDBUS_TYPE > FIELDBUS_TYPE_PNIOIO
 #error "A wrong IO bus type has been defined!"
 #endif
 

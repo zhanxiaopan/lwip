@@ -14,7 +14,7 @@
 #include "eips_main.h"
 #elif WS_FIELDBUS_TYPE == FIELDBUS_TYPE_NONE
 #include "netconf.h"
-#elif WS_FIELDBUS_TYPE == FIELDBUS_TYPE_PNIO
+#elif WS_FIELDBUS_TYPE == FIELDBUS_TYPE_PNIO || WS_FIELDBUS_TYPE == FIELDBUS_TYPE_PNIOIO
 extern void pnio_app_init(void);
 extern void pnio_process(void);
 extern void pnio_app_iodata_update(void);
@@ -119,7 +119,9 @@ void system_init()
 	ws_init();
 
 	// Init network module
+#if WS_FIELDBUS_TYPE != FIELDBUS_TYPE_PNIOIO
     system_init_network();
+#endif
 #endif
 #if WS_FIELDBUS_TYPE == FIELDBUS_TYPE_BL
 #ifdef __USE_LAUNCH_PAD

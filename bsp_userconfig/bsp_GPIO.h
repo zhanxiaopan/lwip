@@ -88,9 +88,11 @@ void 			GPIO_TagConfigPropertiesAF(GPIOTag_TypeDef tag,
 		 	 	 	 	 	 	 	   	   GPIO_SET_TypeDef GPIO_SET, GPIO_SPD_TypeDef GPIO_SPD,
 										   uint32_t GPIO_AF);
 uint8_t			GPIO_TagRead(GPIOTag_TypeDef tag);
+uint8_t         GPIO_TagStateRead(GPIOTag_TypeDef tag);
 void 			GPIO_TagWrite(GPIOTag_TypeDef tag, uint8_t bitVal);
 void			GPIO_TagWritePort(GPIOTag_TypeDef tag, uint8_t portVal);
 void			GPIO_TagWriteOnce(GPIOTag_TypeDef tag, uint8_t * bitOldVal, uint8_t bitNewVal);
+void            GPIO_TagStateWriteOnce(GPIOTag_TypeDef tag, uint8_t * bitOldVal, uint8_t bitNewVal);
 void 			GPIO_TagToggle(GPIOTag_TypeDef tag);
 // Trigger Interrupt functions
 GPIO_pinInfo	GPIO_ConfigInterrupt(GPIOTag_TypeDef tag, GPIO_TRG_TypeDef GPIO_TRG, uint8_t GPIO_IntChannel);
