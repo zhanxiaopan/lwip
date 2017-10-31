@@ -14,7 +14,7 @@
 #include "eips_main.h"
 #elif WS_FIELDBUS_TYPE == FIELDBUS_TYPE_NONE
 #include "netconf.h"
-#elif WS_FIELDBUS_TYPE == FIELDBUS_TYPE_PNIO || WS_FIELDBUS_TYPE == FIELDBUS_TYPE_PNIOIO
+#elif WS_FIELDBUS_TYPE == FIELDBUS_TYPE_PNIO
 extern void pnio_app_init(void);
 extern void pnio_process(void);
 extern void pnio_app_iodata_update(void);

@@ -52,6 +52,23 @@ void dig_led_write_blank()
 	GPIOPinWrite(GPIO_PORTK_BASE, 0x80, 0x00);
 }
 
+void dig_led_write_ip_end()
+{
+    // step 1: set the LE_N high to prevent un-reliable display
+    GPIOPinWrite(GPIO_PORTK_BASE, 0x80, 0x80);
+
+    // step 2: turn off the dots
+    GPIOPinWrite(GPIO_PORTK_BASE, 0x70, 0x00);
+
+    // step 3: set the 7-segment leds as blank
+    GPIOPinWrite(GPIO_PORTA_BASE, 0x0F, 0x08);
+    GPIOPinWrite(GPIO_PORTA_BASE, 0xF0, 0x80);
+    GPIOPinWrite(GPIO_PORTK_BASE, 0x0F, 0x08);
+
+    // step 4, set LE_N low to update the display
+    GPIOPinWrite(GPIO_PORTK_BASE, 0x80, 0x00);
+}
+
 void dig_led_write_decimal(uint16_t decimal, uint16_t dot_pos)
 {
     uint16_t data_bcd;
@@ -106,7 +123,7 @@ void dig_led_write_decimal(uint16_t decimal, uint16_t dot_pos)
     	first_dig_led_is_zero = true;
     }
 /*
- * Next lines 113-131 were modified on 23/Sept./2017
+ * Next 18 lines were modified on 23/Sept./2017
  * to fix the problem that the second dig_led blink
  * when first was not.
  */
@@ -129,6 +146,7 @@ void dig_led_write_decimal(uint16_t decimal, uint16_t dot_pos)
         // the first digit is not 0, then do not blank
         GPIOPinWrite(GPIO_PORTA_BASE, 0xF0, data_bcd&0xF0);
     }
+
 
 	// the third digital
 	GPIOPinWrite(GPIO_PORTK_BASE, 0x0F, data_bcd&0x0F);

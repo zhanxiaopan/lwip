@@ -21,7 +21,6 @@
 #endif
 
 volatile uint8_t eips_conn_established = 0;
-
 void eips_userobj_callback(uint8_t nEvent, uint16_t nInst, uint8_t *pDataBuf, uint16_t nDataLen);
 
 /* Exported variables ------------------------------------------------ */

@@ -20,6 +20,7 @@
 void dig_led_update(float data);
 
 void dig_led_write_blank();
+void dig_led_write_ip_end();
 void dig_led_write_decimal(uint16_t decimal, uint16_t dot_pos);
 
 /**

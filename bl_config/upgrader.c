@@ -112,7 +112,8 @@ void upgrader_process ()
 	uint32_t i = 0;
 	static uint32_t loop_tick_1 = 0;
     static uint32_t loop_tick_2 = 0;
-
+    GPIO_TagWrite(GPIOTag_LED_2_RED, 1);
+ //   GPIO_TagWrite(GPIOTag_LED_2_GRN, 0);
 	switch (g_upgrader.status) {
 	case UPGRADER_IDLE:
 		loop_tick_1++;
@@ -186,7 +187,7 @@ void upgrader_process ()
 		//config the waiting to be "no_wait"
 		jump_config = JUMP_WAITING_TIME_NO;
 		EEPROMProgram ((uint32_t*)&jump_config, EEPROM_ADDR_BL_JUMP_CONFIG, EEPROM_LEN_BL_JUMP_CONFIG);
-
+	    GPIO_TagWrite(GPIOTag_LED_2_RED, 1);
 		puts("Jumping");
 		break;
 	case READY_TO_JUMP:

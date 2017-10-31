@@ -1240,7 +1240,7 @@ void ws_sensor_absence_detection() {
 
 // no method in this fun is subject to the risk of being blocked.
 // this fun should be called by main loop periodically.
-void ws_process()
+void ws_process ()
 {
 	// read cmd/paras input
 	ws_read_newctrlparas();
@@ -1299,12 +1299,15 @@ void _ws_display_ip()
 		case 7:
 			dig_led_write_decimal(ip_addr.array[((led_ip_display_index-1)/2)], 0);
 			break;
+		case 9:
+		    dig_led_write_ip_end();
+			break;
 		default:
-			dig_led_write_blank();
+		    dig_led_write_blank();
 			break;
 	}
 
-	if (++led_ip_display_index>7)
+	if (++led_ip_display_index>9)
 		led_ip_display_index = 0;
 }
 #endif
@@ -1315,26 +1318,40 @@ void _ws_display_ip()
  */
 #if WS_FIELDBUS_TYPE == FIELDBUS_TYPE_EIPS
 extern volatile uint8_t eips_conn_established;		//added by TMS
+volatile uint8_t eips_show_ip = 31;           //counter for showing ip address only three times 31 = 2*3times*(4ipaddr+1end)+1
 uint32_t led_mac_display_delay = 0;
 #endif
 
 void ws_dig_led_update_daemon() {
 #if WS_FIELDBUS_TYPE == FIELDBUS_TYPE_EIPS
-	//if network connection established
-	if(eips_conn_established) {
-	    float dig_led_val = flow_aver_2<0?0:(float)flow_aver_2;
-	    dig_led_update(dig_led_val);
-	    led_ip_display_index = 0;
-	} else {
-
-		led_mac_display_delay+=WS_DIG_LED_UPDATE_PERIOD;
-		if(led_mac_display_delay > 950)	//around 1s
-		{
-			led_mac_display_delay = 0;
-			_ws_display_ip();
-		}
-
-	}
+	//if network connection is NOT established
+    if(!(eips_conn_established) && eips_show_ip)
+    {
+        led_mac_display_delay+=WS_DIG_LED_UPDATE_PERIOD;
+        if(led_mac_display_delay > 950) //around 1s
+        {
+            led_mac_display_delay = 0;
+            _ws_display_ip();
+            eips_show_ip--;
+        }
+    }
+    else if(eips_show_ip)
+    {
+        eips_show_ip = eips_show_ip%10;
+        led_mac_display_delay+=WS_DIG_LED_UPDATE_PERIOD;
+        if(led_mac_display_delay > 950) //around 1s
+        {
+            led_mac_display_delay = 0;
+            _ws_display_ip();
+            eips_show_ip--;
+        }
+    }
+    else
+    {
+        float dig_led_val = flow_aver_2<0?0:(float)flow_aver_2;
+        dig_led_update(dig_led_val);
+        led_ip_display_index = 0;
+    }
 #else
     float dig_led_val;
     dig_led_val = flow_aver_2<0?0:(float)flow_aver_2;
@@ -1348,9 +1365,24 @@ void ws_dig_led_update_daemon() {
 #define GPIOTAG_DIN_ALL (GPIOTag_DIN_1 | GPIOTag_DIN_2 | GPIOTag_DIN_3)
 #define GPIOTAG_DOUT_ALL (GPIOTag_DOUT_1 | GPIOTag_DOUT_2 | GPIOTag_DOUT_3)
 
-#if WS_FIELDBUS_TYPE != FIELDBUS_TYPE_PNIOIO
+//typedef union {
+//	struct {
+//		uint8_t bit0:1;
+//		uint8_t bit1:1;
+//		uint8_t bit2:1;
+//	} single;
+//	struct {
+//		uint8_t bit0_3:3;
+//	} map;
+//	uint8_t raw;
+//	uint8_t * pointer;
+//} GPIO_DATA;
+
+//GPIO_DATA _old_dout_data;
+//GPIO_DATA _new_dout_data;
+//GPIO_DATA _din_data;
+
 uint8_t _ws_dout_old = 0;
-#endif
 
 void ws_gpio_init() {
 
@@ -1362,35 +1394,10 @@ void ws_gpio_init() {
 			GPIOTAG_DOUT_ALL,
 			GPIO_SET_OUT_PUSHPULL, GPIO_SPD_HIGH);
 
-#if WS_FIELDBUS_TYPE != FIELDBUS_TYPE_PNIOIO
 	GPIOIntDisable(GPIO_PORTE_BASE, GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_2);
-#endif
 }
 
-uint8_t _ws_dout_old_oktoweld = 0;
-uint8_t _ws_dout_old_flow_warning = 0;
-uint8_t _ws_dout_old_leak_detected = 0;
 void ws_update_io() {
-#if WS_FIELDBUS_TYPE != FIELDBUS_TYPE_PNIOIO
-	ETH_IO_DATA_OBJ_OUTPUT.data.gpio_din_1_3 = GPIO_TagStateRead(GPIOTAG_DIN_ALL);
-	//write only once
+	ETH_IO_DATA_OBJ_OUTPUT.data.gpio_din_1_3 = GPIO_TagStateRead(GPIOTAG_DIN_ALL);//( GPIO_TagRead(GPIOTag_DIN_1) +2*(GPIO_TagRead(GPIOTag_DIN_2))+4*(GPIO_TagRead(GPIOTag_DIN_3)));
 	GPIO_TagStateWriteOnce(GPIOTAG_DOUT_ALL, (uint8_t*)&_ws_dout_old, ETH_IO_DATA_OBJ_INPUT.data.gpio_dout_1_3);
-#else
-	ws_i_web_reset = GPIO_TagRead(GPIOTag_DIN_1);
-	uint8_t temppp  = GPIO_TagStateRead(GPIOTAG_DIN_ALL);
-	ws_i_web_valveon = GPIO_TagRead(GPIOTag_DIN_2);
-	ws_i_web_bypass = GPIO_TagRead(GPIOTag_DIN_3);
-	if(_ws_dout_old_oktoweld != ws_o_is_oktoweld) {
-		GPIO_TagWrite(GPIOTag_DOUT_1, ws_o_is_oktoweld);
-		_ws_dout_old_oktoweld = ws_o_is_oktoweld;
-	}
-	if(_ws_dout_old_flow_warning != ws_o_is_flow_warning) {
-		GPIO_TagWrite(GPIOTag_DOUT_2, ws_o_is_flow_warning);
-		_ws_dout_old_flow_warning = ws_o_is_flow_warning;
-	}
-	if(_ws_dout_old_leak_detected != ws_o_is_leak_detected) {
-		GPIO_TagWrite(GPIOTag_DOUT_3, ws_o_is_leak_detected);
-		_ws_dout_old_leak_detected = ws_o_is_leak_detected;
-	}
-#endif
 }

@@ -7,8 +7,10 @@
  *****************************************************************************/
 
 --retain=g_pfnVectors
-//#define APP_BASE 0x00020000
-#define APP_BASE 0x00000000
+// When use bootloader,APP_BASE should be 0x20000
+#define APP_BASE 0x00020000
+//#define APP_BASE 0x00000000
+
 #define RAM_BASE 0x20000000
 MEMORY
 {
