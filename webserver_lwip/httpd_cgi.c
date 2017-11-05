@@ -445,6 +445,7 @@ u16_t ADC_Handler(int iIndex, char *pcInsert, int iInsertLen)
 #else
 		temp_str_len = sprintf (temp_str, "%s", "disabled");
 #endif
+		break;
 	case HD_LOGO:
 	    temp_str_len = sprintf (temp_str, "%s", STR_SYS_NAME);
 	    break;
