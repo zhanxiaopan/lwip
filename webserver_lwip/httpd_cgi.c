@@ -445,6 +445,9 @@ u16_t ADC_Handler(int iIndex, char *pcInsert, int iInsertLen)
 #else
 		temp_str_len = sprintf (temp_str, "%s", "disabled");
 #endif
+	case HD_LOGO:
+	    temp_str_len = sprintf (temp_str, "%s", SYSTEM_NAME);
+	    break;
 	default:
 		break;
 #endif /* USE_WS_ORIGIN_WEBFILES */

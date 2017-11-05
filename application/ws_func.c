@@ -1387,17 +1387,17 @@ uint8_t _ws_dout_old = 0;
 void ws_gpio_init() {
 
 	GPIO_TagConfigProperties(
-			GPIOTAG_DIN_ALL,
+	        GPIOTag_DIN_ALL,
 			GPIO_SET_IN_PULLDOWN, GPIO_SPD_HIGH);
 
 	GPIO_TagConfigProperties(
-			GPIOTAG_DOUT_ALL,
+	        GPIOTag_DOUT_ALL,
 			GPIO_SET_OUT_PUSHPULL, GPIO_SPD_HIGH);
 
 	GPIOIntDisable(GPIO_PORTE_BASE, GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_2);
 }
 
 void ws_update_io() {
-	ETH_IO_DATA_OBJ_OUTPUT.data.gpio_din_1_3 = GPIO_TagStateRead(GPIOTAG_DIN_ALL);//( GPIO_TagRead(GPIOTag_DIN_1) +2*(GPIO_TagRead(GPIOTag_DIN_2))+4*(GPIO_TagRead(GPIOTag_DIN_3)));
-	GPIO_TagStateWriteOnce(GPIOTAG_DOUT_ALL, (uint8_t*)&_ws_dout_old, ETH_IO_DATA_OBJ_INPUT.data.gpio_dout_1_3);
+	ETH_IO_DATA_OBJ_OUTPUT.data.gpio_din_1_3 = GPIO_TagStateRead(GPIOTag_DIN_ALL);
+	GPIO_TagStateWriteOnce(GPIOTag_DOUT_ALL, (uint8_t*)&_ws_dout_old, ETH_IO_DATA_OBJ_INPUT.data.gpio_dout_1_3);
 }

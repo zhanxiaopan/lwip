@@ -60,7 +60,7 @@ function btn_click_cancel()
 	<!-- img class="im1" src="/src/Header_Blank.gif" -->
   </td>
   <td>
-	<img class="im2" src="/src/Header_SmartFlow.gif">
+	<img class="im2" src="/src/Header_<!--#hd_logo-->.gif">
   </td>
   <td class="im3">
 	<!-- img class="im3" src="/src/Header_Blank.gif" -->

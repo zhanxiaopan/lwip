@@ -48,7 +48,8 @@ void lwip_user_init(void)
 	uint32_t ws_is_new_ipaddr_configured = 0;
 	EEPROMRead ((uint32_t*)&ws_is_new_ipaddr_configured, EEPROM_ADDR_NEW_IP_IS_SAVED, 4);
 
-	if(ws_is_new_ipaddr_configured == EEPROM_VAL_NEW_IP_SAVED)
+	//if(ws_is_new_ipaddr_configured == EEPROM_VAL_NEW_IP_SAVED)
+	if(0)
 	{
 		EEPROMRead ((uint32_t*)ip_addr.array, EEPROM_ADDR_IP_ADDR0, 4);
 	}

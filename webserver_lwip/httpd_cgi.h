@@ -82,6 +82,7 @@ typedef enum
     VAR_SL,
     VAR_UPD,
 	IP_DIS,
+	HD_LOGO,
     SSI_TAG_NUM // Here the SSI_TAG_NUM will automatically increase!
 #endif
 }   TAG_INDEXS;
@@ -145,7 +146,8 @@ char const* TAGS[SSI_TAG_NUM] = {
     "var_sd",
     "var_sl",
     "var_upd",
-	"ip_dis"
+	"ip_dis",
+	"hd_logo"
 #endif /* ENABLE_DATA_TXT_LOG */
 };
 

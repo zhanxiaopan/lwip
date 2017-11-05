@@ -6,6 +6,10 @@
 #ifndef __SYS_CONFIG_H_
 #define __SYS_CONFIG_H_
 
+//uncomment the marco to rename the application
+#define SYSTEM_NAME     "SmartFlow"
+//#define SYSTEM_NAME     "FlexFlow"
+
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
