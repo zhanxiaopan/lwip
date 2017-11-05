@@ -156,6 +156,12 @@ char const* NONE = "";
 char const* STR_TRUE = "true";
 char const* STR_FALSE = "false";
 
+#ifdef IS_SMART_FLOW
+char const* STR_SYS_NAME = "SmartFlow";
+#else
+char const* STR_SYS_NAME = "FlexFlow";
+#endif
+
 /* CGI handler for LED control */
 const char * LEDS_CGI_Handler(int iIndex, int iNumParams, char *pcParam[], char *pcValue[]);
 
