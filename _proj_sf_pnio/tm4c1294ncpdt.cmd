@@ -8,8 +8,8 @@
 
 --retain=g_pfnVectors
 // When use bootloader,APP_BASE should be 0x20000
-#define APP_BASE 0x00020000
-//#define APP_BASE 0x00000000
+//#define APP_BASE 0x00020000
+#define APP_BASE 0x00000000
 MEMORY
 {
     FLASH (RX) : origin = APP_BASE, length = 0x000D0000
