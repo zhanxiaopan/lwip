@@ -59,7 +59,8 @@ extern uint32_t __STACK_TOP;
 //extern void EthernetIntHandler(void);
 
 extern void LwIPEthernetIntHandler(void);
-
+extern void IntTimer4Handler(void);
+extern void IntTimer5Handler(void);
 //extern void Timer0BIntHandler(void);
 //
 //extern void SSI0IntHandler(void);
@@ -160,9 +161,9 @@ void (* const g_pfnVectors[])(void) =
     IntDefaultHandler,                      // UART7 Rx and Tx
     IntDefaultHandler,                      // I2C2 Master and Slave
     IntDefaultHandler,                      // I2C3 Master and Slave
-    IntDefaultHandler,                      // Timer 4 subtimer A
+    IntTimer4Handler,                      // Timer 4 subtimer A
     IntDefaultHandler,                      // Timer 4 subtimer B
-    IntDefaultHandler,                      // Timer 5 subtimer A
+    IntTimer5Handler,                      // Timer 5 subtimer A
     IntDefaultHandler,                      // Timer 5 subtimer B
     IntDefaultHandler,                      // FPU
     0,                                      // Reserved
