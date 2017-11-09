@@ -8,7 +8,7 @@
 #include "sys_config.h"
 #if WS_FIELDBUS_TYPE == FIELDBUS_TYPE_EIPS
 #include "netconf.h"
-#elif WS_FIELDBUS_TYPE == FIELDBUS_TYPE_PNIO
+#elif WS_FIELDBUS_TYPE == FIELDBUS_TYPE_PNIO || WS_FIELDBUS_TYPE ==FIELDBUS_TYPE_PNIOIO
 #include "inc/hw_nvic.h"
 #endif
 
@@ -34,7 +34,7 @@ typedef union
 	uint32_t time;
 } TIME_COUNTER_Union;
 
-#if WS_FIELDBUS_TYPE == FIELDBUS_TYPE_PNIO
+#if WS_FIELDBUS_TYPE == FIELDBUS_TYPE_PNIO || WS_FIELDBUS_TYPE ==FIELDBUS_TYPE_PNIOIO
 extern uint32_t g_ui32ClkFreq;
 extern volatile uint64_t g_ulTickCounter;
 extern uint32_t g_ui32LocalTimer;
@@ -105,7 +105,7 @@ void BSP_Init()
     SysCtlMOSCConfigSet(SYSCTL_MOSC_HIGHFREQ);
     // Run from the PLL at 120 MHz.
     SystemCoreClock = SysCtlClockFreqSet((SYSCTL_XTAL_25MHZ | SYSCTL_OSC_MAIN | SYSCTL_USE_PLL | SYSCTL_CFG_VCO_480), 120000000);
-#if WS_FIELDBUS_TYPE == FIELDBUS_TYPE_PNIO
+#if WS_FIELDBUS_TYPE == FIELDBUS_TYPE_PNIO || WS_FIELDBUS_TYPE ==FIELDBUS_TYPE_PNIOIO
     // ** g_ui32ClkFreq is used by pnio.
     g_ui32ClkFreq = SystemCoreClock;
 #endif
@@ -219,7 +219,7 @@ void SysTick_IntHandler()
 #if WS_FIELDBUS_TYPE == FIELDBUS_TYPE_EIPS
     // Call lwip timer handler.
 	lwip_timer();
-#elif WS_FIELDBUS_TYPE == FIELDBUS_TYPE_PNIO
+#elif WS_FIELDBUS_TYPE == FIELDBUS_TYPE_PNIO || WS_FIELDBUS_TYPE ==FIELDBUS_TYPE_PNIOIO
 	// **
     /* increment global tick counter */
     g_ulTickCounter++;

@@ -16,7 +16,7 @@
 #include "eips_main.h"
 #elif WS_FIELDBUS_TYPE == FIELDBUS_TYPE_NONE
 #include "netconf.h"
-#elif WS_FIELDBUS_TYPE == FIELDBUS_TYPE_PNIO
+#elif WS_FIELDBUS_TYPE == FIELDBUS_TYPE_PNIO || WS_FIELDBUS_TYPE ==FIELDBUS_TYPE_PNIOIO
 extern void pnio_app_init(void);
 extern void pnio_process(void);
 extern void pnio_app_iodata_update(void);
@@ -159,7 +159,7 @@ void system_init_network(void)
 	Ethernet_InitMACPHYDMA();
 	// Init lwIP system and its app (http, tftp)
 	lwip_user_init();
-#elif WS_FIELDBUS_TYPE == FIELDBUS_TYPE_PNIO
+#elif WS_FIELDBUS_TYPE == FIELDBUS_TYPE_PNIO || WS_FIELDBUS_TYPE ==FIELDBUS_TYPE_PNIOIO
 	pnio_app_init();
 #endif
 #if WS_FIELDBUS_TYPE != FIELDBUS_TYPE_BL
@@ -174,7 +174,7 @@ void system_init_network(void)
     // Init network IO
 #if WS_FIELDBUS_TYPE == FIELDBUS_TYPE_EIPS
     eips_process_init();
-#elif WS_FIELDBUS_TYPE == FIELDBUS_TYPE_PNIO
+#elif WS_FIELDBUS_TYPE == FIELDBUS_TYPE_PNIO || WS_FIELDBUS_TYPE ==FIELDBUS_TYPE_PNIOIO
 #endif /* WS_FIELDBUS_TYPE */
 }
 

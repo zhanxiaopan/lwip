@@ -116,7 +116,7 @@ extern uint8_t cmd_di_4;
 #if WS_FIELDBUS_TYPE == FIELDBUS_TYPE_EIPS
 #define eip_led_ms sys_led_ms
 #define eip_led_ns sys_led_ns
-#elif WS_FIELDBUS_TYPE == FIELDBUS_TYPE_PNIO
+#elif WS_FIELDBUS_TYPE == FIELDBUS_TYPE_PNIO || WS_FIELDBUS_TYPE == FIELDBUS_TYPE_PNIOIO
 #define pnio_led_ms sys_led_ms
 #define pnio_led_ns sys_led_ns
 #endif /* WS_FIELDBUS_TYPE == FIELDBUS_TYPE_EIPS */

@@ -49,7 +49,7 @@
 
 #if WS_FIELDBUS_TYPE == FIELDBUS_TYPE_EIPS
 #include "netconf.h"
-#elif WS_FIELDBUS_TYPE == FIELDBUS_TYPE_PNIO
+#elif WS_FIELDBUS_TYPE == FIELDBUS_TYPE_PNIO || WS_FIELDBUS_TYPE ==FIELDBUS_TYPE_PNIOIO
 #include <pn_includes.h>
 #include "pn_user.h"
 #include "pn_config.h"
@@ -90,7 +90,7 @@ u16_t ADC_Handler(int iIndex, char *pcInsert, int iInsertLen)
 	memset(temp_str, 0, 100);
 #endif /* ENABLE_DATA_TXT_LOG */
 
-#if WS_FIELDBUS_TYPE == FIELDBUS_TYPE_PNIO
+#if WS_FIELDBUS_TYPE == FIELDBUS_TYPE_PNIO || WS_FIELDBUS_TYPE ==FIELDBUS_TYPE_PNIOIO
 	uint32_t pnio_ip;
 	uint8_t *p_temp;
 	uint8_t ip0, ip1, ip2, ip3;
@@ -297,7 +297,7 @@ u16_t ADC_Handler(int iIndex, char *pcInsert, int iInsertLen)
 	case IE_PTC: /* ws logo (eips/pnio/dido) */
 #if WS_FIELDBUS_TYPE == FIELDBUS_TYPE_EIPS
 		temp_str_len = sprintf (temp_str, "%s", "EN");
-#elif WS_FIELDBUS_TYPE == FIELDBUS_TYPE_PNIO
+#elif WS_FIELDBUS_TYPE == FIELDBUS_TYPE_PNIO || WS_FIELDBUS_TYPE ==FIELDBUS_TYPE_PNIOIO
 		temp_str_len = sprintf (temp_str, "%s", "PN");
 #elif defined WS_FILEDBUS_NONE_BUT_DIDO
 		temp_str_len = sprintf (temp_str, "%s", "IO");
@@ -307,7 +307,7 @@ u16_t ADC_Handler(int iIndex, char *pcInsert, int iInsertLen)
 #if WS_FIELDBUS_TYPE == FIELDBUS_TYPE_EIPS
 		temp_str_len = sprintf (temp_str, "%d.%d.%d.%d", ip_addr.byte.uip_add_0, ip_addr.byte.uip_add_1, ip_addr.byte.uip_add_2, ip_addr.byte.uip_add_3);
 		//temp_str_len = sprintf (temp_str, "%d.%d.%d.%d", uip_addr[0], uip_addr[1], uip_addr[2], uip_addr[3]);
-#elif WS_FIELDBUS_TYPE == FIELDBUS_TYPE_PNIO
+#elif WS_FIELDBUS_TYPE == FIELDBUS_TYPE_PNIO || WS_FIELDBUS_TYPE ==FIELDBUS_TYPE_PNIOIO
 		IOD_cfgGet(CFG_KEY_NET_TEMP_IP, &pnio_ip);
 		p_temp = (uint8_t*)&pnio_ip;
 		ip3 =  *p_temp;
