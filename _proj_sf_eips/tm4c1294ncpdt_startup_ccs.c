@@ -58,7 +58,8 @@ extern void Ethernet_IntHandler(void);
 extern void flowsensor_reading(void);
 extern void GPIOJ_ISR (void);
 extern void GPIOE_ISR(void);
-
+extern void IntTimer4Handler(void);
+extern void IntTimer5Handler(void);
 //*****************************************************************************
 //
 // The vector table.  Note that the proper constructs must be placed on this to
@@ -149,9 +150,9 @@ void (* const g_pfnVectors[])(void) =
     IntDefaultHandler,                      // UART7 Rx and Tx
     IntDefaultHandler,                      // I2C2 Master and Slave
     IntDefaultHandler,                      // I2C3 Master and Slave
-    IntDefaultHandler,                      // Timer 4 subtimer A
+    IntTimer4Handler,                      // Timer 4 subtimer A
     IntDefaultHandler,                      // Timer 4 subtimer B
-    IntDefaultHandler,                      // Timer 5 subtimer A
+    IntTimer5Handler,                      // Timer 5 subtimer A
     IntDefaultHandler,                      // Timer 5 subtimer B
     IntDefaultHandler,                      // FPU
     0,                                      // Reserved

@@ -8,7 +8,9 @@
 #include "sys_config.h"
 #include "dig_led.h"
 #include "RandomMAC.h"
-
+#include "driverlib/interrupt.h"
+#include "driverlib/sysctl.h"
+#include "driverlib/timer.h"
 #if WS_FIELDBUS_TYPE == FIELDBUS_TYPE_EIPS
 #include "netconf.h"
 #include "eips_main.h"
@@ -79,7 +81,7 @@ void system_loop()
 	TickLoop_PeriodicalCall(lwip_link_monitor, 1, 0);
 	TickLoop_PeriodicalCall(eips_process_loop, EIPS_REFRESHING_RATE, 0);
 	TickLoop_PeriodicalCall(ws_process, WS_PROCESS_RUN_PERIOD, 0);
-	TickLoop_PeriodicalCallAtIdle(ws_dig_led_update_daemon, WS_DIG_LED_UPDATE_PERIOD, 0);
+//	TickLoop_PeriodicalCallAtIdle(ws_dig_led_update_daemon, WS_DIG_LED_UPDATE_PERIOD, 0);
 	TickLoop_PeriodicalCallAtIdle(ws_update_io, 1, 1);
 #elif WS_FIELDBUS_TYPE == FIELDBUS_TYPE_PNIO || WS_FIELDBUS_TYPE == FIELDBUS_TYPE_PNIOIO
 	TickLoop_PeriodicalCall(pnio_process, 8, 0);
@@ -112,12 +114,14 @@ void system_init()
     system_init_leds();
 
     // Init digtal led module
+
     dig_led_init();
 #if WS_FIELDBUS_TYPE != FIELDBUS_TYPE_BL
     // Init application modules
 	flowsensor_init();
 	ws_init();
-
+	init_timer4();
+	TimerEnable(TIMER4_BASE,TIMER_A);
 	// Init network module
 #if WS_FIELDBUS_TYPE != FIELDBUS_TYPE_PNIOIO
     system_init_network();

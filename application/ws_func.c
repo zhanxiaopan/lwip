@@ -34,6 +34,11 @@
 #include "io_data_struct.h"
 #include "dig_led.h"
 #include "bsp_eeprom_const.h"
+#include "driverlib/interrupt.h"
+#include "driverlib/sysctl.h"
+#include "driverlib/timer.h"
+#include "driverlib/rom.h"
+#include "driverlib/rom_map.h"
 
 #if WS_FIELDBUS_TYPE == FIELDBUS_TYPE_EIPS
 #include "netconf.h"
@@ -94,6 +99,18 @@ uint8_t ws_i_bus_bypass = 0;
 #define WS_CMD_INDEX_BYPASS (2)
 static DIO_BLOCK_T ctrl_signal_web[3];
 static DIO_BLOCK_T ctrl_signal_bus[3];
+
+void init_timer4(void);
+void timer4_stop(void);
+void IntTimer4Handler(void);
+#define timer4_start()    TimerEnable(TIMER4_BASE,TIMER_A)
+#define timer4_reset()    TimerLoadSet(TIMER4_BASE, TIMER_A, SystemCoreClock/1000*WS_DIG_LED_UPDATE_PERIOD)
+
+void init_timer5(void);
+void timer5_stop(void);
+void IntTimer5Handler(void);
+#define timer5_start()    TimerEnable(TIMER5_BASE,TIMER_A)
+#define timer5_reset()    TimerLoadSet(TIMER5_BASE, TIMER_A, SystemCoreClock/1000)
 
 
 
@@ -1065,6 +1082,77 @@ void ws_flowrate_detect_leakage ()
     	ws_o_is_leak_detected = 0;
     }
 }
+
+void IntTimer4Handler(void){
+    // Clear the timer interrupt.
+    //
+    TimerIntClear(TIMER4_BASE, TIMER_TIMA_TIMEOUT);
+
+    // Update the interrupt status.
+    //
+//    IntMasterDisable();
+    ws_dig_led_update_daemon();
+//    IntMasterEnable();
+}
+
+void init_timer4(void){
+    //
+    // Enable the timers.
+    //
+
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_TIMER4);
+    while(!SysCtlPeripheralReady(SYSCTL_PERIPH_TIMER4));
+    TimerConfigure(TIMER4_BASE, TIMER_CFG_PERIODIC);            //count down, one shot
+    TimerClockSourceSet(TIMER4_BASE, TIMER_CLOCK_SYSTEM);
+    TimerLoadSet(TIMER4_BASE, TIMER_A,SystemCoreClock/1000*WS_DIG_LED_UPDATE_PERIOD);   //timeout = 1*WS_DIG_LED_UPDATE_PERIOD ms
+
+    //TimerIntRegister(TIMER4_BASE, TIMER_A, laser_timer_ISR);
+    IntPrioritySet(INT_TIMER4A, INTERRUPT_PRIORITY_LOW);//INTERRUPT_PRIORITY_SYS
+    IntEnable(INT_TIMER4A);
+    TimerIntClear(TIMER4_BASE, TIMER_TIMA_TIMEOUT);
+    TimerIntEnable(TIMER4_BASE, TIMER_TIMA_TIMEOUT);
+}
+
+void timer4_stop() {
+    timer4_reset();
+    TimerDisable(TIMER4_BASE,TIMER_A);
+}
+
+void IntTimer5Handler(void){
+    // Clear the timer interrupt.
+    //
+    TimerIntClear(TIMER5_BASE, TIMER_TIMA_TIMEOUT);
+
+    // Update the interrupt status.
+    //
+//    IntMasterDisable();
+    ws_dig_led_update_daemon();
+//    IntMasterEnable();
+}
+
+void init_timer5(void){
+    //
+    // Enable the timers.
+    //
+
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_TIMER5);
+    while(!SysCtlPeripheralReady(SYSCTL_PERIPH_TIMER5));
+    TimerConfigure(TIMER5_BASE, TIMER_CFG_PERIODIC);            //count down, one shot
+    TimerClockSourceSet(TIMER5_BASE, TIMER_CLOCK_SYSTEM);
+    TimerLoadSet(TIMER5_BASE, TIMER_A,SystemCoreClock/1000*WS_DIG_LED_UPDATE_PERIOD);   //timeout = 1*WS_DIG_LED_UPDATE_PERIOD ms
+
+    //TimerIntRegister(TIMER5_BASE, TIMER_A, laser_timer_ISR);
+    IntPrioritySet(INT_TIMER5A, INTERRUPT_PRIORITY_LOW);//INTERRUPT_PRIORITY_SYS
+    IntEnable(INT_TIMER5A);
+    TimerIntClear(TIMER5_BASE, TIMER_TIMA_TIMEOUT);
+    TimerIntEnable(TIMER5_BASE, TIMER_TIMA_TIMEOUT);
+}
+
+void timer5_stop() {
+    timer5_reset();
+    TimerDisable(TIMER5_BASE,TIMER_A);
+}
+
 
 // exported functions
 void ws_init ()

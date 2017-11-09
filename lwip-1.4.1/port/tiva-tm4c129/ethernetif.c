@@ -652,9 +652,11 @@ ethernetif_process_transmit(tStellarisIF *pIF)
  * @param psNetif the lwip network interface structure for this ethernetif
  * @return None.
  */
+uint32_t ETH_rec_counter=0;
 static void
 ethernetif_receive(struct netif *psNetif)
 {
+  ETH_rec_counter++;
   tDescriptorList *pDescList;
   tStellarisIF *pIF;
   static struct pbuf *pBuf = NULL;

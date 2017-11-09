@@ -241,6 +241,7 @@ void lwip_process ()
   * @retval	none.
   * @details this int handler would be triggered by various ETH trigger src
   */
+uint32_t ETH_loopcounter = 0;
 void Ethernet_IntHandler(void)
 {
     uint32_t ui32Status;
@@ -254,6 +255,7 @@ void Ethernet_IntHandler(void)
     // If a transmit/receive interrupt was active,
     // call the low-level interrupt handler
     if (ui32Status) {
+        ETH_loopcounter++;
     	ethernetif_interrupt(&lwip_netif, ui32Status);
     }
 
