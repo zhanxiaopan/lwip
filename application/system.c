@@ -88,7 +88,7 @@ void system_loop()
 	TickLoop_PeriodicalCall(pnio_app_iodata_update, 8, 0);
 	TickLoop_PeriodicalCall(ws_process, WS_PROCESS_RUN_PERIOD, 0);
 	TickLoop_PeriodicalCallAtIdle(ws_dig_led_update_daemon, WS_DIG_LED_UPDATE_PERIOD, 0);
-	TickLoop_PeriodicalCallAtIdle(ws_update_io, 1, 1);
+//	TickLoop_PeriodicalCallAtIdle(ws_update_io, 1, 1);
 #elif WS_FIELDBUS_TYPE == FIELDBUS_TYPE_BL
     TickLoop_PeriodicalCall(EthernetLoop_UpdateLink, 1, 0);
     TickLoop_PeriodicalCall(EthernetLoop_TCP_Process, 1, 0);
@@ -123,9 +123,9 @@ void system_init()
 	init_timer4();
 	TimerEnable(TIMER4_BASE,TIMER_A);
 	// Init network module
-#if WS_FIELDBUS_TYPE != FIELDBUS_TYPE_PNIOIO
+//#if WS_FIELDBUS_TYPE != FIELDBUS_TYPE_PNIOIO
     system_init_network();
-#endif
+//#endif
 #endif
 #if WS_FIELDBUS_TYPE == FIELDBUS_TYPE_BL
 #ifdef __USE_LAUNCH_PAD

@@ -83,6 +83,10 @@ uint8_t ws_i_cmd_valve_on = 0;
 uint8_t ws_i_cmd_bypass = 0;
 uint8_t ws_i_cmd_brwr_write_access = 0;
 
+uint8_t ws_io_cmd_reset = 0;
+uint8_t ws_io_cmd_valve_on = 0;
+uint8_t ws_io_cmd_bypass = 0;
+
 // control signal buf of web
 uint8_t ws_i_web_reset = 0;
 uint8_t ws_i_web_valveon = 0;
@@ -525,7 +529,7 @@ void ws_handle_error_state()
 	}
 
 	// to sync web cmd of reset.
-	ws_i_web_reset = ws_i_cmd_reset;
+	ws_i_web_reset = ws_i_cmd_reset || ws_io_cmd_reset;
 }
 
 
@@ -739,7 +743,7 @@ void ws_bypass_control ()
 		ws_i_web_bypass = 0;
 		return;
 	}
-	ws_o_is_Bypassed = (ws_i_cmd_bypass == 0)?0:1;
+	ws_o_is_Bypassed = ((ws_i_cmd_bypass || ws_i_cmd_bypass)== 0)?0:1;
 	ws_i_web_bypass = ws_o_is_Bypassed;
 }
 
@@ -747,7 +751,7 @@ void ws_bypass_control ()
 void ws_valve_control ()
 {
 	uint8_t local_valvectrl = 0;
-	local_valvectrl = ws_i_cmd_valve_on;
+	local_valvectrl = ws_i_cmd_valve_on || ws_io_cmd_valve_on;
 
 	// TBD: shall AND process result here to finally decide whether to open/close valve.
 	if (ws_attr_err_flag == 0) {
@@ -1330,7 +1334,7 @@ void ws_sensor_absence_detection() {
 
 // no method in this fun is subject to the risk of being blocked.
 // this fun should be called by main loop periodically.
-void ws_process ()
+void ws_process()
 {
 	// read cmd/paras input
 	ws_read_newctrlparas();
@@ -1455,6 +1459,9 @@ void ws_dig_led_update_daemon() {
 #define GPIOTAG_DIN_ALL (GPIOTag_DIN_1 | GPIOTag_DIN_2 | GPIOTag_DIN_3)
 #define GPIOTAG_DOUT_ALL (GPIOTag_DOUT_1 | GPIOTag_DOUT_2 | GPIOTag_DOUT_3)
 
+#if WS_FIELDBUS_TYPE != FIELDBUS_TYPE_PNIOIO
+uint8_t _ws_dout_old = 0;
+#endif
 //typedef union {
 //	struct {
 //		uint8_t bit0:1;
@@ -1472,8 +1479,6 @@ void ws_dig_led_update_daemon() {
 //GPIO_DATA _new_dout_data;
 //GPIO_DATA _din_data;
 
-uint8_t _ws_dout_old = 0;
-
 void ws_gpio_init() {
 
 	GPIO_TagConfigProperties(
@@ -1484,10 +1489,37 @@ void ws_gpio_init() {
 	        GPIOTag_DOUT_ALL,
 			GPIO_SET_OUT_PUSHPULL, GPIO_SPD_HIGH);
 
+#if WS_FIELDBUS_TYPE != FIELDBUS_TYPE_PNIOIO
 	GPIOIntDisable(GPIO_PORTE_BASE, GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_2);
+#endif
 }
 
+uint8_t _ws_dout_old_oktoweld = 0;
+uint8_t _ws_dout_old_flow_warning = 0;
+uint8_t _ws_dout_old_leak_detected = 0;
+uint8_t ttemp =0;
 void ws_update_io() {
-	ETH_IO_DATA_OBJ_OUTPUT.data.gpio_din_1_3 = GPIO_TagStateRead(GPIOTag_DIN_ALL);
-	GPIO_TagStateWriteOnce(GPIOTag_DOUT_ALL, (uint8_t*)&_ws_dout_old, ETH_IO_DATA_OBJ_INPUT.data.gpio_dout_1_3);
+#if WS_FIELDBUS_TYPE != FIELDBUS_TYPE_PNIOIO
+	ETH_IO_DATA_OBJ_OUTPUT.data.gpio_din_1_3 = GPIO_TagStateRead(GPIOTAG_DIN_ALL);
+	//write only once
+	GPIO_TagStateWriteOnce(GPIOTAG_DOUT_ALL, (uint8_t*)&_ws_dout_old, ETH_IO_DATA_OBJ_INPUT.data.gpio_dout_1_3);
+#else
+	ws_io_cmd_reset = GPIO_TagRead(GPIOTag_DIN_1);
+	ws_io_cmd_valve_on =GPIO_TagRead(GPIOTag_DIN_2);
+	ws_io_cmd_bypass =  GPIO_TagRead(GPIOTag_DIN_3);
+	ttemp = GPIO_TagStateRead(GPIOTAG_DIN_ALL);
+	if(_ws_dout_old_oktoweld != ws_o_is_oktoweld) {
+		GPIO_TagWrite(GPIOTag_DOUT_1, ws_o_is_oktoweld);
+		_ws_dout_old_oktoweld = ws_o_is_oktoweld;
+	}
+	if(_ws_dout_old_flow_warning != ws_o_is_flow_warning) {
+		GPIO_TagWrite(GPIOTag_DOUT_2, ws_o_is_flow_warning);
+		_ws_dout_old_flow_warning = ws_o_is_flow_warning;
+	}
+	if(_ws_dout_old_leak_detected != ws_o_is_leak_detected) {
+		GPIO_TagWrite(GPIOTag_DOUT_3, ws_o_is_leak_detected);
+		_ws_dout_old_leak_detected = ws_o_is_leak_detected;
+	}
+#endif
 }
+
