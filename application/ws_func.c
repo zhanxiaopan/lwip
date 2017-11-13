@@ -83,9 +83,9 @@ uint8_t ws_i_cmd_valve_on = 0;
 uint8_t ws_i_cmd_bypass = 0;
 uint8_t ws_i_cmd_brwr_write_access = 0;
 
-uint8_t ws_io_cmd_reset = 0;
-uint8_t ws_io_cmd_valve_on = 0;
-uint8_t ws_io_cmd_bypass = 0;
+volatile uint8_t ws_io_cmd_reset = 0;
+volatile uint8_t ws_io_cmd_valve_on = 0;
+volatile uint8_t ws_io_cmd_bypass = 0;
 
 // control signal buf of web
 uint8_t ws_i_web_reset = 0;
@@ -529,7 +529,7 @@ void ws_handle_error_state()
 	}
 
 	// to sync web cmd of reset.
-	ws_i_web_reset = ws_i_cmd_reset || ws_io_cmd_reset;
+	ws_i_web_reset = ws_i_cmd_reset;
 }
 
 
@@ -574,6 +574,7 @@ void ws_read_eth_input()
 	}
 #endif /* WS_FILEDBUS_NONE_BUT_DIDO */
 
+#if (WS_FIELDBUS_TYPE != FIELDBUS_TYPE_PNIOIO)
 #ifdef WS_FILEDBUS_NONE_BUT_DIDO
 
 #else /* WS_FILEDBUS_NONE_BUT_DIDO */
@@ -587,7 +588,21 @@ void ws_read_eth_input()
 #endif /* WS_VALVE_CTRL_INVERTED */
 	ws_i_bus_bypass = ETH_IO_DATA_OBJ_INPUT.data.cmd_bypass;
 #endif /* WS_FILEDBUS_NONE_BUT_DIDO */
+#else
+#ifdef WS_FILEDBUS_NONE_BUT_DIDO
 
+#else /* WS_FILEDBUS_NONE_BUT_DIDO */
+
+    // update the src signal from bus interface.
+    ws_i_bus_reset = ws_io_cmd_reset;
+#ifndef WS_VALVE_CTRL_INVERTED
+    ws_i_bus_valveon = ws_io_cmd_valve_on;
+#else /* WS_VALVE_CTRL_INVERTED */
+    ws_i_bus_valveon = ws_io_cmd_valve_on ? 0 : 1;
+#endif /* WS_VALVE_CTRL_INVERTED */
+    ws_i_bus_bypass = ws_io_cmd_bypass;
+#endif /* WS_FILEDBUS_NONE_BUT_DIDO */
+#endif
 	// web channel is updated in httpd_cgi.c
 
 	// process the dido's edge.
@@ -698,6 +713,7 @@ void ws_read_eth_input()
 
 void ws_update_eth_output ()
 {
+#if WS_FIELDBUS_TYPE != FIELDBUS_TYPE_PNIOIO
 #ifndef WS_FILEDBUS_NONE_BUT_DIDO
 	//ETH_IO_DATA_OBJ_OUTPUT.data.nFlowrate= (uint8_t)(qv_flowrate_1 *10);       // feedback flowrate in 10*l/min.
 #ifndef WS_VALVE_CTRL_INVERTED
@@ -732,6 +748,8 @@ void ws_update_eth_output ()
 	    debug_count_ack++;
 	ws_should_ack = 0;
 #endif /* WS_FILEDBUS_NONE_BUT_DIDO */
+#endif
+
 }
 
 // currently http input and output are updated directly in http SSI and CGI routines.
@@ -751,7 +769,7 @@ void ws_bypass_control ()
 void ws_valve_control ()
 {
 	uint8_t local_valvectrl = 0;
-	local_valvectrl = ws_i_cmd_valve_on || ws_io_cmd_valve_on;
+	local_valvectrl = ws_i_cmd_valve_on;
 
 	// TBD: shall AND process result here to finally decide whether to open/close valve.
 	if (ws_attr_err_flag == 0) {
