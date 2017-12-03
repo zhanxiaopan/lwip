@@ -34,6 +34,8 @@
 #include "io_data_struct.h"
 #include "dig_led.h"
 #include "bsp_eeprom_const.h"
+#include "aio_config.h"
+
 #include "driverlib/interrupt.h"
 #include "driverlib/sysctl.h"
 #include "driverlib/timer.h"
@@ -350,11 +352,13 @@ void ws_read_flowsensor2 ()
 
 void ws_read_newctrlparas ()
 {
+
 	uint8_t _ip_addr[4] = {0, 0, 0, 0};
 	char ip_str[4] = {'0', '0', '0', '\0'};
 	uint8_t i = 0;
 	char *pStart;
 	char *pEnd;
+
 	uint32_t flag_is_board_used = 0;
 
 #ifdef RESERVE_INTERNAL_PARA_SETTING
@@ -1515,28 +1519,31 @@ void ws_gpio_init() {
 uint8_t _ws_dout_old_oktoweld = 0;
 uint8_t _ws_dout_old_flow_warning = 0;
 uint8_t _ws_dout_old_leak_detected = 0;
-uint8_t ttemp =0;
+
 void ws_update_io() {
 #if WS_FIELDBUS_TYPE != FIELDBUS_TYPE_PNIOIO
-	ETH_IO_DATA_OBJ_OUTPUT.data.gpio_din_1_3 = GPIO_TagStateRead(GPIOTAG_DIN_ALL);
+	ETH_IO_DATA_OBJ_OUTPUT.data.gpio_din_1_3 = GPIO_TagStateRead(GPIOTag_DIN_ALL);
 	//write only once
-	GPIO_TagStateWriteOnce(GPIOTAG_DOUT_ALL, (uint8_t*)&_ws_dout_old, ETH_IO_DATA_OBJ_INPUT.data.gpio_dout_1_3);
+	GPIO_TagStateWriteOnce(GPIOTag_DOUT_ALL, (uint8_t*)&_ws_dout_old, ETH_IO_DATA_OBJ_INPUT.data.gpio_dout_1_3);
 #else
-	ws_io_cmd_reset = GPIO_TagRead(GPIOTag_DIN_1);
-	ws_io_cmd_valve_on =GPIO_TagRead(GPIOTag_DIN_2);
-	ws_io_cmd_bypass =  GPIO_TagRead(GPIOTag_DIN_3);
-	ttemp = GPIO_TagStateRead(GPIOTAG_DIN_ALL);
-	if(_ws_dout_old_oktoweld != ws_o_is_oktoweld) {
-		GPIO_TagWrite(GPIOTag_DOUT_1, ws_o_is_oktoweld);
-		_ws_dout_old_oktoweld = ws_o_is_oktoweld;
-	}
-	if(_ws_dout_old_flow_warning != ws_o_is_flow_warning) {
-		GPIO_TagWrite(GPIOTag_DOUT_2, ws_o_is_flow_warning);
-		_ws_dout_old_flow_warning = ws_o_is_flow_warning;
-	}
-	if(_ws_dout_old_leak_detected != ws_o_is_leak_detected) {
-		GPIO_TagWrite(GPIOTag_DOUT_3, ws_o_is_leak_detected);
-		_ws_dout_old_leak_detected = ws_o_is_leak_detected;
+	if(aio_pnio_config == AIO_PNIO_WITH_IO)
+	{
+	    ws_io_cmd_reset = GPIO_TagRead(GPIOTag_DIN_1);
+	    ws_io_cmd_valve_on = GPIO_TagRead(GPIOTag_DIN_2);
+	    ws_io_cmd_bypass =  GPIO_TagRead(GPIOTag_DIN_3);
+
+	    if(_ws_dout_old_oktoweld != ws_o_is_oktoweld) {
+	        GPIO_TagWrite(GPIOTag_DOUT_1, ws_o_is_oktoweld);
+	        _ws_dout_old_oktoweld = ws_o_is_oktoweld;
+	    }
+	    if(_ws_dout_old_flow_warning != ws_o_is_flow_warning) {
+	        GPIO_TagWrite(GPIOTag_DOUT_2, ws_o_is_flow_warning);
+	        _ws_dout_old_flow_warning = ws_o_is_flow_warning;
+	    }
+	    if(_ws_dout_old_leak_detected != ws_o_is_leak_detected) {
+	        GPIO_TagWrite(GPIOTag_DOUT_3, ws_o_is_leak_detected);
+	        _ws_dout_old_leak_detected = ws_o_is_leak_detected;
+	    }
 	}
 #endif
 }

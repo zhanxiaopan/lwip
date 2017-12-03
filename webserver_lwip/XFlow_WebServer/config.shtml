@@ -1,0 +1,76 @@
+<html>
+  <head>
+    <title>System Configuration</title>
+    <meta content="">
+    <style></style>
+    <script type="text/javascript">
+    
+        function getValSel(selId)
+        {
+            var sel = document.getElementById(selId);
+            var val = sel.options[sel.selectedIndex].value;
+            
+            return val;
+        }
+    
+        function config_btn_clk()
+        {
+                var network = getValSel("id_network_sel");
+                var logo = getValSel("id_logo_sel");
+                
+                var xmlhttp;
+                if (window.XMLHttpRequest)
+                  {
+                  xmlhttp=new XMLHttpRequest();
+                  }
+                else
+                  {
+                  xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+                  }
+                xmlhttp.onreadystatechange=function()
+                  {
+                  if (xmlhttp.readyState==4 && xmlhttp.status==200)
+                    {
+                    //window.parent.info_frame.document.getElementById("setup_info").innerHTML=xmlhttp.responseText;
+                    }
+                  }
+                xmlhttp.open("GET","/leds.cgi?aionw="+network+"&aiolg="+logo,true);
+                xmlhttp.send();
+        }
+</script>
+    </script>
+  </head>
+  <body>
+    <h1>System Configuration</h1>
+    <span>Network: <!--#dpaionw--></span><br/>
+    <span>Logo: <!--#hd_logo--></span><br/>
+    <br/>
+    <form method="GET" id="id_config_form" action="http://<!--#ipaddr-->/leds.cgi">
+    Network Selection:<br/>
+        <select size="1" id="id_network_sel" name="aionw">
+            <option value="0" > Ethernet/IP </option>
+            <option value="1" > Profinet </option>
+            <option value="2" > Profinet + DIDO </option>
+        </select>
+        </br>
+        
+    Logo Selection:<br/>
+        <select size="1" id="id_logo_sel" name="aiolg">
+            <option value="4" > SmartFlow </option>
+            <option value="8" > FlexFlow </option>
+        </select>
+        </br>
+        </br>
+        
+    <!--
+    Bootloader Task:
+        <select size="1" id="id_bootloader_task" name="aiobt" disabled="disabled">
+            <option value="0" > Redirect </option>
+            <option value="1" > Update Ethernet/IP Binary </option>
+            <option value="2" > Update Profinet Binary </option>
+        </select>
+    -->
+    <input type="button" value="Submit" onclick="config_btn_clk()"/>
+    </form>
+  </body>
+</html>

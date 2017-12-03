@@ -8,10 +8,13 @@
 #include "system.h"
 #include <stdio.h>
 
+#include "aio_config.h"
+
 #if WS_FIELDBUS_TYPE == FIELDBUS_TYPE_BL
 #include "reset.h"
 #endif
 int main(void) {
+    aio_readConfig();
 	//==
 	//The following section is only avaliable
 	//in the Bootloader project.
@@ -34,5 +37,6 @@ int main(void) {
 	//initialization of the system
 	system_init();
 	//major loop of the system
+
 	while(1) system_loop();
 }

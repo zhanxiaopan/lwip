@@ -8,6 +8,7 @@
 #ifndef BSP_USERCONFIG_BSP_EEPROM_CONST_H_
 #define BSP_USERCONFIG_BSP_EEPROM_CONST_H_
 
+#include <stdbool.h>
 #include "eeprom.h"
 
 #define EEPROM_ADDR_MAC_EXIST       EEPROMAddrFromBlock(3)
@@ -36,6 +37,8 @@
 
 #define EEPROM_ADDR_BL_JUMP_CONFIG  EEPROMAddrFromBlock(2)+20
 #define EEPROM_LEN_BL_JUMP_CONFIG   4
+
+#define EEPROM_ALL_IN_ONE_CONFIG    EEPROMAddrFromBlock(8)
 
 
 #define    JUMP_CONFIG_NAN          0xFFFFFFFF

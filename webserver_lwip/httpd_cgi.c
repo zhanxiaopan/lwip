@@ -46,6 +46,7 @@
 #include "ws_func.h"
 
 #include "bsp_eeprom_const.h"
+#include "aio_config.h"
 
 #if WS_FIELDBUS_TYPE == FIELDBUS_TYPE_EIPS
 #include "netconf.h"
@@ -447,8 +448,20 @@ u16_t ADC_Handler(int iIndex, char *pcInsert, int iInsertLen)
 #endif
 		break;
 	case HD_LOGO:
-	    temp_str_len = sprintf (temp_str, "%s", STR_SYS_NAME);
+	    if(aio_logo_sel == AIO_LOGO_SMARTFLOW)
+	        temp_str_len = sprintf (temp_str, "%s", STR_SYS_NAME_SF);
+	    else
+	        temp_str_len = sprintf (temp_str, "%s", STR_SYS_NAME_FF);
 	    break;
+	case DP_AIO_NETWORK:
+	    if(aio_network_sel == AIO_NET_SEL_EIPS )
+	        temp_str_len = sprintf (temp_str, "%s", STR_SYS_NETWORK_EIPS);
+	    else if (aio_pnio_config == AIO_PNIO_WITHOUT_IO )
+	        temp_str_len = sprintf (temp_str, "%s", STR_SYS_NETWORK_PNIO);
+	    else if (aio_pnio_config == AIO_PNIO_WITH_IO )
+	        temp_str_len = sprintf (temp_str, "%s", STR_SYS_NETWORK_PNIOIO);
+	    break;
+
 	default:
 		break;
 #endif /* USE_WS_ORIGIN_WEBFILES */
@@ -654,7 +667,49 @@ const char * LEDS_CGI_Handler(int iIndex, int iNumParams, char *pcParam[], char 
 	    		  isto_info_update =  1;
 	    		  return "/src/info.shtml";
 	    	  }
-	      } else if (strcmp(pcParam[i],"displayVal")==0) {
+	      }
+	      //
+	      // here we read the network bus type
+	      //
+	      else if (strcmp(pcParam[i] , "aionw")== 0) {
+	          uint8_t network_sel = atoi(pcValue[i]);
+	          switch(network_sel) {
+	          case AIO_EIPS:
+	              aio_pnio_config = AIO_PNIO_NONE;
+	              aio_network_sel = AIO_NET_SEL_EIPS;
+	              break;
+	          case AIO_PNIO:
+                  aio_pnio_config = AIO_PNIO_WITHOUT_IO;
+                  aio_network_sel = AIO_NET_SEL_PNIO;
+	              break;
+	          case AIO_PNIOIO:
+                  aio_pnio_config = AIO_PNIO_WITH_IO;
+                  aio_network_sel = AIO_NET_SEL_PNIO;
+	              break;
+	          }
+	          //TODO: write eeprom
+	          //aio_writeConfig();
+	      }
+	      //
+	      // here we read the logo name
+	      //
+	      else if (strcmp(pcParam[i] , "aiolg") == 0 ) {
+	          uint8_t logo_sel = atoi(pcValue[i]);
+	          switch(logo_sel) {
+	          case AIO_FF:
+	              aio_logo_sel = AIO_LOGO_FLEXFLOW;
+	              break;
+	          case AIO_SF:
+	              aio_logo_sel = AIO_LOGO_SMARTFLOW;
+	              break;
+	          }
+	          //TODO: write eeprom
+	          aio_writeConfig();
+	          //TODO:restart
+	          return "config.shtml";
+	          SysCtlReset();
+	      }
+	      else if (strcmp(pcParam[i],"displayVal")==0) {
 
 	      }
 //	      } else if (strcmp(pcParam[i], "update")==0) {

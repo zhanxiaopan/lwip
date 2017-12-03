@@ -24,6 +24,12 @@
 //#endif
 //#endif
 
+#define AIO_EIPS        0
+#define AIO_PNIO        1
+#define AIO_PNIOIO      2
+#define AIO_SF          4
+#define AIO_FF          8
+
 typedef enum
 {
     DISP1 = 0,
@@ -83,6 +89,7 @@ typedef enum
     VAR_UPD,
 	IP_DIS,
 	HD_LOGO,
+	DP_AIO_NETWORK,
     SSI_TAG_NUM // Here the SSI_TAG_NUM will automatically increase!
 #endif
 }   TAG_INDEXS;
@@ -147,7 +154,8 @@ char const* TAGS[SSI_TAG_NUM] = {
     "var_sl",
     "var_upd",
 	"ip_dis",
-	"hd_logo"
+	"hd_logo",
+	"dpaionw"
 #endif /* ENABLE_DATA_TXT_LOG */
 };
 
@@ -156,11 +164,12 @@ char const* NONE = "";
 char const* STR_TRUE = "true";
 char const* STR_FALSE = "false";
 
-#ifdef IS_SMART_FLOW
-char const* STR_SYS_NAME = "SmartFlow";
-#else
-char const* STR_SYS_NAME = "FlexFlow";
-#endif
+char const* STR_SYS_NAME_SF = "SmartFlow";
+char const* STR_SYS_NAME_FF = "FlexFlow";
+
+char const* STR_SYS_NETWORK_EIPS = "Ethernet/IP";
+char const* STR_SYS_NETWORK_PNIO = "Profinet";
+char const* STR_SYS_NETWORK_PNIOIO = "Profinet + IO";
 
 /* CGI handler for LED control */
 const char * LEDS_CGI_Handler(int iIndex, int iNumParams, char *pcParam[], char *pcValue[]);

@@ -29,7 +29,7 @@ extern "C" {
 
 /* Configurations --------------------------------------------------------------------------*/
 #define APP_NAME "WSV1"
-#define APP_NAME_EXTENDED "Weld Server V1"
+#define APP_NAME_EXTENDED "Weld Saver V1"
 #define APP_VERSION_MAJ 0
 #define APP_VERSION_MID 0
 #define APP_VERSION_MIN 3
@@ -120,10 +120,10 @@ typedef enum
 
 } GPIOTag_TypeDef;
 
-#define GPIOTag_DOUT_1 (GPIOTag_OB_LED_1)
-#define GPIOTag_DOUT_2 (GPIOTag_OB_LED_2)
-#define GPIOTag_DOUT_3 (GPIOTag_OB_LED_3)
-#define GPIOTag_DOUT_4 (GPIOTag_OB_LED_4)
+#define GPIOTag_DOUT_1 GPIOTag_OB_LED_1
+#define GPIOTag_DOUT_2 GPIOTag_OB_LED_2
+#define GPIOTag_DOUT_3 GPIOTag_OB_LED_3
+#define GPIOTag_DOUT_4 GPIOTag_OB_LED_4
 
 #define GPIOTag_DOUT_ALL GPIOTag_OB_LED_ALL
 

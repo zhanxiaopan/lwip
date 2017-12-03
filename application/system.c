@@ -4,6 +4,7 @@
  */
 
 /* Includes ---------------------------------------------------------- */
+#include <aio_config.h>
 #include "system.h"
 #include "sys_config.h"
 #include "dig_led.h"
@@ -109,6 +110,7 @@ void system_loop()
   * @param	None.
   * @retval	None.
   */
+extern void init_timer4(void);      //todo debug! why we need this func?
 void system_init()
 {
 	// Init the bsp.
@@ -165,7 +167,7 @@ void system_init_network(void)
 	Ethernet_InitMACPHYDMA();
 	// Init lwIP system and its app (http, tftp)
 	lwip_user_init();
-#elif WS_FIELDBUS_TYPE == FIELDBUS_TYPE_PNIO || WS_FIELDBUS_TYPE ==FIELDBUS_TYPE_PNIOIO
+#elif WS_FIELDBUS_TYPE == FIELDBUS_TYPE_PNIO || WS_FIELDBUS_TYPE == FIELDBUS_TYPE_PNIOIO
 	pnio_app_init();
 #endif
 #if WS_FIELDBUS_TYPE != FIELDBUS_TYPE_BL
@@ -334,23 +336,45 @@ void GPIOJ_ISR (void) {
  *  @return none
  *  @details serve for DIN/DOUT untility
  */
+
 void GPIOE_ISR (void) {
-#if WS_FIELDBUS_TYPE == FIELDBUS_TYPE_NONE || WS_FIELDBUS_TYPE == FIELDBUS_TYPE_PNIOIO
-	if (HWREG(GPIO_PORTE_BASE + 0x00000418) & 0x00000001) {
-		GPIOIntClear(GPIO_PORTE_BASE, 0x00000001);
-		ws_i_bus_reset = GPIO_TagRead(GPIOTag_DIN_1);
-	}
-	else if (HWREG(GPIO_PORTE_BASE + 0x00000418) & 0x00000002) {
-		GPIOIntClear(GPIO_PORTE_BASE, 0x00000002);
-		ws_i_bus_valveon = GPIO_TagRead(GPIOTag_DIN_2);
-	}
-	else if (HWREG(GPIO_PORTE_BASE + 0x00000418) & 0x00000004) {
-		GPIOIntClear(GPIO_PORTE_BASE, 0x00000004);
-		ws_i_bus_bypass = GPIO_TagRead(GPIOTag_DIN_3);
-	}
-	else if (HWREG(GPIO_PORTE_BASE + 0x00000418) & 0x00000008) {
-		GPIOIntClear(GPIO_PORTE_BASE, 0x00000008);
-	}
-	else return;
+#if WS_FIELDBUS_TYPE == FIELDBUS_TYPE_NONE
+        if (HWREG(GPIO_PORTE_BASE + 0x00000418) & 0x00000001) {
+            GPIOIntClear(GPIO_PORTE_BASE, 0x00000001);
+            ws_i_bus_reset = GPIO_TagRead(GPIOTag_DIN_1);
+        }
+        else if (HWREG(GPIO_PORTE_BASE + 0x00000418) & 0x00000002) {
+            GPIOIntClear(GPIO_PORTE_BASE, 0x00000002);
+            ws_i_bus_valveon = GPIO_TagRead(GPIOTag_DIN_2);
+        }
+        else if (HWREG(GPIO_PORTE_BASE + 0x00000418) & 0x00000004) {
+            GPIOIntClear(GPIO_PORTE_BASE, 0x00000004);
+            ws_i_bus_bypass = GPIO_TagRead(GPIOTag_DIN_3);
+        }
+        else if (HWREG(GPIO_PORTE_BASE + 0x00000418) & 0x00000008) {
+            GPIOIntClear(GPIO_PORTE_BASE, 0x00000008);
+        }
+        else return;
+#elif WS_FIELDBUS_TYPE == FIELDBUS_TYPE_PNIOIO
+        //
+        if(aio_pnio_config == AIO_PNIO_WITH_IO)
+        {
+            if (HWREG(GPIO_PORTE_BASE + 0x00000418) & 0x00000001) {
+                GPIOIntClear(GPIO_PORTE_BASE, 0x00000001);
+                ws_i_bus_reset = GPIO_TagRead(GPIOTag_DIN_1);
+            }
+            else if (HWREG(GPIO_PORTE_BASE + 0x00000418) & 0x00000002) {
+                GPIOIntClear(GPIO_PORTE_BASE, 0x00000002);
+                ws_i_bus_valveon = GPIO_TagRead(GPIOTag_DIN_2);
+            }
+            else if (HWREG(GPIO_PORTE_BASE + 0x00000418) & 0x00000004) {
+                GPIOIntClear(GPIO_PORTE_BASE, 0x00000004);
+                ws_i_bus_bypass = GPIO_TagRead(GPIOTag_DIN_3);
+            }
+            else if (HWREG(GPIO_PORTE_BASE + 0x00000418) & 0x00000008) {
+                GPIOIntClear(GPIO_PORTE_BASE, 0x00000008);
+            }
+            else return;
+        }
 #endif /* WS_FIELDBUS_TYPE == FIELDBUS_TYPE_NONE */
 }
