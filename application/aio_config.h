@@ -10,6 +10,8 @@
 
 #include <stdint.h>
 
+//ummm
+
 #define AIO_PNIO_NONE       0x10
 #define AIO_PNIO_WITHOUT_IO 0x11
 #define AIO_PNIO_WITH_IO    0x12
