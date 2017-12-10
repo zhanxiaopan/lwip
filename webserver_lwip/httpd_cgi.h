@@ -24,11 +24,14 @@
 //#endif
 //#endif
 
-#define AIO_EIPS        0
-#define AIO_PNIO        1
-#define AIO_PNIOIO      2
-#define AIO_SF          4
-#define AIO_FF          8
+#define AIO_PTCL_EIPS           0
+#define AIO_PTCL_PNIO           1
+#define AIO_PTCL_PNIOIO         2
+#define AIO_PTCL_SF             4
+#define AIO_PTCL_FF             8
+#define AIO_PTCL_REDI           16
+#define AIO_PTCL_LOAD_EIPS      32
+#define AIO_PTCL_LOAD_PNIO      64
 
 typedef enum
 {

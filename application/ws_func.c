@@ -1526,7 +1526,7 @@ void ws_update_io() {
 	//write only once
 	GPIO_TagStateWriteOnce(GPIOTag_DOUT_ALL, (uint8_t*)&_ws_dout_old, ETH_IO_DATA_OBJ_INPUT.data.gpio_dout_1_3);
 #else
-	if(aio_pnio_config == AIO_PNIO_WITH_IO)
+	if(aio_network_sel == AIO_NETWORK_PNIOIO)
 	{
 	    ws_io_cmd_reset = GPIO_TagRead(GPIOTag_DIN_1);
 	    ws_io_cmd_valve_on = GPIO_TagRead(GPIOTag_DIN_2);

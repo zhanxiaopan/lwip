@@ -10,7 +10,9 @@
 
 MEMORY
 {
-    FLASH (RX) : origin = 0x00000000, length = 0x000D0000
+    //FLASH (RX) : origin = 0x00000000, length = 0x000D0000
+    //below is the config for aio
+    FLASH (RX) : origin = 0x00060000, length = 0x00040000
     SRAM (RWX) : origin = 0x20000000, length = 0x00038000
     SRAM_STACK (RWX) : origin = 0x20038000, length = 0x00008000
 }

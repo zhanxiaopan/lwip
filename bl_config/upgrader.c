@@ -11,12 +11,14 @@
 #include "inc/hw_sysctl.h"
 #include "inc/hw_memmap.h"
 #include "hw_nvic.h"
-#include <stdio.h>
 #include "bsp_eeprom_const.h"
 #include "reset.h"
+#include <stdio.h>
 
-#define UPGRADER_APP_START_ADDR (0x20000)
-#define UPGRADER_DL_BUF_START_ADDR (0x60000)
+#include "aio_config.h"
+
+//#define UPGRADER_APP_START_ADDR (0x20000)
+#define UPGRADER_DL_BUF_START_ADDR (0xA0000)
 #ifdef __USE_LAUNCH_PAD
 // we define UERLED1 (PNO) as BL indicator
 #define BL_INDICATOR GPIOTag_OB_LED_2
@@ -26,7 +28,7 @@
 #define LOOP_PERIOD (100)
 
 #ifndef USE_FILE_SYSTEM_IN_TFTP
-uint32_t g_ui32TransferAddress = UPGRADER_APP_START_ADDR;
+uint32_t g_ui32TransferAddress = AIO_EIPS_VTABLE_ADDR;
 uint32_t g_ui32DownloadBuffAddr = UPGRADER_DL_BUF_START_ADDR;
 uint32_t g_ui32WritingPosition = 0;		// indicate the next byte position to be programmed. this could jump during downloading and copying stages.
 uint8_t g_ui8DownloadError = 0;
@@ -45,7 +47,7 @@ TFTP_ERROR_LIST g_error;
 #define JUMP_WAITING_TIME_FOREVER   4000000000  // several monthes
 
 uint32_t    jump_config;
-uint32_t    WaitingTime = JUMP_WAITING_TIME_SHORT;  //40
+uint32_t    WaitingTime = JUMP_WAITING_TIME_LONG;  //5min
 
 FW_UPGRADER_STATUS_T upgrader_read_status_eeprom ()
 {
@@ -59,33 +61,21 @@ void upgrader_write_status_eeprom ()
 
 void upgrader_init(FW_UPGRADER_T *upgrader)
 {
-	//upgrader->status = upgrader_read_status_eeprom();
-    //retrive the configuration for the waiting time
-    EEPROMRead ((uint32_t*)&jump_config, EEPROM_ADDR_BL_JUMP_CONFIG, EEPROM_LEN_BL_JUMP_CONFIG);
-    switch(jump_config) {
-        case JUMP_CONFIG_NO_WAIT:
-            WaitingTime = JUMP_WAITING_TIME_SHORT;
-//            WaitingTime = JUMP_WAITING_TIME_NO;
-            break;
-
-        case JUMP_CONFIG_SHORT_WAIT:
-            WaitingTime = JUMP_WAITING_TIME_SHORT;
-            break;
-
-        case JUMP_CONFIG_LONG_WAIT:
-            WaitingTime = JUMP_WAITING_TIME_LONG;
-            break;
-
-        case JUMP_CONFIG_FOREVER_WAIT:
-            WaitingTime = JUMP_WAITING_TIME_FOREVER;
-            break;
-
-        default:
-            WaitingTime = JUMP_WAITING_TIME_SHORT;
+    /*
+     * code above deprecated by Tms on 06.12.2017
+     */
+    if(aio_bl_config == AIO_BL_LOAD_EIPS || aio_bl_config == AIO_BL_LOAD_PNIO)
+        WaitingTime == JUMP_WAITING_TIME_LONG;
+    else
+    {
+        //only enter this state when it is not config
+        //to redirect
+        //the redirection should be implemented in "main.c"
+        printf("Bootloader configuration error!@2");
+        while(1);
     }
 
 	upgrader->status = UPGRADER_IDLE;
-
 }
 
 // blink a LED here to imply the ws is waiting for a TFTP WRQ.
@@ -132,12 +122,17 @@ void upgrader_process ()
 		else {
 			// timeout when waiting for TFTP WRQ!
 			g_upgrader.status = UPGRADER_TIMEOUT;
+			//todo: redirect or something!
 		}
 		break;
 	case UPGRADER_TIMEOUT:
 		// timeout so we go directly to jump.
 		g_upgrader.status = READY_TO_JUMP;
 		puts("Upgrader_timeout");
+
+		//roll back to previous setup for redirect
+		aio_rollback();
+
 		break;
 	case REQUESTED:
 		// requested also means we're in downloading status.
@@ -150,6 +145,21 @@ void upgrader_process ()
 		// todo: integrity verification required here.
 		// start copying from download buf to main_app_buf
 		// init g_ui32WritingPosition to main_app_buf firstly and then go to next state.
+	    /*
+	     * below added by Tms on 06.12.2017
+	     */
+	    if(aio_bl_config == AIO_BL_LOAD_EIPS)
+	        g_ui32TransferAddress = AIO_EIPS_VTABLE_ADDR;
+	    else if(aio_bl_config == AIO_BL_LOAD_PNIO)
+	        g_ui32TransferAddress = AIO_PNIO_VTABLE_ADDR;
+	    else
+	    {
+	        //state error, no other value should show
+	        //up here!
+	        printf("Bootloader configuration error!@3");
+	        while(1);
+	    }
+
 		g_ui32WritingPosition = g_ui32TransferAddress;
 		g_upgrader.status = FLASH_COPPYING;
 		break;
@@ -158,6 +168,7 @@ void upgrader_process ()
 
 		// erase the main_app_buf
 
+	    //TODO: calculate the size!
 		for (i=0; i<256; i++) {
 		  if (FlashErase(g_ui32TransferAddress + i * 1024) != 0) {
 			// report the error.
@@ -183,6 +194,13 @@ void upgrader_process ()
 
 		// now it's ready to jump.
 		g_upgrader.status = READY_TO_JUMP;
+
+		// update the aio_bin_exist_flag
+		if(aio_bin_exist_flag != AIO_BIN_BOTH)
+		    aio_bin_exist_flag++;
+		else
+            aio_bl_config = AIO_BL_REDI;
+		aio_writeConfig();
 
 		//config the waiting to be "no_wait"
 		jump_config = JUMP_WAITING_TIME_NO;
@@ -232,6 +250,7 @@ void upgrader_process ()
 	    // Set the vector table to the beginning of the app in flash.
 	    //
 
+		//this position should not be reached in all-in-one
 		resetInit();
 		resetLaunch();  // should be redirect to 0x20000 after reset
 

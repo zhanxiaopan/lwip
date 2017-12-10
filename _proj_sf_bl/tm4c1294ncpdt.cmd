@@ -72,6 +72,7 @@ SECTIONS
     .cinit  :   > FLASH
     .pinit  :   > FLASH
     .init_array : > FLASH
+    .identifier : > 0x0001C000
 
     .vtable :   > 0x20000000
     .data   :   > SRAM

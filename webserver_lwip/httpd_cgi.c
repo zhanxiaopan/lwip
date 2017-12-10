@@ -454,11 +454,11 @@ u16_t ADC_Handler(int iIndex, char *pcInsert, int iInsertLen)
 	        temp_str_len = sprintf (temp_str, "%s", STR_SYS_NAME_FF);
 	    break;
 	case DP_AIO_NETWORK:
-	    if(aio_network_sel == AIO_NET_SEL_EIPS )
+	    if(aio_network_sel == AIO_NETWORK_EIPS )
 	        temp_str_len = sprintf (temp_str, "%s", STR_SYS_NETWORK_EIPS);
-	    else if (aio_pnio_config == AIO_PNIO_WITHOUT_IO )
+	    else if (aio_network_sel == AIO_NETWORK_PNIO )
 	        temp_str_len = sprintf (temp_str, "%s", STR_SYS_NETWORK_PNIO);
-	    else if (aio_pnio_config == AIO_PNIO_WITH_IO )
+	    else if (aio_network_sel == AIO_NETWORK_PNIOIO )
 	        temp_str_len = sprintf (temp_str, "%s", STR_SYS_NETWORK_PNIOIO);
 	    break;
 
@@ -668,23 +668,39 @@ const char * LEDS_CGI_Handler(int iIndex, int iNumParams, char *pcParam[], char 
 	    		  return "/src/info.shtml";
 	    	  }
 	      }
+          //
+          // here we read the network bus type
+          //
+          else if (strcmp(pcParam[i] , "aiobl")== 0) {
+              uint8_t val = atoi(pcValue[i]);
+              switch(val) {
+              case AIO_PTCL_REDI:
+                  aio_bl_config = AIO_BL_REDI;
+                  break;
+              case AIO_PTCL_LOAD_EIPS:
+                  aio_bl_config = AIO_BL_LOAD_PNIO;
+                  break;
+              case AIO_PTCL_LOAD_PNIO:
+                  aio_bl_config = AIO_BL_LOAD_EIPS;
+                  break;
+              }
+              //TODO: write eeprom
+              //aio_writeConfig();
+          }
 	      //
 	      // here we read the network bus type
 	      //
 	      else if (strcmp(pcParam[i] , "aionw")== 0) {
-	          uint8_t network_sel = atoi(pcValue[i]);
-	          switch(network_sel) {
-	          case AIO_EIPS:
-	              aio_pnio_config = AIO_PNIO_NONE;
-	              aio_network_sel = AIO_NET_SEL_EIPS;
+	          uint8_t val = atoi(pcValue[i]);
+	          switch(val) {
+	          case AIO_PTCL_EIPS:
+	              aio_network_sel = AIO_NETWORK_EIPS;
 	              break;
-	          case AIO_PNIO:
-                  aio_pnio_config = AIO_PNIO_WITHOUT_IO;
-                  aio_network_sel = AIO_NET_SEL_PNIO;
+	          case AIO_PTCL_PNIO:
+                  aio_network_sel = AIO_NETWORK_PNIO;
 	              break;
-	          case AIO_PNIOIO:
-                  aio_pnio_config = AIO_PNIO_WITH_IO;
-                  aio_network_sel = AIO_NET_SEL_PNIO;
+	          case AIO_PTCL_PNIOIO:
+                  aio_network_sel = AIO_NETWORK_PNIOIO;
 	              break;
 	          }
 	          //TODO: write eeprom
@@ -694,19 +710,17 @@ const char * LEDS_CGI_Handler(int iIndex, int iNumParams, char *pcParam[], char 
 	      // here we read the logo name
 	      //
 	      else if (strcmp(pcParam[i] , "aiolg") == 0 ) {
-	          uint8_t logo_sel = atoi(pcValue[i]);
-	          switch(logo_sel) {
-	          case AIO_FF:
+	          uint8_t val = atoi(pcValue[i]);
+	          switch(val) {
+	          case AIO_PTCL_FF:
 	              aio_logo_sel = AIO_LOGO_FLEXFLOW;
 	              break;
-	          case AIO_SF:
+	          case AIO_PTCL_SF:
 	              aio_logo_sel = AIO_LOGO_SMARTFLOW;
 	              break;
 	          }
 	          //TODO: write eeprom
 	          aio_writeConfig();
-	          //TODO:restart
-	          return "config.shtml";
 	          SysCtlReset();
 	      }
 	      else if (strcmp(pcParam[i],"displayVal")==0) {

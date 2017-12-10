@@ -357,7 +357,7 @@ void GPIOE_ISR (void) {
         else return;
 #elif WS_FIELDBUS_TYPE == FIELDBUS_TYPE_PNIOIO
         //
-        if(aio_pnio_config == AIO_PNIO_WITH_IO)
+        if(aio_network_sel == AIO_NETWORK_PNIOIO)
         {
             if (HWREG(GPIO_PORTE_BASE + 0x00000418) & 0x00000001) {
                 GPIOIntClear(GPIO_PORTE_BASE, 0x00000001);

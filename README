@@ -40,3 +40,82 @@ utilities
 webserver_lwip
   - web server implementation based on lwIP.
   - html files included in this folder as well.
+
+==================================================
+Release Note for "all-in-one"
+==================================================
+
+The all-in-one version of SF/FF make booting to 
+different industrial network protocols avalilable,
+which include EIPS, PNIO, PNIOIO. Besides, the user 
+can choose between the logos of "SmartFlow" and
+"FlexFlow".
+
+0. Compile Binary Files
+
+The whole application includes three binary files, which 
+are BL, EIPS and PNIOIO. The PNIOIO includes the network 
+features for PNIO and PNIOIO.
+
+The developer should first configure the flash section
+for different binary files. The configurations are listed
+below:
+    1) Bootloader:
+        Flash: origin = 0x00000000, length = 0x000F0000
+    2) EIPS:
+        Flash: origin = 0x00020000, length = 0x00040000
+    3) PNIO
+        Flash: origin = 0x00060000, length = 0x00040000
+        
+1. Load Binary Files for the first time
+
+To enable the new uC for the first time, we should first burn 
+all the bins listed above into the uC.
+
+Firstly, the bootloader should be burned via the enumerator.
+Afterwards, the bins for 1.EIPS and 2.PNIOIO should be loaded 
+via tftp IN ORDER(!!!).
+
+When all the bins are burned in then uC. The uC will be redirect 
+to the EIPS binary with IP address 172.24.1.1. The user should 
+set up the system on "<ip_addr>/config.shtml".
+
+2. Set up the System
+
+Simply select the network and logo on form would change the configu-
+ration.
+
+3. Update the System
+
+1) Set up the filed "Bootloader Config" on page "config.shtml" 
+to "Update <XXX> Binary" before load the updating binary. Here 
+<XXX> is the binary user wish to update.
+
+2) The system should be reboot automatically.
+
+3) Upload the binary for <XXX> within five minutes. 
+
+4) If no binary is received by the tftp server, user should
+manually reset the uC and again try to upload the bin.
+
+5) After the automatic reboot, the system is redirect to the 
+network configurated on config.shtml at the first step. If the 
+user did not change the selection, the network will stay the same 
+as before.
+
+4. Tips for Further Development and Debug
+
+1) The state configuration is programmed in EEPROM
+
+2) Check the "config.shtml" and "httpd_cgi.c" for the configration 
+frontend.
+
+3) Check "main.c", "upgrader.c", and "aio_config.c" for the backend. 
+
+4) For the first loading of the bins, the process should strictly follow 
+the instruction in the section 1.
+
+5) "while(1);" loops are used in the code to trap the bad state. For 
+instance, "aio_bl_config == AIO_BL_REDI && aio_bin_exist_flag == 
+AIO_BIN_NONE" is one of the bad state to be trapped.
+

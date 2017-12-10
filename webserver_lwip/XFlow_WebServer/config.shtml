@@ -2,75 +2,94 @@
   <head>
     <title>System Configuration</title>
     <meta content="">
-    <style></style>
+    <style>
+        select { width: 175 };
+    </style>
     <script type="text/javascript">
-    
+        var nw = "<!--#dpaionw-->";
+        var lg = "<!--#hd_logo-->";
+        
+        function setOpt(id,opt){document.getElementById(id).value = opt;}
+        
         function getValSel(selId)
         {
             var sel = document.getElementById(selId);
-            var val = sel.options[sel.selectedIndex].value;
-            
-            return val;
+            return sel.options[sel.selectedIndex].value;
         }
     
         function config_btn_clk()
         {
-                var network = getValSel("id_network_sel");
-                var logo = getValSel("id_logo_sel");
-                
+                var conf = getValSel("sel_bconf");
+                var network = getValSel("sel_nw");
+                var logo = getValSel("sel_lg");
                 var xmlhttp;
                 if (window.XMLHttpRequest)
-                  {
                   xmlhttp=new XMLHttpRequest();
-                  }
                 else
-                  {
                   xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
-                  }
-                xmlhttp.onreadystatechange=function()
-                  {
-                  if (xmlhttp.readyState==4 && xmlhttp.status==200)
-                    {
-                    //window.parent.info_frame.document.getElementById("setup_info").innerHTML=xmlhttp.responseText;
-                    }
-                  }
-                xmlhttp.open("GET","/leds.cgi?aionw="+network+"&aiolg="+logo,true);
+                xmlhttp.onreadystatechange=function(){};
+                xmlhttp.open("GET","/leds.cgi?aiobl="+conf+",aionw="+network+"&aiolg="+logo,true);
                 xmlhttp.send();
         }
-</script>
+        
+        function init_data()
+        {
+            switch(nw)
+            {
+                case "eips":
+                    setOpt("sel_nw",0);
+                break;
+                case "pnio":
+                    setOpt("sel_nw",1);
+                break;
+                case "pnioio":
+                    setOpt("sel_nw",2);
+                break;
+            }
+            
+            if(lg == "SmartFlow")
+                setOpt("sel_lg",4);
+            else
+                setOpt("sel_lg",8);
+        }
     </script>
   </head>
   <body>
     <h1>System Configuration</h1>
-    <span>Network: <!--#dpaionw--></span><br/>
-    <span>Logo: <!--#hd_logo--></span><br/>
     <br/>
     <form method="GET" id="id_config_form" action="http://<!--#ipaddr-->/leds.cgi">
+    Bootloader Config:<br/>
+        <select size="1" id = "sel_bconf">
+            <option value="16" selected="selected"> Redirect </option>
+            <option value="32" > Update Ethernet/IP Binary </option>
+            <option value="64" > Update Profinet Binary </option>
+        </select>
+        <br/>
+        <br/>
+        
     Network Selection:<br/>
-        <select size="1" id="id_network_sel" name="aionw">
+        <select size="1" id="sel_nw" name="aionw">
             <option value="0" > Ethernet/IP </option>
             <option value="1" > Profinet </option>
             <option value="2" > Profinet + DIDO </option>
         </select>
-        </br>
+        <br/>
+        <br/>
         
     Logo Selection:<br/>
-        <select size="1" id="id_logo_sel" name="aiolg">
+        <select size="1" id="sel_lg" name="aiolg">
             <option value="4" > SmartFlow </option>
             <option value="8" > FlexFlow </option>
         </select>
-        </br>
-        </br>
+        <br/>
+        <br/>
+        <br/>
         
-    <!--
-    Bootloader Task:
-        <select size="1" id="id_bootloader_task" name="aiobt" disabled="disabled">
-            <option value="0" > Redirect </option>
-            <option value="1" > Update Ethernet/IP Binary </option>
-            <option value="2" > Update Profinet Binary </option>
-        </select>
-    -->
-    <input type="button" value="Submit" onclick="config_btn_clk()"/>
+    <input style="margin-left: 120px;" type="button" value="Submit" onclick="config_btn_clk()"/>
     </form>
+    
+    <script type="text/javascript">
+        init_data();
+    </script>
   </body>
 </html>
