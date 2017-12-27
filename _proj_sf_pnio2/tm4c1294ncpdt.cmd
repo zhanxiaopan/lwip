@@ -66,7 +66,7 @@ SECTIONS
 
 SECTIONS
 {
-    .intvecs:   > 0x00000000
+    .intvecs:   > 0x00060000//0x00000000
     .text   :   > FLASH
     .const  :   > FLASH
     .cinit  :   > FLASH
