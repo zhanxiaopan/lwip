@@ -84,7 +84,7 @@ void upgrader_blink_indicator_led () {
 #ifdef __USE_LAUNCH_PAD
 	GPIO_TagToggle(BL_INDICATOR);
 #else /* __USE_LAUNCH_PAD */
-	GPIO_TagToggle(BL_INDICATOR);
+	//GPIO_TagToggle(BL_INDICATOR);
 #endif /* __USE_LAUNCH_PAD */
 
 }
@@ -196,10 +196,22 @@ void upgrader_process ()
 		g_upgrader.status = READY_TO_JUMP;
 
 		// update the aio_bin_exist_flag
-		if(aio_bin_exist_flag != AIO_BIN_BOTH)
-		    aio_bin_exist_flag++;
+		if(aio_bl_config == AIO_BL_REDI)
+		    aio_bin_exist_flag = AIO_BIN_BOTH;
 		else
-            aio_bl_config = AIO_BL_REDI;
+		{
+		    if(aio_bin_exist_flag != AIO_BIN_BOTH)
+		    {
+		        aio_bin_exist_flag++;
+		        aio_bl_config++;
+		        aio_network_sel = AIO_NETWORK_EIPS;
+		    }
+		    else
+		    {
+		        aio_bin_exist_flag = AIO_BIN_BOTH;
+		        aio_bl_config = AIO_BL_REDI;
+		    }
+		}
 		aio_writeConfig();
 
 		//config the waiting to be "no_wait"

@@ -80,7 +80,7 @@ static err_t tcp_listen_input(struct tcp_pcb_listen *pcb);
 static err_t tcp_timewait_input(struct tcp_pcb *pcb);
 
 /**
- * The initial input processing of TCP. It verifies the TCP header, demultiplexes
+ * The initial input processing of TCP. It verifies the TCP header, demultiplexers
  * the segment between the PCBs and passes it on to tcp_process(), which implements
  * the TCP finite state machine. This function is called by the IP layer (in
  * ip_input()).
@@ -88,6 +88,15 @@ static err_t tcp_timewait_input(struct tcp_pcb *pcb);
  * @param p received TCP segment to process (p->payload pointing to the IP header)
  * @param inp network interface on which this segment was received
  */
+u16_t temp_port1=0;
+#define HTTP_REQ_BUFFER_MAXLEN 10
+//static struct pbuf *HTTP_REQ_BUFFER[HTTP_REQ_BUFFER_MAXLEN];
+//static struct netif *HTTP_REQ_Netif;
+//static unsigned char HTTP_REQ_BUFFER_LEN = 0;
+//static unsigned char HTTP_RREQ_BUFFER_OVER=0;
+unsigned char HTTP_CONFILICT_ENABLE=0;
+unsigned char global_HTTP_service_lock=0;
+unsigned long int global_service_timer_10us=0;
 void
 tcp_input(struct pbuf *p, struct netif *inp)
 {
@@ -301,6 +310,80 @@ tcp_input(struct pbuf *p, struct netif *inp)
       }
     }
     tcp_input_pcb = pcb;
+
+    if(HTTP_CONFILICT_ENABLE==1)
+    {
+    //struct pbuf *BUFFER_NEXT=NULL;
+    //struct pbuf *HTTP_cur=NULL;
+    if(tcphdr->dest==80 && global_HTTP_service_lock == 1)  //1.2s (global_service_timer_10us>=120000||global_HTTP_service_lock==1))
+    {
+        //if(remote_ip)
+        //{
+            //        if(HTTP_REQ_BUFFER_LEN<HTTP_REQ_BUFFER_MAXLEN)
+            //        {
+            //            HTTP_REQ_Netif = inp;
+            //            if(HTTP_RREQ_BUFFER_OVER==1)
+            //            {
+            //  //              //TCP_STATS_INC(tcp.drop);
+            //  //             // snmp_inc_tcpinerrs();
+            //   //             BUFFER_NEXT = HTTP_REQ_BUFFER[HTTP_REQ_BUFFER_LEN]->next;
+            //   //             HTTP_REQ_BUFFER[HTTP_REQ_BUFFER_LEN]->next=0;
+            //                pbuf_free(HTTP_REQ_BUFFER[HTTP_REQ_BUFFER_LEN]);
+            //  //              while(BUFFER_NEXT!=0)
+            //  //              {
+            //  //                  HTTP_cur = BUFFER_NEXT->next;
+            //  //                  BUFFER_NEXT->next=0;
+            //  //                  pbuf_free(BUFFER_NEXT);
+            //  //                  BUFFER_NEXT = HTTP_cur;
+            //  //              }
+            //            }
+            //
+            //            HTTP_REQ_BUFFER[HTTP_REQ_BUFFER_LEN]=pbuf_alloc(PBUF_RAW,p->len, p->type);
+            //
+            //            HTTP_REQ_BUFFER[HTTP_REQ_BUFFER_LEN]->tot_len = p->tot_len;
+            //            HTTP_REQ_BUFFER[HTTP_REQ_BUFFER_LEN]->len = p->len;
+            //            HTTP_REQ_BUFFER[HTTP_REQ_BUFFER_LEN]->type = p->type;
+            //            HTTP_REQ_BUFFER[HTTP_REQ_BUFFER_LEN]->flags = p->flags;
+            //            HTTP_REQ_BUFFER[HTTP_REQ_BUFFER_LEN]->ref = 1;//p->ref;
+            //            memcpy(HTTP_REQ_BUFFER[HTTP_REQ_BUFFER_LEN]->payload, p->payload, p->len);
+            //            BUFFER_NEXT = HTTP_REQ_BUFFER[HTTP_REQ_BUFFER_LEN];
+            //            HTTP_cur = p;
+            //            while(HTTP_cur->next!=0)
+            //            {
+            //                HTTP_cur = HTTP_cur->next;
+            //                BUFFER_NEXT->next =pbuf_alloc(PBUF_RAW,HTTP_cur->len, HTTP_cur->type);
+            //                BUFFER_NEXT = BUFFER_NEXT->next;
+            //                BUFFER_NEXT->tot_len = HTTP_cur->tot_len;
+            //                BUFFER_NEXT->len = HTTP_cur->len;
+            //                BUFFER_NEXT->type = HTTP_cur->type;
+            //                BUFFER_NEXT->flags = HTTP_cur->flags;
+            //                BUFFER_NEXT->ref = HTTP_cur->ref;
+            //                memcpy(BUFFER_NEXT->payload, HTTP_cur->payload, HTTP_cur->len);
+            //            }
+            //            BUFFER_NEXT->next=0;
+            //            //pbuf_free(HTTP_REQ_BUFFER[HTTP_REQ_BUFFER_LEN]);
+            //            HTTP_REQ_BUFFER_LEN++;
+            //            if(HTTP_REQ_BUFFER_LEN==HTTP_REQ_BUFFER_MAXLEN)
+            //            {
+            //                HTTP_RREQ_BUFFER_OVER=1;
+            //                HTTP_REQ_BUFFER_LEN=0;
+            //
+            //            }
+            //        }
+
+            //}
+        tcp_abort(pcb);
+        err = ERR_ABRT;
+        goto aborted;//dropped;
+    }
+    else if (tcphdr->dest != 80)
+    {
+       global_service_timer_10us=0;
+    }
+    }
+
+
+
     err = tcp_process(pcb);
     /* A return value of ERR_ABRT means that tcp_abort() was called
        and that the pcb has been freed. If so, we don't do anything. */

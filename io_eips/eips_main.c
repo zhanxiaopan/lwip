@@ -33,11 +33,31 @@ uint8_t flag_fieldbus_down = 1;
  *  @return none
  *  @details this should be called in same rate as the parameter in eips_rtasys_process.
  */
+
+extern unsigned char global_HTTP_service_lock;
+extern uint8_t flag_fieldbus_down;
+unsigned long int HTTP_lock_enable_counter=0;
+extern unsigned char HTTP_CONFILICT_ENABLE;
 void eips_process_loop (void)
+{
+    if(flag_fieldbus_down)
+        HTTP_CONFILICT_ENABLE=0;
+    else
+        HTTP_CONFILICT_ENABLE=1;
+    global_HTTP_service_lock=1;
+    eips_userobj_data_send(EIPS_IODATA_T2O.row, EIPS_IODATA_SIZE_T2O);
+    eips_rtasys_process(EIPS_REFRESHING_RATE); // signal EIPS_REFRESHING_RATE ms between calls
+
+    global_HTTP_service_lock=0;
+    HTTP_lock_enable_counter=0;
+}
+
+/*void eips_process_loop (void)
 {
     eips_userobj_data_send(EIPS_IODATA_T2O.row, EIPS_IODATA_SIZE_T2O);
 	eips_rtasys_process(EIPS_REFRESHING_RATE); // signal EIPS_REFRESHING_RATE ms between calls
-}
+
+}*/
 
 /**
  *  @brief init eips system

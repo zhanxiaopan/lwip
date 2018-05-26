@@ -112,11 +112,6 @@ void IntTimer4Handler(void);
 #define timer4_start()    TimerEnable(TIMER4_BASE,TIMER_A)
 #define timer4_reset()    TimerLoadSet(TIMER4_BASE, TIMER_A, SystemCoreClock/1000*WS_DIG_LED_UPDATE_PERIOD)
 
-void init_timer5(void);
-void timer5_stop(void);
-void IntTimer5Handler(void);
-#define timer5_start()    TimerEnable(TIMER5_BASE,TIMER_A)
-#define timer5_reset()    TimerLoadSet(TIMER5_BASE, TIMER_A, SystemCoreClock/1000)
 
 
 
@@ -212,6 +207,10 @@ double flow_dev_aver = 0;
 double flow_dev_aver_quar = 0;
 double flow_dev_int = 0;		// integral of dev in unit of Litre
 double flow_aver_1 = 0, flow_aver_2 = 0;
+
+double flow_linear_translatin = 0;
+double test = 0;
+
 double flow_aver_1_quar = 0, flow_aver_2_quar = 0;		// average calculated in 1/4 of duration.
 double leak_detection_quantized_index = 0;
 double dif_flowrate_ramp = 0;
@@ -561,52 +560,52 @@ void ws_read_eth_input()
 	 * in di interrupt, ws_i_bus_reset, ws_i_bus_valveon, ws_i_bus_bypass is valued to reuse the cmd input channel with filedbus.
 	 * assumed that dido will never be down - that means no dido connection leads to all-zero cmd input.
 	 * */
-#ifndef WS_FILEDBUS_NONE_BUT_DIDO
-	if (flag_fieldbus_down) {
-		// fieldbus communication is down.
-		if (dio_detect_edge(&ctrl_signal_web[WS_CMD_INDEX_RESET])) {
-		ws_i_cmd_reset = 2 - dio_detect_edge(&ctrl_signal_web[WS_CMD_INDEX_RESET]);
-		}
-		if (dio_detect_edge(&ctrl_signal_web[WS_CMD_INDEX_VALVEON])) {
-		ws_i_cmd_valve_on = 2 - dio_detect_edge(&ctrl_signal_web[WS_CMD_INDEX_VALVEON]);
+    #ifndef WS_FILEDBUS_NONE_BUT_DIDO
+	    if (aio_network_sel != AIO_NETWORK_PNIOIO && flag_fieldbus_down) {
+	        // fieldbus communication is down.
+	        if (dio_detect_edge(&ctrl_signal_web[WS_CMD_INDEX_RESET])) {
+                ws_i_cmd_reset = 2 - dio_detect_edge(&ctrl_signal_web[WS_CMD_INDEX_RESET]);
+	        }
+	        if (dio_detect_edge(&ctrl_signal_web[WS_CMD_INDEX_VALVEON])) {
+                ws_i_cmd_valve_on = 2 - dio_detect_edge(&ctrl_signal_web[WS_CMD_INDEX_VALVEON]);
+	        }
+	        if (dio_detect_edge(&ctrl_signal_web[WS_CMD_INDEX_BYPASS])) {
+	            ws_i_cmd_bypass = 2 - dio_detect_edge(&ctrl_signal_web[WS_CMD_INDEX_BYPASS]);
+	        }
+	        return;
+	    }
+    #endif /* WS_FILEDBUS_NONE_BUT_DIDO */
 
-		}
-		if (dio_detect_edge(&ctrl_signal_web[WS_CMD_INDEX_BYPASS])) {
-			ws_i_cmd_bypass = 2 - dio_detect_edge(&ctrl_signal_web[WS_CMD_INDEX_BYPASS]);
-		}
-		return;
-	}
-#endif /* WS_FILEDBUS_NONE_BUT_DIDO */
-
-#if (WS_FIELDBUS_TYPE != FIELDBUS_TYPE_PNIOIO)
-#ifdef WS_FILEDBUS_NONE_BUT_DIDO
-
-#else /* WS_FILEDBUS_NONE_BUT_DIDO */
-
-	// update the src signal from bus interface.
-	ws_i_bus_reset = ETH_IO_DATA_OBJ_INPUT.data.cmd_reset;
-#ifndef WS_VALVE_CTRL_INVERTED
-	ws_i_bus_valveon = ETH_IO_DATA_OBJ_INPUT.data.cmd_valve_ctr;
-#else /* WS_VALVE_CTRL_INVERTED */
-	ws_i_bus_valveon = ETH_IO_DATA_OBJ_INPUT.data.cmd_valve_ctr ? 0 : 1;
-#endif /* WS_VALVE_CTRL_INVERTED */
-	ws_i_bus_bypass = ETH_IO_DATA_OBJ_INPUT.data.cmd_bypass;
-#endif /* WS_FILEDBUS_NONE_BUT_DIDO */
-#else
-#ifdef WS_FILEDBUS_NONE_BUT_DIDO
-
-#else /* WS_FILEDBUS_NONE_BUT_DIDO */
-
-    // update the src signal from bus interface.
-    ws_i_bus_reset = ws_io_cmd_reset;
-#ifndef WS_VALVE_CTRL_INVERTED
-    ws_i_bus_valveon = ws_io_cmd_valve_on;
-#else /* WS_VALVE_CTRL_INVERTED */
-    ws_i_bus_valveon = ws_io_cmd_valve_on ? 0 : 1;
-#endif /* WS_VALVE_CTRL_INVERTED */
-    ws_i_bus_bypass = ws_io_cmd_bypass;
-#endif /* WS_FILEDBUS_NONE_BUT_DIDO */
-#endif
+if(aio_network_sel != AIO_NETWORK_PNIOIO)
+{
+        #ifdef WS_FILEDBUS_NONE_BUT_DIDO
+	        // nothing
+        #else /* WS_FILEDBUS_NONE_BUT_DIDO */
+	        // update the src signal from bus interface.
+	        ws_i_bus_reset = ETH_IO_DATA_OBJ_INPUT.data.cmd_reset;
+            #ifndef WS_VALVE_CTRL_INVERTED
+	            ws_i_bus_valveon = ETH_IO_DATA_OBJ_INPUT.data.cmd_valve_ctr;
+            #else /* WS_VALVE_CTRL_INVERTED */
+	            ws_i_bus_valveon = ETH_IO_DATA_OBJ_INPUT.data.cmd_valve_ctr ? 0 : 1;
+            #endif /* WS_VALVE_CTRL_INVERTED */
+            ws_i_bus_bypass = ETH_IO_DATA_OBJ_INPUT.data.cmd_bypass;
+        #endif /* WS_FILEDBUS_NONE_BUT_DIDO */
+}
+else
+{
+        #ifdef WS_FILEDBUS_NONE_BUT_DIDO
+            // nothing
+        #else /* WS_FILEDBUS_NONE_BUT_DIDO */
+            // update the src signal from bus interface.
+            ws_i_bus_reset = ws_io_cmd_reset;
+            #ifndef WS_VALVE_CTRL_INVERTED
+                ws_i_bus_valveon = ws_io_cmd_valve_on;
+            #else /* WS_VALVE_CTRL_INVERTED */
+                ws_i_bus_valveon = ws_io_cmd_valve_on ? 0 : 1;
+            #endif /* WS_VALVE_CTRL_INVERTED */
+            ws_i_bus_bypass = ws_io_cmd_bypass;
+        #endif /* WS_FILEDBUS_NONE_BUT_DIDO */
+}
 	// web channel is updated in httpd_cgi.c
 
 	// process the dido's edge.
@@ -671,11 +670,11 @@ void ws_read_eth_input()
 
 	// update the src signal from bus interface.
 	ws_i_bus_reset = ETH_IO_DATA_OBJ_INPUT.data.cmd_reset;
-#ifndef WS_VALVE_CTRL_INVERTED
-	ws_i_bus_valveon = ETH_IO_DATA_OBJ_INPUT.data.cmd_valve_ctr;
-#else /* WS_VALVE_CTRL_INVERTED */
-	ws_i_bus_valveon = ETH_IO_DATA_OBJ_INPUT.data.cmd_valve_ctr ? 0 : 1;
-#endif /* WS_VALVE_CTRL_INVERTED */
+    #ifndef WS_VALVE_CTRL_INVERTED
+	    ws_i_bus_valveon = ETH_IO_DATA_OBJ_INPUT.data.cmd_valve_ctr;
+    #else /* WS_VALVE_CTRL_INVERTED */
+	    ws_i_bus_valveon = ETH_IO_DATA_OBJ_INPUT.data.cmd_valve_ctr ? 0 : 1;
+    #endif /* WS_VALVE_CTRL_INVERTED */
 
 	ws_i_bus_bypass = ETH_IO_DATA_OBJ_INPUT.data.cmd_bypass;
 #endif
@@ -717,7 +716,8 @@ void ws_read_eth_input()
 
 void ws_update_eth_output ()
 {
-#if WS_FIELDBUS_TYPE != FIELDBUS_TYPE_PNIOIO
+    if(aio_network_sel != AIO_NETWORK_PNIOIO)
+    {
 #ifndef WS_FILEDBUS_NONE_BUT_DIDO
 	//ETH_IO_DATA_OBJ_OUTPUT.data.nFlowrate= (uint8_t)(qv_flowrate_1 *10);       // feedback flowrate in 10*l/min.
 #ifndef WS_VALVE_CTRL_INVERTED
@@ -752,8 +752,7 @@ void ws_update_eth_output ()
 	    debug_count_ack++;
 	ws_should_ack = 0;
 #endif /* WS_FILEDBUS_NONE_BUT_DIDO */
-#endif
-
+    }
 }
 
 // currently http input and output are updated directly in http SSI and CGI routines.
@@ -984,11 +983,60 @@ void ws_update_weighted_index_threshold () {
 }
 #endif
 
+//added by panzi 2018.5.24.12:45,滑动算数平均值滤波
+//参数 1 : databuf 要平均的数值的数组
+//    2:  count 个数
+double  move_average_filter(double *databuf,int count)
+{
+    double sample_value = 0;
+    double sum = 0;
+    int i;
+    for(i = 0;i < count;i++)
+    {
+        sum += databuf[i];
+    }
+    sample_value = sum/count;
+    return sample_value;
+}
+//added by panzi 2018.5.24.12:45,防脉冲干扰平均值滤波
+//参数 1 : databuf 要平均的数值的数组，去除最大最小，剩下count - 2 个中间的数
+//    2:  count 个数
+double max_min_choice(double *databuf,int count)
+{
+    double max_value,min_value;
+    double sample_value = 0;
+    double sum = 0;
+    int i ;
+    max_value = databuf[0];
+    min_value = databuf[0];
+    for(i = 0;i < count; i++)
+    {
+        sum += databuf[i] ;
+        if(databuf[i] > max_value)
+        {
+           max_value = databuf[i];
+        }
+        else if(databuf[i] < min_value)
+        {
+            min_value = databuf[i];
+        }
+    }
+    sample_value = (sum - max_value - min_value)/(count-2);
+    return sample_value;
+}
+
+
+
 // calculate and check whether there is a leakage
 // when bypassed, calculation will be still done.
 void ws_flowrate_detect_leakage ()
 {
     uint16_t i = qv_buf_size - 1;
+
+//    static double flow_aver_2_temp = 0;
+//    static int cnt = 0;
+//    static int j = 0;
+//    double databuf[5] = {0} ; //added by panzi,2018.5.24,数组变量，连续将flow_aver_2放到了该数组里面
 
     // for effiency, calculate moving average in advance of buffer update.
 #if 0
@@ -1002,6 +1050,36 @@ void ws_flowrate_detect_leakage ()
 	// right one, but could be of stability issues.
 	flow_aver_1 = (qv_flowrate_1 - qv_flowrate_buf_1[qv_buf_size-1]) / qv_buf_size + flow_aver_1;
 	flow_aver_2 = (qv_flowrate_2 - qv_flowrate_buf_2[qv_buf_size-1]) / qv_buf_size + flow_aver_2;
+
+	test = qv_flowrate_buf_2[199];
+
+
+	flow_linear_translatin = 1.23 * flow_aver_2 + 0.92;
+
+
+#if 0
+	 //added by panzi*2018.5.24
+	 flow_aver_2_temp =  (qv_flowrate_2 - qv_flowrate_buf_2[qv_buf_size-1]) / qv_buf_size + flow_aver_2;
+
+	 //smc线性化by panzi
+	 // flow_aver_2 = 1.235144 * flow_aver_2 + 0.918925;     // 55points
+	 //  flow_aver_2 = 1.256785 * flow_aver_2 + 0.827483   // 54points
+	 // flow_aver_2 = 1.423127 * flow_aver_2 + 0.844190    // 20points
+
+	 cnt++;
+	 j++;
+	 databuf[j] = flow_aver_2_temp ;
+	 if(cnt == 5)
+	 {
+
+	    flow_aver_2 = move_average_filter(databuf, 5);
+	    //flow_aver_2 = max_min_choice(databuf, 5);
+	    flow_aver_2 = 1.235144 * flow_aver_2 + 0.918925;
+	    cnt = 0;
+	    j = 0;
+	 }
+	 //added by panzi*2018.5.24
+#endif
 	flow_aver_1_quar = (qv_flowrate_1 - qv_flowrate_buf_1[qv_buf_size_a_quarter-1]) / qv_buf_size_a_quarter + flow_aver_1_quar;
 	flow_aver_2_quar = (qv_flowrate_2 - qv_flowrate_buf_2[qv_buf_size_a_quarter-1]) / qv_buf_size_a_quarter + flow_aver_2_quar;
 #endif
@@ -1142,41 +1220,6 @@ void init_timer4(void){
 void timer4_stop() {
     timer4_reset();
     TimerDisable(TIMER4_BASE,TIMER_A);
-}
-
-void IntTimer5Handler(void){
-    // Clear the timer interrupt.
-    //
-    TimerIntClear(TIMER5_BASE, TIMER_TIMA_TIMEOUT);
-
-    // Update the interrupt status.
-    //
-//    IntMasterDisable();
-    ws_dig_led_update_daemon();
-//    IntMasterEnable();
-}
-
-void init_timer5(void){
-    //
-    // Enable the timers.
-    //
-
-    SysCtlPeripheralEnable(SYSCTL_PERIPH_TIMER5);
-    while(!SysCtlPeripheralReady(SYSCTL_PERIPH_TIMER5));
-    TimerConfigure(TIMER5_BASE, TIMER_CFG_PERIODIC);            //count down, one shot
-    TimerClockSourceSet(TIMER5_BASE, TIMER_CLOCK_SYSTEM);
-    TimerLoadSet(TIMER5_BASE, TIMER_A,SystemCoreClock/1000*WS_DIG_LED_UPDATE_PERIOD);   //timeout = 1*WS_DIG_LED_UPDATE_PERIOD ms
-
-    //TimerIntRegister(TIMER5_BASE, TIMER_A, laser_timer_ISR);
-    IntPrioritySet(INT_TIMER5A, INTERRUPT_PRIORITY_LOW);//INTERRUPT_PRIORITY_SYS
-    IntEnable(INT_TIMER5A);
-    TimerIntClear(TIMER5_BASE, TIMER_TIMA_TIMEOUT);
-    TimerIntEnable(TIMER5_BASE, TIMER_TIMA_TIMEOUT);
-}
-
-void timer5_stop() {
-    timer5_reset();
-    TimerDisable(TIMER5_BASE,TIMER_A);
 }
 
 
@@ -1481,9 +1524,8 @@ void ws_dig_led_update_daemon() {
 #define GPIOTAG_DIN_ALL (GPIOTag_DIN_1 | GPIOTag_DIN_2 | GPIOTag_DIN_3)
 #define GPIOTAG_DOUT_ALL (GPIOTag_DOUT_1 | GPIOTag_DOUT_2 | GPIOTag_DOUT_3)
 
-#if WS_FIELDBUS_TYPE != FIELDBUS_TYPE_PNIOIO
 uint8_t _ws_dout_old = 0;
-#endif
+
 //typedef union {
 //	struct {
 //		uint8_t bit0:1;
@@ -1511,11 +1553,9 @@ void ws_gpio_init() {
 	        GPIOTag_DOUT_ALL,
 			GPIO_SET_OUT_PUSHPULL, GPIO_SPD_HIGH);
 
-#if WS_FIELDBUS_TYPE != FIELDBUS_TYPE_PNIOIO
+if(aio_network_sel != AIO_NETWORK_PNIOIO)
 	GPIOIntDisable(GPIO_PORTE_BASE, GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_2);
-#endif
 }
-
 uint8_t _ws_dout_old_oktoweld = 0;
 uint8_t _ws_dout_old_flow_warning = 0;
 uint8_t _ws_dout_old_leak_detected = 0;
@@ -1525,8 +1565,9 @@ void ws_update_io() {
 	ETH_IO_DATA_OBJ_OUTPUT.data.gpio_din_1_3 = GPIO_TagStateRead(GPIOTag_DIN_ALL);
 	//write only once
 	GPIO_TagStateWriteOnce(GPIOTag_DOUT_ALL, (uint8_t*)&_ws_dout_old, ETH_IO_DATA_OBJ_INPUT.data.gpio_dout_1_3);
+
 #else
-	if(aio_network_sel == AIO_NETWORK_PNIOIO)
+    if(aio_network_sel == AIO_NETWORK_PNIOIO)
 	{
 	    ws_io_cmd_reset = GPIO_TagRead(GPIOTag_DIN_1);
 	    ws_io_cmd_valve_on = GPIO_TagRead(GPIOTag_DIN_2);
@@ -1545,6 +1586,12 @@ void ws_update_io() {
 	        _ws_dout_old_leak_detected = ws_o_is_leak_detected;
 	    }
 	}
+    else if(aio_network_sel == AIO_NETWORK_PNIO)
+    {
+        ETH_IO_DATA_OBJ_OUTPUT.data.gpio_din_1_3 = GPIO_TagStateRead(GPIOTag_DIN_ALL);
+        //write only once
+        GPIO_TagStateWriteOnce(GPIOTag_DOUT_ALL, (uint8_t*)&_ws_dout_old, ETH_IO_DATA_OBJ_INPUT.data.gpio_dout_1_3);
+    }
 #endif
 }
 

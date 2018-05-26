@@ -7,10 +7,10 @@
 #include "netconf.h"				// header file
 
 // global ip addr variables
-uint8_t uip_add_0 = 0;
-uint8_t uip_add_1 = 0;
-uint8_t uip_add_2 = 0;
-uint8_t uip_add_3 = 0;
+uint8_t uip_add_0 = 192;
+uint8_t uip_add_1 = 168;
+uint8_t uip_add_2 = 1;
+uint8_t uip_add_3 = 2;
 
 /* Private declarations --------------------------------------------------------------------*/
 #ifdef USE_DHCP

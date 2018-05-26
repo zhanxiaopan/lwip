@@ -70,8 +70,8 @@ int main(void) {
             printf("Bootloader configuration error!@1");
             while(1);
         }
-    }
 
+    }
     /*
      * #FOR BOOTLOADER#
      * if aio_bl_config is not configured to
@@ -84,5 +84,6 @@ int main(void) {
 	system_init();
 	//major loop of the system
 
-	while(1) system_loop();
+	while(1)
+	    system_loop();
 }

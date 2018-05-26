@@ -1,25 +1,41 @@
 
 
 <style type="text/css">
-.left .le1{width: 62px;height:58px; }
-.left .le2{width: 17px;height:58px; }
-.left .le3{width: 5px;height:58px; }
-.left .le4{width: 17px;height:58px; }
-.left .le5{width: 46px;height:58px; }
-.left .le6{width: 20px;height:58px; }
 .left{width: 210px; height: 56px;}
+.status-row { text-align: center; padding-left: 23px; }
 </style>
- 
+
+<script>
+  function copy_innerText(src,dest)
+  {
+  	var dom = document.getElementById(src);
+  	if (dom && dom.src != dest) {
+  		dom.src = dest;
+  	}
+  }
+  window.refreshStatus = function (flow0_src, flow1_src, flow2_src, status0_src, status1_src, status2_src) {
+	try {
+	  	copy_innerText("id_flow0_img",flow0_src);
+	  	copy_innerText("id_flow1_img",flow1_src);
+	  	copy_innerText("id_flow2_img",flow2_src);
+	  	copy_innerText("id_status0_img",status0_src);
+	  	copy_innerText("id_status1_img",status1_src);
+	  	copy_innerText("id_status2_img",status2_src);
+	} catch (e) {
+	}
+  }
+</script>
+
 <table border="0" cellspacing="0" cellpadding="0"  bgcolor="#f0f0f0">
 <tbody>
 <tr class="left" >
-	<td >
-	<img class="le1" id="id_flow0_img" name="flow0_img" src="/src/flowrate_blank.gif"> 
-	<img class="le2" id="id_flow1_img" name="flow1_img" src="/src/flowrate_0.gif">
-	<img class="le3" src="/src/flowrate_dot.gif">
-	<img class="le4" id="id_flow2_img" name="flow2_img" src="/src/flowrate_0.gif">
-	<img class="le5" name="flow_unit_img" src="/src/flowrate_lpm.gif">
-	<img class="le6" src="/src/flowrate_blank.gif">
+	<td class="status-row">
+	<img id="id_flow0_img" name="flow0_img" src="/src/flowrate_blank.gif">
+	<img id="id_flow1_img" name="flow1_img" src="/src/flowrate_0.gif">
+	<img src="/src/flowrate_dot.gif">
+	<img id="id_flow2_img" name="flow2_img" src="/src/flowrate_0.gif">
+	<img name="flow_unit_img" src="/src/flowrate_lpm.gif">
+	<img src="/src/flowrate_blank.gif">
 	</td>
 </tr>
 

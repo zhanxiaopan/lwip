@@ -15,6 +15,7 @@
 #if WS_FIELDBUS_TYPE == FIELDBUS_TYPE_EIPS
 #include "netconf.h"
 #include "eips_main.h"
+extern unsigned long int global_service_timer_10us;
 #elif WS_FIELDBUS_TYPE == FIELDBUS_TYPE_NONE
 #include "netconf.h"
 #elif WS_FIELDBUS_TYPE == FIELDBUS_TYPE_PNIO || WS_FIELDBUS_TYPE ==FIELDBUS_TYPE_PNIOIO
@@ -22,6 +23,13 @@ extern void pnio_app_init(void);
 extern void pnio_process(void);
 extern void pnio_app_iodata_update(void);
 #endif /* WS_FIELDBUS_TYPE == FIELDBUS_TYPE_EIPS */
+
+void init_timer5(void);
+void timer5_stop(void);
+void IntTimer5Handler(void);
+#define timer5_start()    TimerEnable(TIMER5_BASE,TIMER_A)
+#define timer5_reset()    TimerLoadSet(TIMER5_BASE, TIMER_A, SystemCoreClock/1000)
+
 
 #if WS_FIELDBUS_TYPE != FIELDBUS_TYPE_BL
 #include "httpd.h"
@@ -130,6 +138,8 @@ void system_init()
 	ws_init();
 	init_timer4();
 	TimerEnable(TIMER4_BASE,TIMER_A);
+    init_timer5();
+    TimerEnable(TIMER5_BASE,TIMER_A);
 	// Init network module
 //#if WS_FIELDBUS_TYPE != FIELDBUS_TYPE_PNIOIO
     system_init_network();
@@ -377,4 +387,51 @@ void GPIOE_ISR (void) {
             else return;
         }
 #endif /* WS_FIELDBUS_TYPE == FIELDBUS_TYPE_NONE */
+}
+#if WS_FIELDBUS_TYPE == FIELDBUS_TYPE_EIPS
+extern unsigned char global_HTTP_service_lock;
+extern unsigned long int HTTP_lock_enable_counter;
+#endif
+void IntTimer5Handler(void){
+    // Clear the timer interrupt.
+    //
+#if WS_FIELDBUS_TYPE == FIELDBUS_TYPE_EIPS
+    if(HTTP_lock_enable_counter>110000)//110000 40ms
+        global_HTTP_service_lock=1;
+    HTTP_lock_enable_counter++;
+
+    global_service_timer_10us++;
+
+#endif
+
+    TimerIntClear(TIMER5_BASE, TIMER_TIMA_TIMEOUT);
+
+    // Update the interrupt status.
+    //
+//    IntMasterDisable();
+
+//    IntMasterEnable();
+}
+
+void init_timer5(void){
+    //
+    // Enable the timers.
+    //
+
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_TIMER5);
+    while(!SysCtlPeripheralReady(SYSCTL_PERIPH_TIMER5));
+    TimerConfigure(TIMER5_BASE, TIMER_CFG_PERIODIC);            //count down, one shot
+    TimerClockSourceSet(TIMER5_BASE, TIMER_CLOCK_PIOSC);        //TIMER_CLOCK_SYSTEM
+    TimerLoadSet(TIMER5_BASE, TIMER_A,SystemCoreClock/100000);   //timeout = 10 us
+
+    //TimerIntRegister(TIMER5_BASE, TIMER_A, laser_timer_ISR);
+    IntPrioritySet(INT_TIMER5A, INTERRUPT_PRIORITY_LOW);//INTERRUPT_PRIORITY_SYS
+    IntEnable(INT_TIMER5A);
+    TimerIntClear(TIMER5_BASE, TIMER_TIMA_TIMEOUT);
+    TimerIntEnable(TIMER5_BASE, TIMER_TIMA_TIMEOUT);
+}
+
+void timer5_stop() {
+    timer5_reset();
+    TimerDisable(TIMER5_BASE,TIMER_A);
 }

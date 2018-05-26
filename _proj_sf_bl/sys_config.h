@@ -17,7 +17,10 @@ extern "C" {
 #define FIELDBUS_TYPE_EIPS  (1)
 #define FIELDBUS_TYPE_PNIO  (2)
 #define FIELDBUS_TYPE_BL    (3)
-#define WS_FIELDBUS_TYPE FIELDBUS_TYPE_BL
+
+//
+#define WS_FIELDBUS_TYPE FIELDBUS_TYPE_EIPS
+
 #if WS_FIELDBUS_TYPE > FIELDBUS_TYPE_BL
 #error "A wrong IO bus type has been defined!"
 #endif
@@ -27,7 +30,7 @@ extern "C" {
  * Uncomment below to indicate the usage of TIVA launchpad instead of actual ws hardware.
  * It mainly affect the definition of the used LED.
  * */
-#define __USE_LAUNCH_PAD
+//#define __USE_LAUNCH_PAD
 #define UPGRADER_PROCESS_INTERVAL (5)
 
 

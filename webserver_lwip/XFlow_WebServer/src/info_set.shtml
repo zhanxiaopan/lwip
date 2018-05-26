@@ -2,9 +2,33 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
 <meta http-equiv="Pragma" content="no-cache">
-<script type="text/javascript" src="hidden.js">
-</script>
 <script type="text/javascript">
+  function copy_setup_value(id,val) {
+  		document.getElementById(id).value = val;
+  }
+
+  function set_setup_selection(id,sel) {
+  	var opts = document.getElementById(id).getElementsByTagName("option");
+  	for (i=0; i<opts.length; i++)
+  	{
+  		if(opts[i].value==sel)
+  			opts[i].selected=true;
+  		else
+  			opts[i].selected=false;
+  	}
+  }
+  window.refreshInfoSet = function (g_setup_on, g_should_update, g_flow_waring, g_flow_fault, g_leak_rsp, g_stb_delay, g_startup_leak) {
+	try {
+	    if (g_setup_on && g_should_update) {
+	  		copy_setup_value("id_setup_flow_warning",g_flow_waring);
+	  		copy_setup_value("id_setup_flow_fault",g_flow_fault);
+	  		set_setup_selection("id_setup_lr",g_leak_rsp);
+	  		set_setup_selection("id_setup_sd",g_stb_delay);
+	  		set_setup_selection("id_setup_sl",g_startup_leak);
+	    }
+	 } catch (e) {
+	 }
+  }
 </script>
 </head>
 
@@ -93,7 +117,7 @@
             </td>
             <td height="25" width="32"><img src="/src/blank.gif" border="0" alt=""></td>
             </tr>
-			
+
 			<tr>
             <td height="25" width="32"><img src="/src/blank.gif" border="0" alt=""></td>
             <td height="25" width="225" align="left"><font size="2">IP Address</font></td>

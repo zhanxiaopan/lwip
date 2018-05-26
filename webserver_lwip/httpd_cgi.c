@@ -234,7 +234,8 @@ u16_t ADC_Handler(int iIndex, char *pcInsert, int iInsertLen)
 
 		break;
 	case DISP4: /* value of flowrate */
-		temp_str_len = sprintf (temp_str, "%.1f", flow_aver_2);
+		temp_str_len = sprintf (temp_str, "%.1f", flow_linear_translatin);
+	    //temp_str_len = sprintf (temp_str, "%.1f", flow_aver_2);
 		break;
 	case DISP_F_W: /* current setting of flowrate warnning */
 		temp_str_len = sprintf (temp_str, "%.1f", ws_i_warning_flow);
@@ -296,13 +297,24 @@ u16_t ADC_Handler(int iIndex, char *pcInsert, int iInsertLen)
 		temp_str_len = sprintf (temp_str, "%s", "V2.3.0");
 		break;
 	case IE_PTC: /* ws logo (eips/pnio/dido) */
-#if WS_FIELDBUS_TYPE == FIELDBUS_TYPE_EIPS
-		temp_str_len = sprintf (temp_str, "%s", "EN");
-#elif WS_FIELDBUS_TYPE == FIELDBUS_TYPE_PNIO || WS_FIELDBUS_TYPE ==FIELDBUS_TYPE_PNIOIO
-		temp_str_len = sprintf (temp_str, "%s", "PN");
-#elif defined WS_FILEDBUS_NONE_BUT_DIDO
-		temp_str_len = sprintf (temp_str, "%s", "IO");
-#endif
+        switch(aio_network_sel) {
+        case AIO_NETWORK_EIPS:
+            temp_str_len = sprintf (temp_str, "%s", "EN");
+            break;
+        case AIO_NETWORK_PNIO:
+            temp_str_len = sprintf (temp_str, "%s", "PN");
+            break;
+        case AIO_NETWORK_PNIOIO:
+            temp_str_len = sprintf (temp_str, "%s", "IO");
+            break;
+        }
+//#if WS_FIELDBUS_TYPE == FIELDBUS_TYPE_EIPS
+//		temp_str_len = sprintf (temp_str, "%s", "EN");
+//#elif WS_FIELDBUS_TYPE == FIELDBUS_TYPE_PNIO || WS_FIELDBUS_TYPE ==FIELDBUS_TYPE_PNIOIO
+//		temp_str_len = sprintf (temp_str, "%s", "PN");
+//#elif defined WS_FILEDBUS_NONE_BUT_DIDO
+//		temp_str_len = sprintf (temp_str, "%s", "IO");
+//#endif
 		break;
 	case IPADDR: /* ip address */
 #if WS_FIELDBUS_TYPE == FIELDBUS_TYPE_EIPS
@@ -455,7 +467,7 @@ u16_t ADC_Handler(int iIndex, char *pcInsert, int iInsertLen)
 	    break;
 	case DP_AIO_NETWORK:
 	    if(aio_network_sel == AIO_NETWORK_EIPS )
-	        temp_str_len = sprintf (temp_str, "%s", STR_SYS_NETWORK_EIPS);
+	        temp_str_len = sprintf (temp_str, "%s", STR_SYS_NETWORK_PNIO);//STR_SYS_NETWORK_EIPS);
 	    else if (aio_network_sel == AIO_NETWORK_PNIO )
 	        temp_str_len = sprintf (temp_str, "%s", STR_SYS_NETWORK_PNIO);
 	    else if (aio_network_sel == AIO_NETWORK_PNIOIO )
@@ -592,19 +604,19 @@ const char * LEDS_CGI_Handler(int iIndex, int iNumParams, char *pcParam[], char 
 	      if (strcmp(pcParam[i] , "para1")==0) {
 	    	  ws_i_web_reset = (ws_i_web_reset) ? 0 : 1;
 	    	  isNewCmdSubmit = 1;
-	    	  return "/src/controls.shtml";
+	    	  return "/src/empty.shtml";
 
 	      }
 	      else if (strcmp(pcParam[i] , "para2")==0) {
 	    	  ws_i_web_valveon = (ws_o_is_valve_on==1)?0:1;
 	    	  isNewCmdSubmit = 1;
-	    	  return "/src/controls.shtml";
+	    	  return "/src/empty.shtml";
 	      }
 	      else if (strcmp(pcParam[i] , "para3")==0) {
 	    	  // para3 bth clicked for bypass control
 	    	  ws_i_web_bypass = (ws_o_is_Bypassed==0)?1:0;
 	    	  isNewCmdSubmit = 1;
-	    	  return "/src/controls.shtml";
+	    	  return "/src/empty.shtml";
 	      }
 	      else if (strcmp(pcParam[i] , "para5")==0) {
 	    	  //start control para settings.
@@ -673,38 +685,49 @@ const char * LEDS_CGI_Handler(int iIndex, int iNumParams, char *pcParam[], char 
           //
           else if (strcmp(pcParam[i] , "aiobl")== 0) {
               uint8_t val = atoi(pcValue[i]);
-              switch(val) {
-              case AIO_PTCL_REDI:
+              if(val == AIO_PTCL_REDI )
                   aio_bl_config = AIO_BL_REDI;
-                  break;
-              case AIO_PTCL_LOAD_EIPS:
-                  aio_bl_config = AIO_BL_LOAD_PNIO;
-                  break;
-              case AIO_PTCL_LOAD_PNIO:
-                  aio_bl_config = AIO_BL_LOAD_EIPS;
-                  break;
+              else{
+                  switch(val) {
+    //              case AIO_PTCL_REDI:
+    //                  aio_bl_config = AIO_BL_REDI;
+    //                  break;
+                  case AIO_PTCL_LOAD_EIPS:
+                      aio_bl_config = AIO_BL_LOAD_EIPS;
+                      break;
+                  case AIO_PTCL_LOAD_PNIO:
+                      aio_bl_config = AIO_BL_LOAD_PNIO;
+                      break;
+                  }
+                  //TODO: write eeprom
+                  aio_writeConfig();
+                  SysCtlReset();
               }
-              //TODO: write eeprom
-              //aio_writeConfig();
           }
 	      //
 	      // here we read the network bus type
 	      //
 	      else if (strcmp(pcParam[i] , "aionw")== 0) {
 	          uint8_t val = atoi(pcValue[i]);
-	          switch(val) {
-	          case AIO_PTCL_EIPS:
-	              aio_network_sel = AIO_NETWORK_EIPS;
-	              break;
-	          case AIO_PTCL_PNIO:
-                  aio_network_sel = AIO_NETWORK_PNIO;
-	              break;
-	          case AIO_PTCL_PNIOIO:
-                  aio_network_sel = AIO_NETWORK_PNIOIO;
-	              break;
+	          if(val == (aio_network_sel-0x11))
+	              ;
+	          else
+	          {
+                  switch(val) {
+                  case AIO_PTCL_EIPS:
+                      aio_network_sel = AIO_NETWORK_EIPS;
+                      break;
+                  case AIO_PTCL_PNIO:
+                      aio_network_sel = AIO_NETWORK_PNIO;
+                      break;
+                  case AIO_PTCL_PNIOIO:
+                      aio_network_sel = AIO_NETWORK_PNIOIO;
+                      break;
+                  }
+                  //TODO: write eeprom
+                  aio_writeConfig();
+                  SysCtlReset();
 	          }
-	          //TODO: write eeprom
-	          //aio_writeConfig();
 	      }
 	      //
 	      // here we read the logo name
@@ -721,7 +744,7 @@ const char * LEDS_CGI_Handler(int iIndex, int iNumParams, char *pcParam[], char 
 	          }
 	          //TODO: write eeprom
 	          aio_writeConfig();
-	          SysCtlReset();
+	          //SysCtlReset();
 	      }
 	      else if (strcmp(pcParam[i],"displayVal")==0) {
 

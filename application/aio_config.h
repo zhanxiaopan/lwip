@@ -24,9 +24,9 @@
 extern uint8_t aio_bl_config;
 
 #define AIO_NETWORK_NONE    0x10
-#define AIO_NETWORK_PNIO    0x11
-#define AIO_NETWORK_PNIOIO  0x12
-#define AIO_NETWORK_EIPS    0x13
+#define AIO_NETWORK_EIPS    0x11
+#define AIO_NETWORK_PNIO    0x12
+#define AIO_NETWORK_PNIOIO  0x13
 //default value: AIO_NETWORK_EIPS
 extern uint8_t aio_network_sel;
 

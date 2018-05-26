@@ -48,10 +48,10 @@ void Ethernet_Init()
 //		uip_add_2 = 125;
 //		uip_add_3 = 67;
 //	}
-	uip_add_0 = 172;
-	uip_add_1 = 24;
-	uip_add_2 = 1;
-	uip_add_3 = 1;
+	uip_add_0 = 192;//172;
+	uip_add_1 = 168;//24;
+	uip_add_2 = 1;//1;
+	uip_add_3 = 2;//1;
 //	uip_add_0 = 192;
 //	uip_add_1 = 168;
 //	uip_add_2 = 125;

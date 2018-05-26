@@ -277,7 +277,7 @@ static char http_post_response_filename[LWIP_HTTPD_POST_MAX_RESPONSE_URI_LEN+1];
 #define HTTPD_LAST_TAG_PART 0xFFFF
 
 const char * const g_pcSSIExtensions[] = {
-  ".shtml", ".shtm", ".ssi", ".xml"
+  ".shtml", ".shtm", ".ssi", ".xml", ".json"
 };
 
 #define NUM_SHTML_EXTENSIONS (sizeof(g_pcSSIExtensions) / sizeof(const char *))

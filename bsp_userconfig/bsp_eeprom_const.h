@@ -38,8 +38,8 @@
 #define EEPROM_ADDR_BL_JUMP_CONFIG  EEPROMAddrFromBlock(2)+20
 #define EEPROM_LEN_BL_JUMP_CONFIG   4
 
-#define EEPROM_ALL_IN_ONE_CONFIG    EEPROMAddrFromBlock(8)
-
+#define EEPROM_ALL_IN_ONE_CONFIGL   EEPROMAddrFromBlock(8)
+#define EEPROM_ALL_IN_ONE_CONFIGH   EEPROMAddrFromBlock(8)+4
 
 #define    JUMP_CONFIG_NAN          0xFFFFFFFF
 #define    JUMP_CONFIG_NO_WAIT      0x00040004       //not avaliable yet

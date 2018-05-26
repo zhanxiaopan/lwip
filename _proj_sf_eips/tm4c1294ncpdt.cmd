@@ -8,8 +8,9 @@
 
 --retain=g_pfnVectors
 // When use bootloader,APP_BASE should be 0x20000
-#define APP_BASE 0x00020000
-//#define APP_BASE 0x00000000
+
+//#define APP_BASE 0x00020000 //modified by panzi 2018.5.25
+#define APP_BASE 0x00000000  //
 
 #define RAM_BASE 0x20000000
 MEMORY

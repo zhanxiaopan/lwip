@@ -6,10 +6,23 @@
         select { width: 175 };
     </style>
     <script type="text/javascript">
+		
+		//var password="";
+		//password=prompt('Please enter the password:','');
+		//if (password != 'mima')   
+		//{	
+			//alert("Wrong password, access denied.");    
+			//window.opener=null; 
+			//window.close();			
+		//}  // close the window when the password is wrong
+	
         var nw = "<!--#dpaionw-->";
         var lg = "<!--#hd_logo-->";
         
-        function setOpt(id,opt){document.getElementById(id).value = opt;}
+        function setOpt(id,opt)
+        {
+            document.getElementById(id).value = opt;
+        }
         
         function getValSel(selId)
         {
@@ -28,7 +41,7 @@
                 else
                   xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
                 xmlhttp.onreadystatechange=function(){};
-                xmlhttp.open("GET","/leds.cgi?aiobl="+conf+",aionw="+network+"&aiolg="+logo,true);
+                xmlhttp.open("GET","/leds.cgi?aiobl="+conf+"&aionw="+network+"&aiolg="+logo,true);
                 xmlhttp.send();
         }
         
@@ -52,6 +65,7 @@
             else
                 setOpt("sel_lg",8);
         }
+
     </script>
   </head>
   <body>
@@ -85,7 +99,7 @@
         <br/>
         <br/>
         
-    <input style="margin-left: 120px;" type="button" value="Submit" onclick="config_btn_clk()"/>
+    <input style="margin-left: 120px;" type="button" value="Submit" onClick="config_btn_clk()"/>
     </form>
     
     <script type="text/javascript">

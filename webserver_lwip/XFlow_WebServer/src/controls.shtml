@@ -2,30 +2,46 @@
 <meta http-equiv="Cache-Control" content="no-cache">
 <meta http-equiv="Cache-Control" content="no-store">
 <meta http-equiv="Pragma" content="no-cache">
-<script type="text/javascript" src="hidden.js">
-</script>
 <script type="text/javascript">
+function createNewXHR() {
+	if (window.XMLHttpRequest) {
+		return new XMLHttpRequest();
+	} else {
+		return new ActiveXObject("Microsoft.XMLHTTP");
+	}
+}
+var controlXHR1 = createNewXHR();
 function btn_click_setup()
-            {
-                var xmlhttp;
-                if (window.XMLHttpRequest)
+            {                
+				controlXHR1.abort();
+                controlXHR1.open("GET","/leds.cgi?para5=&randpara=" + Math.random(),true);
+                controlXHR1.onreadystatechange=function()
                   {
-                  xmlhttp=new XMLHttpRequest();
-                  }
-                else
-                  {
-                  xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
-                  }
-                xmlhttp.onreadystatechange=function()
-                  {
-                  if (xmlhttp.readyState==4 && xmlhttp.status==200)
+                  if (controlXHR1.readyState==4 && controlXHR1.status==200)
                     {
-                    window.parent.info_frame.document.getElementById("setup_info").innerHTML=xmlhttp.responseText;
+                    window.parent.info_frame.document.getElementById("setup_info").innerHTML=controlXHR1.responseText;
                     }
                   }
-                xmlhttp.open("GET","/leds.cgi?para5=&randpara=" + Math.random(),true);
-                xmlhttp.send();
+                controlXHR1.send();
             }
+function btn_click_reset() {
+	controlXHR1.abort();
+	controlXHR1.open('GET', '/leds.cgi?para1=reset1&randpara=' + Math.random(), true);
+	controlXHR1.onreadystatechange = function () {};
+	controlXHR1.send();
+}
+function btn_click_valve() {
+	controlXHR1.abort();
+	controlXHR1.open('GET', '/leds.cgi?para2=valve1&randpara=' + Math.random(), true);
+	controlXHR1.onreadystatechange = function () {};
+	controlXHR1.send();
+}
+function btn_click_bypass() {
+	controlXHR1.abort();
+	controlXHR1.open('GET', '/leds.cgi?para3=bypass1&randpara=' + Math.random(), true);
+	controlXHR1.onreadystatechange = function () {};
+	controlXHR1.send();
+}
 </script>
 </head>
 
@@ -39,23 +55,17 @@ function btn_click_setup()
 
 
 		<td width="151" height="58">
-		<a href="http://<!--#ipaddr-->/leds.cgi?para1=reset1">
-		<img src="/src/btn_reset.gif" border="0" alt="RESET">
-		</a>
+		<img src="/src/btn_reset.gif" border="0" onclick="btn_click_reset()" alt="RESET">
 		</td>
 
 		
 		<td width="151" height="58">
-		<a href="http://<!--#ipaddr-->/leds.cgi?para2=valve1">
-		<img src="/src/btn_valve.gif" border="0" alt="VALVE">
-		</a>
+		<img src="/src/btn_valve.gif" border="0" onclick="btn_click_valve()" alt="VALVE">
 		</td>
 
 		
 		<td width="151" height="58">
-		<a href="http://<!--#ipaddr-->/leds.cgi?para3=bypass1">
-		<img src="/src/btn_bypass.gif" border="0" alt="BYPASS">
-		</a>
+		<img src="/src/btn_bypass.gif" border="0" onclick="btn_click_bypass()" alt="BYPASS">
 		</td>
 
 	</tr>

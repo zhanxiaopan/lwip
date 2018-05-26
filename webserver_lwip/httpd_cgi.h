@@ -8,6 +8,8 @@
 #ifndef WEBSERVER_LWIP_HTTPD_CGI_H_
 #define WEBSERVER_LWIP_HTTPD_CGI_H_
 
+#include "ws_func.h"
+
 //#define VAR_STPO    45
 //#define VAR_LR      6
 //#define VAR_SD      47
@@ -183,6 +185,8 @@ const tCGI LEDS_CGI={"/leds.cgi", LEDS_CGI_Handler};
 /* Cgi call table, only one CGI used */
 tCGI CGI_TAB[1];
 
-#define FLOW_AVER   ((flow_aver_2>0)?flow_aver_2:0)
+//#define FLOW_AVER   ((flow_aver_2>0)?flow_aver_2:0)//masked by panzi2018.5.25
+#define FLOW_AVER   ((flow_linear_translatin>0)?flow_linear_translatin:0) //added by panzi 2018.5.25
+
 
 #endif /* WEBSERVER_LWIP_HTTPD_CGI_H_ */

@@ -46,14 +46,24 @@ function btn_click_cancel()
                 xmlhttp.send();
             }
 
+window.refreshInfo = function (info_src) {
+	try {
+		if (document.info_img.src != info_src)
+		{
+			document.info_img.src = info_src;
+		}
+	} catch (e) {
+	}
+
+}
 </script>
 </head>
 
 <body>
 	<div id="setup_info" border="0">
-		<img id="test_info_img" name="info_img" src="/src/info_st_5.gif"  width="390" height="232">	
+	<img id="test_info_img" name="info_img" src="/src/info_st_5.gif"  width="390" height="232">
 	</div>
-		
+
 </body>
 
 </html>

@@ -1,1 +1,1 @@
-makefsfile -i XFlow_WebServer -o fsdata_custom.h -r -h -q
+makefsfile -i XFlow_WebServer -o fsdata_custom.h -r -h -v

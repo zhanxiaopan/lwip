@@ -75,6 +75,8 @@ extern double flow_dev_int;		// integral of dev in unit of Litre
 extern double flow_aver_1;
 extern double flow_aver_2;
 
+extern double flow_linear_translatin; //added by panzi 2018.5.25
+
 extern uint8_t ws_o_status_index;
 
 extern uint8_t ws_web_datalog_alive;
@@ -97,6 +99,14 @@ void ws_process(void);
 void ws_dig_led_update_daemon();
 void ws_gpio_init(void);
 void ws_update_io(void);
+
+//added by panzi 2018.5.24,flowrate filter滑动算术平均值滤波
+double  move_average_filter(double *databuf,int count);
+//added by panzi 2018.5.24.12:45,防脉冲干扰平均值滤波
+//参数 1 : databuf 要平均的数值的数组，去除最大最小，剩下count - 2 个中间的数
+//    2:  count 个数
+double max_min_choice(double *databuf,int count);
+
 
 typedef enum
 {

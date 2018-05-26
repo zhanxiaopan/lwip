@@ -48,12 +48,12 @@ typedef union IO_DATA_INPUT_T
 		uint8_t     cmd_delay;              // goDelay
 		uint8_t     cmd_startup_leak;       // goStartupLeak
 
-#if WS_FIELDBUS_TYPE != FIELDBUS_TYPE_PNIOIO
+//#if WS_FIELDBUS_TYPE != FIELDBUS_TYPE_PNIOIO
 		uint8_t		gpio_dout_1_3:3;
 		uint8_t		di_rvd_bit_05_09:5;
-#else
-		uint8_t		di_rvd_byte_6;
-#endif
+//#else
+//		uint8_t		di_rvd_byte_6;
+//#endif
 
 		uint8_t		di_rvd_byte_7;
 		uint16_t    di_rvd_bytes_8_9;
@@ -96,12 +96,12 @@ typedef union IO_DATA_OUTPUT_T
 		uint8_t     delay;                  // 8: delay, by TMS
 		uint8_t     startup_leak;           // 8: startup_leak, by TMS
 
-#if WS_FIELDBUS_TYPE != FIELDBUS_TYPE_PNIOIO
+//#if WS_FIELDBUS_TYPE != FIELDBUS_TYPE_PNIOIO
 		uint8_t 	gpio_din_1_3:3;
 		uint8_t		do_rvd_bit5_9:5;
-#else
-		uint8_t		do_rvd_byte_8;
-#endif
+//#else
+//		uint8_t		do_rvd_byte_8;
+//#endif
 
 		uint8_t		do_rvd_byte_9;
 	} data;
