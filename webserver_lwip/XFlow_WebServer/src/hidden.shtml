@@ -1,0 +1,6 @@
+<script>
+try { window.parent.status_frame.refreshStatus("<!--#flow_0-->", "<!--#flow_1-->", "<!--#flow_2-->", "<!--#disp1-->", "<!--#disp2-->", "<!--#disp3-->"); } catch (e) {}
+try { window.parent.info_frame.refreshInfo("<!--#disp16-->"); } catch (e) {}
+try { window.parent.info_frame.refreshInfoSet(<!--#var_stpo-->, <!--#var_upd-->, <!--#disp_f_w-->, <!--#disp_f_f-->, <!--#var_lr-->, <!--#var_sd-->, <!--#var_sl-->, <!--#var_upd-->); } catch (e) {}
+setTimeout(function() { window.location.reload() }, 1000)
+</script>
